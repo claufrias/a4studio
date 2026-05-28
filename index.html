@@ -467,7 +467,7 @@
   .discount-options-row {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px;
+    gap: 10px;
     margin-top: 8px;
   }
 
@@ -475,19 +475,42 @@
     background: rgba(20, 28, 38, 0.7);
     border: 1px solid rgba(255,255,255,0.12);
     border-radius: 12px;
-    padding: 10px;
+    padding: 8px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
+    width: 100%;
+    cursor: pointer;
+    text-align: left;
+    color: #e8edf5;
+    transition: border-color 0.15s ease, transform 0.15s ease, background 0.15s ease;
+  }
+
+  .discount-option:hover {
+    border-color: rgba(255, 152, 0, 0.6);
+    background: rgba(33, 43, 56, 0.9);
+    transform: translateY(-1px);
+  }
+
+  .discount-option:focus-visible {
+    outline: 2px solid rgba(255, 152, 0, 0.8);
+    outline-offset: 2px;
   }
 
   .discount-preview {
     width: 100%;
-    aspect-ratio: 4 / 5;
+    aspect-ratio: 16 / 10;
     border-radius: 8px;
     border: 1px solid rgba(255,255,255,0.15);
     background-size: cover;
     background-position: center;
+  }
+
+  .discount-option-label {
+    text-align: center;
+    font-size: 0.96rem;
+    font-weight: 700;
+    line-height: 1.2;
   }
 
   #modalFondo .modal-btn {
@@ -3702,22 +3725,22 @@ natural 170 g</textarea>
       <label for="modalApplyDiscountToAll">Aplicar a todas las páginas</label>
     </div>
     <div class="discount-options-row">
-      <div class="discount-option">
+      <button class="discount-option" type="button" onclick="seleccionarFondo('dni')">
         <div class="discount-preview" style="background-image: url('fondodni.jpg');"></div>
-        <button class="modal-btn" onclick="seleccionarFondo('dni')">Cuenta DNI <span style="color:#19bd70;">(10% OFF)</span></button>
-      </div>
-      <div class="discount-option">
+        <span class="discount-option-label">Cuenta DNI <span style="color:#19bd70;">(10% OFF)</span></span>
+      </button>
+      <button class="discount-option" type="button" onclick="seleccionarFondo('mercadopago')">
         <div class="discount-preview" style="background-image: url('fondomp.jpg');"></div>
-        <button class="modal-btn" onclick="seleccionarFondo('mercadopago')">Mercado Pago <span style="color:#fffb00;">(15% OFF)</span></button>
-      </div>
-      <div class="discount-option">
+        <span class="discount-option-label">Mercado Pago <span style="color:#fffb00;">(15% OFF)</span></span>
+      </button>
+      <button class="discount-option" type="button" onclick="seleccionarFondo('carrefour')">
         <div class="discount-preview" style="background-image: url('fondobanco.jpg');"></div>
-        <button class="modal-btn" onclick="seleccionarFondo('carrefour')">Cuenta Digital <span style="color:#ff195e;">(15% OFF)</span></button>
-      </div>
-      <div class="discount-option">
+        <span class="discount-option-label">Cuenta Digital <span style="color:#ff195e;">(15% OFF)</span></span>
+      </button>
+      <button class="discount-option" type="button" onclick="seleccionarFondo('qr')">
         <div class="discount-preview" style="background-image: url('fondoqr.jpg');"></div>
-        <button class="modal-btn" onclick="seleccionarFondo('qr')">QR Billeteras <span style="color:#3676ca;">(10% OFF)</span></button>
-      </div>
+        <span class="discount-option-label">QR Billeteras <span style="color:#3676ca;">(10% OFF)</span></span>
+      </button>
     </div>
   </div>
 </div>
