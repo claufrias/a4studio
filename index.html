@@ -3573,12 +3573,12 @@ natural 170 g</textarea>
 
 <div id="header" class="floating-panel floating-panel-left floating-panel-bottom">
   <div class="header-action-bar compact-action-buttons">
-    <button class="header-combo-btn" type="button" title="Nuevo proyecto" onclick="nuevoProyecto()">&#x2728; Nuevo</button>
-    <button class="header-combo-btn" type="button" title="Seleccionar descuento" onclick="abrirModalFondo()">&#x1F4AF; Descuento</button>
-    <button class="header-combo-btn" type="button" title="Imprimir" onclick="exportar()">&#x1F5A8;&#xFE0F; Imprimir</button>
-    <button class="header-combo-btn" type="button" title="Centrar vista" onclick="resetearVista()">&#x1F50E; Centrar</button>
-    <button class="header-combo-btn" type="button" title="Guardar JSON" onclick="guardarDisenoEnArchivo()">&#x1F4BE; Guardar</button>
-    <button class="header-combo-btn" type="button" title="Cargar JSON" onclick="cargarDisenoDesdeArchivo()">&#x1F4C2; Cargar</button>
+    <button class="header-combo-btn btn-with-icon" type="button" title="Nuevo proyecto" onclick="nuevoProyecto()"><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-1.17-2.276a2.25 2.25 0 0 0-1.146-1.146L4.5 14.25l2.847-.813a2.25 2.25 0 0 0 1.146-1.146L9.75 10.5l.813 2.847a2.25 2.25 0 0 0 1.146 1.146l2.276 1.17-2.847.813a2.25 2.25 0 0 0-1.146 1.146ZM18.259 8.715 18 9.75l-.46-.894a1.125 1.125 0 0 0-.572-.572L16 8.025l1.035-.259c.22-.055.41-.192.572-.41L18 6.75l.259 1.035c.055.22.192.41.41.572l.894.358-1.035.259a1.125 1.125 0 0 0-.572.41Z"/></svg><span>Nuevo</span></button>
+    <button class="header-combo-btn btn-with-icon" type="button" title="Seleccionar descuento" onclick="abrirModalFondo()"><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3.75a8.25 8.25 0 1 0 0 16.5 8.25 8.25 0 0 0 0-16.5Zm0 0v2.25m0 12v2.25m6-8.25h2.25m-16.5 0H6m10.607 5.303 1.591 1.591M5.803 5.803l1.591 1.591m9.213-1.591-1.591 1.591M7.394 16.606l-1.591 1.591"/></svg><span>Descuento</span></button>
+    <button class="header-combo-btn btn-with-icon" type="button" title="Imprimir" onclick="exportar()"><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5V3.75h10.5V7.5m-10.5 8.25h10.5v4.5H6.75v-4.5ZM5.25 8.25h13.5a2.25 2.25 0 0 1 2.25 2.25v4.5a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 15v-4.5a2.25 2.25 0 0 1 2.25-2.25Z"/></svg><span>Imprimir</span></button>
+    <button class="header-combo-btn btn-with-icon" type="button" title="Centrar vista" onclick="resetearVista()"><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 9V4.5H9m6 0h4.5V9m0 6v4.5H15m-6 0H4.5V15M9 9l6 6m0-6-6 6"/></svg><span>Centrar</span></button>
+    <button class="header-combo-btn btn-with-icon" type="button" title="Guardar JSON" onclick="guardarDisenoEnArchivo()"><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.5h12.879a2.25 2.25 0 0 1 1.591.659l1.871 1.871a2.25 2.25 0 0 1 .659 1.591V19.5a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 19.5V5.25A.75.75 0 0 1 3.75 4.5Zm3 0V9h9V4.5m-7.5 12h7.5"/></svg><span>Guardar</span></button>
+    <button class="header-combo-btn btn-with-icon" type="button" title="Cargar JSON" onclick="cargarDisenoDesdeArchivo()"><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V6a2.25 2.25 0 0 1 2.25-2.25h5.379a2.25 2.25 0 0 1 1.591.659l1.871 1.871a2.25 2.25 0 0 0 1.591.659H19.5A2.25 2.25 0 0 1 21.75 9v8.25a2.25 2.25 0 0 1-2.25 2.25H4.5a2.25 2.25 0 0 1-2.25-2.25v-1.5"/></svg><span>Cargar</span></button>
   </div>
 </div>
 
@@ -3602,8 +3602,8 @@ natural 170 g</textarea>
       <button class="header-combo-btn btn-with-icon" type="button" onclick="pegarImagen()"><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.75V3a1.5 1.5 0 0 0-1.5-1.5h-6A1.5 1.5 0 0 0 7.5 3v.75M9 3.75h6M5.25 5.25h13.5A1.5 1.5 0 0 1 20.25 6.75v13.5a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5V6.75a1.5 1.5 0 0 1 1.5-1.5Z"/></svg><span>Pegar imagen</span></button>
     </div>
     <div class="image-panel-dual-actions">
-      <button id="cropToggleBtn" onclick="toggleCropMode()" class="header-combo-btn" type="button">&#x2702;&#xFE0F; Recorte</button>
-      <button onclick="resetearImagen()" class="header-combo-btn" type="button">&#x21BA; Restablecer</button>
+      <button id="cropToggleBtn" onclick="toggleCropMode()" class="header-combo-btn btn-with-icon" type="button"><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v13.5a3.75 3.75 0 1 0 0 7.5h10.5M6.75 12h10.5a3.75 3.75 0 1 0-3.75-3.75V3"/></svg><span>Recorte</span></button>
+      <button onclick="resetearImagen()" class="header-combo-btn btn-with-icon" type="button"><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992V4.356m-1.673 3.71a9 9 0 1 0 2.236 5.664"/></svg><span>Restablecer</span></button>
     </div>
     <button class="header-combo-btn btn-with-icon" type="button" onclick="eliminarImagen()"><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673A2.25 2.25 0 0 1 15.916 21.75H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0A48.108 48.108 0 0 0 3.75 5.79m5.25 0V4.875c0-1.036.84-1.875 1.875-1.875h2.25c1.035 0 1.875.84 1.875 1.875V5.79"/></svg><span>Eliminar imagen</span></button>
     <div class="image-search-label image-search-subtitle">Google Imagenes</div>
@@ -3627,7 +3627,7 @@ natural 170 g</textarea>
 
 <div id="titleToolsPanel" class="floating-panel floating-panel-left">
   <div class="compact-action-buttons title-tools-stack">
-    <button onclick="centrarSeleccionado()" class="header-combo-btn" type="button">&#x1F3AF; Centrar</button>
+    <button onclick="centrarSeleccionado()" class="header-combo-btn btn-with-icon" type="button"><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 9V4.5H9m6 0h4.5V9m0 6v4.5H15m-6 0H4.5V15M9 9l6 6m0-6-6 6"/></svg><span>Centrar</span></button>
     <div class="title-color-control">
       <span class="title-color-label">Color</span>
       <input id="titleFloatingColor" type="color" value="#ffffff" oninput="actualizarColorTituloFlotante(this.value)">
@@ -5972,7 +5972,7 @@ natural 170 g</textarea>
         <div class="page-actions-row">
           <button class="header-combo-btn page-mini-btn" id="btnAddPage" type="button">+ Nueva</button>
           <button class="header-combo-btn page-mini-btn" id="btnDuplicatePage" type="button">Dup. pagina</button>
-          <button class="header-combo-btn page-mini-btn" id="btnDeletePage" type="button">&#x1F5D1;&#xFE0F; Borrar pagina</button>
+          <button class="header-combo-btn page-mini-btn btn-with-icon" id="btnDeletePage" type="button"><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673A2.25 2.25 0 0 1 15.916 21.75H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0A48.108 48.108 0 0 0 3.75 5.79m5.25 0V4.875c0-1.036.84-1.875 1.875-1.875h2.25c1.035 0 1.875.84 1.875 1.875V5.79"/></svg><span>Borrar pagina</span></button>
         </div>
         <div id="pagesList" class="pages-list"></div>
         <div id="advancedStatus" class="status-pill">Sistema listo</div>
