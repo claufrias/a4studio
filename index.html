@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
 <title>A4 Studio</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" referrerpolicy="no-referrer">
 <style>
   :root {
     --ui-font-stack: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
@@ -3422,21 +3423,41 @@
       margin-bottom: 8px;
     }
   }
+
+
+  .btn-with-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .btn-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 14px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
 </style>
 </head>
 <body>
 
 <div id="mobileTopBar">
   <div class="mobile-top-side">
-    <button class="mobile-icon-btn" type="button" title="Deshacer" onclick="window.deshacerCambio()">↶</button>
-    <button class="mobile-icon-btn" type="button" title="Rehacer" onclick="window.rehacerCambio()">↷</button>
+    <button class="mobile-icon-btn" type="button" title="Deshacer" onclick="window.deshacerCambio()"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i></button>
+    <button class="mobile-icon-btn" type="button" title="Rehacer" onclick="window.rehacerCambio()"><i class="fa-solid fa-rotate-right" aria-hidden="true"></i></button>
   </div>
   <div class="mobile-top-brand">
     <div class="mobile-top-title">A4 Studio</div>
     <div class="mobile-top-subtitle">Editor móvil</div>
   </div>
   <div class="mobile-top-side mobile-top-side-right">
-    <button class="mobile-icon-btn" type="button" title="Centrar vista" onclick="resetearVista()">⌖</button>
+    <button class="mobile-icon-btn" type="button" title="Centrar vista" onclick="resetearVista()"><i class="fa-solid fa-crosshairs" aria-hidden="true"></i></button>
   </div>
 </div>
 
@@ -3446,15 +3467,15 @@
     <span>Editar</span>
   </button>
   <button class="mobile-dock-btn" type="button" onclick="toggleMobileImagePanel()">
-    <span class="icon">◫</span>
+    <span class="icon"><i class="fa-regular fa-image" aria-hidden="true"></i></span>
     <span>Imagen</span>
   </button>
   <button class="mobile-dock-btn" type="button" onclick="toggleMobilePagesPanel()">
-    <span class="icon">▦</span>
+    <span class="icon"><i class="fa-solid fa-table-cells-large" aria-hidden="true"></i></span>
     <span>Páginas</span>
   </button>
   <button class="mobile-dock-btn" type="button" onclick="toggleMobileActionsPanel()">
-    <span class="icon">⋯</span>
+    <span class="icon"><i class="fa-solid fa-ellipsis" aria-hidden="true"></i></span>
     <span>Proyecto</span>
   </button>
 </div>
@@ -3468,7 +3489,7 @@
   </div>
   
   <div class="card">
-    <div class="card-title">&#x1F4E2; TÍTULO PRINCIPAL</div>
+    <div class="card-title"><i class="fa-solid fa-bullhorn" aria-hidden="true"></i> TÍTULO PRINCIPAL</div>
     <textarea id="titulo" rows="2" placeholder="Escribe aquí...">HOY</textarea>
     <div class="tool-group">
       <select id="tituloFont">
@@ -3483,13 +3504,13 @@
       </select>
     </div>
     <div class="color-row">
-      <label>&#x1F3A8; Color:</label>
+      <label><i class="fa-solid fa-palette" aria-hidden="true"></i> Color:</label>
       <input type="color" id="tituloColor" value="#FFFFFF">
     </div>
   </div>
 
   <div class="card">
-    <div class="card-title">&#x1F3F7;&#xFE0F; NOMBRE DEL PRODUCTO</div>
+    <div class="card-title"><i class="fa-solid fa-tag" aria-hidden="true"></i> NOMBRE DEL PRODUCTO</div>
     <textarea id="producto" rows="2" placeholder="Escribe aquí...">Lomitos de atún
 Carrefour al
 natural 170 g</textarea>
@@ -3506,13 +3527,13 @@ natural 170 g</textarea>
       </select>
     </div>
     <div class="color-row">
-      <label>&#x1F3A8; Color:</label>
+      <label><i class="fa-solid fa-palette" aria-hidden="true"></i> Color:</label>
       <input type="color" id="productoColor" value="#000000">
     </div>
   </div>
 
   <div class="card">
-    <div class="card-title">&#x1F4B0; PRECIOS</div>
+    <div class="card-title"><i class="fa-solid fa-sack-dollar" aria-hidden="true"></i> PRECIOS</div>
     <label>Precio Normal:</label>
     <div class="precio-row">
       <div class="precio-input-group">
@@ -3529,17 +3550,17 @@ natural 170 g</textarea>
       </div>
       <input type="color" id="precioOfertaColor" value="#000000">
     </div>
-    <div id="descuentoInfo" class="descuento-info">&#x1F3F7;&#xFE0F; Selecciona un fondo para ver el descuento</div>
+    <div id="descuentoInfo" class="descuento-info"><i class="fa-solid fa-tag" aria-hidden="true"></i> Selecciona un fondo para ver el descuento</div>
     
   </div>
 
 <div class="info-box">
-    &#x1F4A1; CONSEJOS:<br>
+    <i class="fa-regular fa-lightbulb" aria-hidden="true"></i> CONSEJOS:<br>
     • <strong>CLICK</strong> en objeto &rarr; seleccionar<br>
     • <strong>CLICK FUERA</strong> &rarr; deseleccionar<br>
     • <strong>DOBLE CLIC</strong> en texto &rarr; editar<br>
     • <strong>ESC</strong> &rarr; deseleccionar todo<br>
-    • <strong>&#x2702;&#xFE0F; RECORTAR</strong> &rarr; Arrastra esquinas, bordes o centro<br>
+    • <strong><i class="fa-solid fa-crop-simple" aria-hidden="true"></i> RECORTAR</strong> &rarr; Arrastra esquinas, bordes o centro<br>
     • <strong>RECORTAR / ENTER / ESC</strong> &rarr; aplicar o cancelar el recorte<br>
     • <strong>SHIFT</strong> &rarr; mantener proporción al recortar<br>
     • Muestra dimensiones y proporción en tiempo real
@@ -3548,19 +3569,19 @@ natural 170 g</textarea>
 
 <div id="undoPanel" class="floating-panel floating-panel-left floating-panel-top">
   <div class="header-history">
-    <button class="header-tool-btn always-visible icon-only" id="btnUndoAdvanced" type="button" title="Deshacer" onclick="window.deshacerCambio()">&#x21B6;</button>
-    <button class="header-tool-btn always-visible icon-only" id="btnRedoAdvanced" type="button" title="Rehacer" onclick="window.rehacerCambio()">&#x21B7;</button>
+    <button class="header-tool-btn always-visible icon-only" id="btnUndoAdvanced" type="button" title="Deshacer" onclick="window.deshacerCambio()"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i></button>
+    <button class="header-tool-btn always-visible icon-only" id="btnRedoAdvanced" type="button" title="Rehacer" onclick="window.rehacerCambio()"><i class="fa-solid fa-rotate-right" aria-hidden="true"></i></button>
   </div>
 </div>
 
 <div id="header" class="floating-panel floating-panel-left floating-panel-bottom">
   <div class="header-action-bar compact-action-buttons">
-    <button class="header-combo-btn" type="button" title="Nuevo proyecto" onclick="nuevoProyecto()">&#x2728; Nuevo</button>
-    <button class="header-combo-btn" type="button" title="Seleccionar descuento" onclick="abrirModalFondo()">&#x1F4AF; Descuento</button>
-    <button class="header-combo-btn" type="button" title="Imprimir" onclick="exportar()">&#x1F5A8;&#xFE0F; Imprimir</button>
-    <button class="header-combo-btn" type="button" title="Centrar vista" onclick="resetearVista()">&#x1F50E; Centrar</button>
-    <button class="header-combo-btn" type="button" title="Guardar JSON" onclick="guardarDisenoEnArchivo()">&#x1F4BE; Guardar</button>
-    <button class="header-combo-btn" type="button" title="Cargar JSON" onclick="cargarDisenoDesdeArchivo()">&#x1F4C2; Cargar</button>
+    <button class="header-combo-btn btn-with-icon" type="button" title="Nuevo proyecto" onclick="nuevoProyecto()"><i class="fa-solid fa-wand-magic-sparkles btn-icon" aria-hidden="true"></i><span>Nuevo</span></button>
+    <button class="header-combo-btn btn-with-icon" type="button" title="Seleccionar descuento" onclick="abrirModalFondo()"><i class="fa-solid fa-bullseye btn-icon" aria-hidden="true"></i><span>Descuento</span></button>
+    <button class="header-combo-btn btn-with-icon" type="button" title="Imprimir" onclick="exportar()"><i class="fa-solid fa-print btn-icon" aria-hidden="true"></i><span>Imprimir</span></button>
+    <button class="header-combo-btn btn-with-icon" type="button" title="Centrar vista" onclick="resetearVista()"><i class="fa-solid fa-crosshairs btn-icon" aria-hidden="true"></i><span>Centrar</span></button>
+    <button class="header-combo-btn btn-with-icon" type="button" title="Guardar JSON" onclick="guardarDisenoEnArchivo()"><i class="fa-solid fa-floppy-disk btn-icon" aria-hidden="true"></i><span>Guardar</span></button>
+    <button class="header-combo-btn btn-with-icon" type="button" title="Cargar JSON" onclick="cargarDisenoDesdeArchivo()"><i class="fa-regular fa-folder-open btn-icon" aria-hidden="true"></i><span>Cargar</span></button>
   </div>
 </div>
 
@@ -3580,19 +3601,19 @@ natural 170 g</textarea>
   <div class="image-search-shell">
     <div class="image-search-label">Imagen</div>
     <div class="image-panel-dual-actions">
-      <button class="header-combo-btn" type="button" onclick="cargarImagen()">🖼️ Agregar</button>
-      <button class="header-combo-btn" type="button" onclick="pegarImagen()">📋 Pegar imagen</button>
+      <button class="header-combo-btn btn-with-icon" type="button" onclick="cargarImagen()"><i class="fa-solid fa-circle btn-icon" aria-hidden="true"></i><span>Agregar</span></button>
+      <button class="header-combo-btn btn-with-icon" type="button" onclick="pegarImagen()"><i class="fa-solid fa-circle btn-icon" aria-hidden="true"></i><span>Pegar imagen</span></button>
     </div>
     <div class="image-panel-dual-actions">
-      <button id="cropToggleBtn" onclick="toggleCropMode()" class="header-combo-btn" type="button">&#x2702;&#xFE0F; Recorte</button>
-      <button onclick="resetearImagen()" class="header-combo-btn" type="button">&#x21BA; Restablecer</button>
+      <button id="cropToggleBtn" onclick="toggleCropMode()" class="header-combo-btn btn-with-icon" type="button"><i class="fa-solid fa-circle btn-icon" aria-hidden="true"></i><span>Recorte</span></button>
+      <button onclick="resetearImagen()" class="header-combo-btn btn-with-icon" type="button"><i class="fa-solid fa-circle btn-icon" aria-hidden="true"></i><span>Restablecer</span></button>
     </div>
-    <button class="header-combo-btn" type="button" onclick="eliminarImagen()">🗑️ Eliminar imagen</button>
+    <button class="header-combo-btn btn-with-icon" type="button" onclick="eliminarImagen()"><i class="fa-solid fa-circle btn-icon" aria-hidden="true"></i><span>Eliminar imagen</span></button>
     <div class="image-search-label image-search-subtitle">Google Imagenes</div>
     <input id="googleImageSearchInput" class="image-search-field" type="text" placeholder="Buscar producto, marca o packshot">
     <div class="image-search-actions">
-      <button class="header-combo-btn" type="button" onclick="abrirBusquedaGoogleImagenes()">🔎 Buscar en Google</button>
-      <button class="header-combo-btn" type="button" onclick="usarNombreProductoEnBusqueda()">🏷️ Usar producto</button>
+      <button class="header-combo-btn btn-with-icon" type="button" onclick="abrirBusquedaGoogleImagenes()"><i class="fa-solid fa-circle btn-icon" aria-hidden="true"></i><span>Buscar en Google</span></button>
+      <button class="header-combo-btn btn-with-icon" type="button" onclick="usarNombreProductoEnBusqueda()"><i class="fa-solid fa-circle btn-icon" aria-hidden="true"></i><span>Usar producto</span></button>
     </div>
     <div class="image-search-chip-row">
       <button class="image-search-chip" type="button" onclick="aplicarSugerenciaBusquedaImagen('packshot')">packshot</button>
@@ -3601,7 +3622,7 @@ natural 170 g</textarea>
     </div>
     <div class="image-search-note">Abre Google Imagenes en una pestaña nueva. Luego copia la imagen y pulsa Pegar imagen.</div>
     <div id="cropIndicator" style="display: none;" class="crop-status">
-&#x2702;&#xFE0F; RECORTE ACTIVO - Arrastra esquinas, bordes o centro. Pulsa RECORTE o ENTER para aplicar, ESC cancela
+<i class="fa-solid fa-crop-simple" aria-hidden="true"></i> RECORTE ACTIVO - Arrastra esquinas, bordes o centro. Pulsa RECORTE o ENTER para aplicar, ESC cancela
     </div>
     <div id="imagePanelStatus" class="image-search-status">Listo para trabajar con imagenes.</div>
   </div>
@@ -3609,7 +3630,7 @@ natural 170 g</textarea>
 
 <div id="titleToolsPanel" class="floating-panel floating-panel-left">
   <div class="compact-action-buttons title-tools-stack">
-    <button onclick="centrarSeleccionado()" class="header-combo-btn" type="button">&#x1F3AF; Centrar</button>
+    <button onclick="centrarSeleccionado()" class="header-combo-btn btn-with-icon" type="button"><i class="fa-solid fa-crosshairs btn-icon" aria-hidden="true"></i><span>Centrar</span></button>
     <div class="title-color-control">
       <span class="title-color-label">Color</span>
       <input id="titleFloatingColor" type="color" value="#ffffff" oninput="actualizarColorTituloFlotante(this.value)">
@@ -3622,15 +3643,15 @@ natural 170 g</textarea>
 </div>
 
 <div id="canvasContextMenu">
-  <button class="context-menu-btn" type="button" onclick="pegarImagenDesdeMenu()">📋 Pegar imagen</button>
-  <button id="ctxCropImageBtn" class="context-menu-btn" type="button" onclick="recortarImagenDesdeMenu()">✂️ Recorte</button>
-  <button id="ctxDeleteImageBtn" class="context-menu-btn" type="button" onclick="eliminarImagenDesdeMenu()">🗑️ Eliminar imagen</button>
+  <button class="context-menu-btn btn-with-icon" type="button" onclick="pegarImagenDesdeMenu()"><i class="fa-solid fa-circle btn-icon" aria-hidden="true"></i><span>Pegar imagen</span></button>
+  <button id="ctxCropImageBtn" class="context-menu-btn btn-with-icon" type="button" onclick="recortarImagenDesdeMenu()"><i class="fa-solid fa-circle btn-icon" aria-hidden="true"></i><span>Recorte</span></button>
+  <button id="ctxDeleteImageBtn" class="context-menu-btn btn-with-icon" type="button" onclick="eliminarImagenDesdeMenu()"><i class="fa-solid fa-circle btn-icon" aria-hidden="true"></i><span>Eliminar imagen</span></button>
 </div>
 
 <!-- Modal para seleccionar fondo -->
 <div id="modalFondo" class="modal">
   <div class="modal-content">
-    <h3>&#x1F4AF; Selecciona un descuento</h3>
+    <h3><i class="fa-solid fa-percent" aria-hidden="true"></i> Selecciona un descuento</h3>
     <p style="color: #aaa; margin-bottom: 15px;">Selecciona un fondo para tu cartel</p>
     <div id="modalApplyAllOption" class="modal-option">
       <input id="modalApplyDiscountToAll" type="checkbox">
@@ -3647,7 +3668,7 @@ natural 170 g</textarea>
 
 <div id="modalNuevoProyecto" class="modal">
   <div class="modal-content">
-    <h3>&#x1F195; Crear proyecto nuevo</h3>
+    <h3><i class="fa-solid fa-file-circle-plus" aria-hidden="true"></i> Crear proyecto nuevo</h3>
     <p style="color: #aaa; margin-bottom: 15px;">Se limpiara el proyecto actual y se iniciara uno nuevo desde cero.</p>
     <div class="modal-buttons">
       <button class="modal-btn" onclick="confirmarNuevoProyecto()">Continuar</button>
@@ -5945,16 +5966,16 @@ natural 170 g</textarea>
       panel.className = 'floating-panel floating-panel-left';
       panel.innerHTML = `
         <div class="page-nav-row">
-          <button class="header-tool-btn always-visible icon-only" id="btnPrevPage" type="button" title="Pagina anterior">&#x2039;</button>
+          <button class="header-tool-btn always-visible icon-only" id="btnPrevPage" type="button" title="Pagina anterior"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>
           <div class="page-counter-shell">
             <div id="pagesCounter" class="page-counter">1 / 1</div>
           </div>
-          <button class="header-tool-btn always-visible icon-only" id="btnNextPage" type="button" title="Pagina siguiente">&#x203A;</button>
+          <button class="header-tool-btn always-visible icon-only" id="btnNextPage" type="button" title="Pagina siguiente"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
         </div>
         <div class="page-actions-row">
-          <button class="header-combo-btn page-mini-btn" id="btnAddPage" type="button">+ Nueva</button>
+          <button class="header-combo-btn page-mini-btn" id="btnAddPage" type="button"><i class="fa-solid fa-plus" aria-hidden="true"></i> Nueva</button>
           <button class="header-combo-btn page-mini-btn" id="btnDuplicatePage" type="button">Dup. pagina</button>
-          <button class="header-combo-btn page-mini-btn" id="btnDeletePage" type="button">&#x1F5D1;&#xFE0F; Borrar pagina</button>
+          <button class="header-combo-btn page-mini-btn btn-with-icon" id="btnDeletePage" type="button"><i class="fa-solid fa-circle btn-icon" aria-hidden="true"></i><span>Borrar pagina</span></button>
         </div>
         <div id="pagesList" class="pages-list"></div>
         <div id="advancedStatus" class="status-pill">Sistema listo</div>
@@ -6628,9 +6649,9 @@ natural 170 g</textarea>
       if (indicator) {
         indicator.style.display = cropMode ? 'block' : 'none';
         if (message && cropMode) {
-          indicator.innerHTML = `&#x2702;&#xFE0F; ${message}`;
+          indicator.innerHTML = `<i class="fa-solid fa-crop-simple" aria-hidden="true"></i> ${message}`;
         } else if (cropMode) {
-          indicator.innerHTML = '&#x2702;&#xFE0F; RECORTE ACTIVO - Arrastra esquinas, bordes o centro. Pulsa RECORTE o ENTER para aplicar, ESC cancela';
+          indicator.innerHTML = '<i class="fa-solid fa-crop-simple" aria-hidden="true"></i> RECORTE ACTIVO - Arrastra esquinas, bordes o centro. Pulsa RECORTE o ENTER para aplicar, ESC cancela';
         }
       }
     }
