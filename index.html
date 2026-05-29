@@ -3690,12 +3690,12 @@ natural 170 g</textarea>
       <button type="button" onclick="duplicarConsumoActivoEnVacios()">Duplicar en vacíos</button>
       <button type="button" onclick="duplicarConsumoActivoEnTodos()">Repetir en 4</button>
     </div>
-    <label>Copiar producto 1 a:</label>
-    <div class="consumo-slot-row">
-      <button class="consumo-slot-btn" type="button" onclick="copiarConsumoPrimeroA(1)">2</button>
-      <button class="consumo-slot-btn" type="button" onclick="copiarConsumoPrimeroA(2)">3</button>
-      <button class="consumo-slot-btn" type="button" onclick="copiarConsumoPrimeroA(3)">4</button>
-      <button class="consumo-slot-btn" type="button" onclick="copiarConsumoPrimeroEnTodos()">Todos</button>
+    <label id="consumoCopyLabel">Copiar espacio 1 a:</label>
+    <div class="consumo-slot-row" id="consumoCopyButtons">
+      <button class="consumo-slot-btn" type="button" onclick="copiarConsumoActivoA(0)">1</button>
+      <button class="consumo-slot-btn" type="button" onclick="copiarConsumoActivoA(1)">2</button>
+      <button class="consumo-slot-btn" type="button" onclick="copiarConsumoActivoA(2)">3</button>
+      <button class="consumo-slot-btn" type="button" onclick="copiarConsumoActivoA(3)">4</button>
     </div>
     <div class="tool-group consumo-actions">
       <button class="btn-outline" type="button" onclick="limpiarConsumoActivo()">Limpiar espacio</button>
@@ -5312,6 +5312,13 @@ natural 170 g</textarea>
       });
       const indicator = document.getElementById('consumoActiveIndicator');
       if (indicator) indicator.textContent = `Editando espacio ${consumoActiveIndex + 1}`;
+      const copyLabel = document.getElementById('consumoCopyLabel');
+      if (copyLabel) copyLabel.textContent = `Copiar espacio ${consumoActiveIndex + 1} a:`;
+      document.querySelectorAll('#consumoCopyButtons .consumo-slot-btn').forEach((btn, index) => {
+        const sameSlot = index === consumoActiveIndex;
+        btn.disabled = sameSlot;
+        btn.title = sameSlot ? 'Este es el espacio que estas editando' : `Copiar al espacio ${index + 1}`;
+      });
       updateConsumoResultado();
     }
 
@@ -5383,22 +5390,15 @@ natural 170 g</textarea>
       captureStateChange('Producto repetido en los 4 espacios');
     };
 
-    window.copiarConsumoPrimeroA = function(index) {
-      const targetIndex = Math.min(Math.max(Number(index) || 1, 1), CONSUMO_MAX_ITEMS - 1);
-      consumoItems[targetIndex] = cloneData(consumoItems[0] || createConsumoItem());
+    window.copiarConsumoActivoA = function(index) {
+      const targetIndex = Math.min(Math.max(Number(index) || 0, 0), CONSUMO_MAX_ITEMS - 1);
+      if (targetIndex === consumoActiveIndex) return;
+      const sourceIndex = consumoActiveIndex;
+      consumoItems[targetIndex] = cloneData(consumoItems[sourceIndex] || createConsumoItem());
       consumoActiveIndex = targetIndex;
       syncConsumoPanelFromState();
       updateView();
-      captureStateChange(`Producto 1 copiado al espacio ${targetIndex + 1}`);
-    };
-
-    window.copiarConsumoPrimeroEnTodos = function() {
-      const first = cloneData(consumoItems[0] || createConsumoItem());
-      consumoItems = Array.from({ length: CONSUMO_MAX_ITEMS }, () => cloneData(first));
-      consumoActiveIndex = 0;
-      syncConsumoPanelFromState();
-      updateView();
-      captureStateChange('Producto 1 copiado en los 4 espacios');
+      captureStateChange(`Espacio ${sourceIndex + 1} copiado al espacio ${targetIndex + 1}`);
     };
 
     window.limpiarConsumoActivo = function() {
