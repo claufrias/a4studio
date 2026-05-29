@@ -509,10 +509,10 @@
 
   .discount-preview-consumo {
     background-color: #ff9c7a;
-    background-image: url('consumo-inmediato-logo.svg'), linear-gradient(90deg, #df7600 0 34%, #ffffff 34% 100%);
-    background-size: 34% 100%, 100% 100%;
+    background-image: url('consumo-inmediato-fondo.svg');
+    background-size: cover;
     background-repeat: no-repeat;
-    background-position: left center, center;
+    background-position: center;
   }
 
   .discount-option-label {
@@ -3969,11 +3969,11 @@ natural 170 g</textarea>
     let imagenObj = null;
     
     let fondoImg = new Image();
-    let consumoLogoImg = new Image();
-    consumoLogoImg.onload = () => {
+    let consumoFondoImg = new Image();
+    consumoFondoImg.onload = () => {
       if (isConsumoMode()) updateView();
     };
-    consumoLogoImg.src = 'consumo-inmediato-logo.svg';
+    consumoFondoImg.src = 'consumo-inmediato-fondo.svg';
     let fondoPersonalizado = false;
     let fondoActual = null;
     let projectSetupComplete = false;
@@ -4751,18 +4751,6 @@ natural 170 g</textarea>
       ctx.closePath();
     }
 
-    function drawConsumoLogo(ctx, x, y, w, h) {
-      ctx.save();
-      drawRoundedRect(ctx, x, y, w, h, 12);
-      ctx.clip();
-      ctx.fillStyle = '#df7600';
-      ctx.fillRect(x, y, w, h);
-      if (consumoLogoImg.complete && consumoLogoImg.naturalWidth) {
-        ctx.drawImage(consumoLogoImg, x, y, w, h);
-      }
-      ctx.restore();
-    }
-
     function drawWrappedConsumoText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
       const words = String(text || '').replace(/\s+/g, ' ').trim().split(' ').filter(Boolean);
       const lines = [];
@@ -4782,26 +4770,23 @@ natural 170 g</textarea>
 
     function drawConsumoInmediatoLayout() {
       mainCtx.save();
-      mainCtx.fillStyle = '#ff9b7a';
-      mainCtx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+      if (consumoFondoImg.complete && consumoFondoImg.naturalWidth) {
+        mainCtx.drawImage(consumoFondoImg, 0, 0, CANVAS_W, CANVAS_H);
+      } else {
+        mainCtx.fillStyle = '#ff9b7a';
+        mainCtx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+      }
 
       const marginX = 18;
       const marginTop = 18;
       const rowGap = 26;
       const rowH = (CANVAS_H - (marginTop * 2) - (rowGap * 3)) / 4;
-      const rowW = CANVAS_W - marginX * 2;
       const logoW = 320;
 
       consumoItems.forEach((item, index) => {
         const y = marginTop + index * (rowH + rowGap);
-        drawRoundedRect(mainCtx, marginX, y, rowW, rowH, 10);
-        mainCtx.fillStyle = '#ffffff';
-        mainCtx.fill();
-
-        drawConsumoLogo(mainCtx, marginX, y, logoW, rowH);
-
         const contentX = marginX + logoW + 28;
-        const contentW = rowW - logoW - 48;
+        const contentW = CANVAS_W - contentX - 38;
         const calc = getConsumoItemCalculations(item);
         const hasData = (item.nombre && item.nombre.trim()) || calc.precioNormal > 0 || calc.descuentoMonto > 0;
         if (!hasData) return;
