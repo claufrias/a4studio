@@ -507,6 +507,28 @@
     background-position: center;
   }
 
+  .discount-preview-consumo {
+    background:
+      linear-gradient(90deg, #dd7300 0 34%, #ffffff 34% 100%),
+      #ff9c7a;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .discount-preview-consumo::before {
+    content: "Consumo\A inmediato";
+    white-space: pre;
+    position: absolute;
+    left: 5%;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #ffffff;
+    font-size: 0.7rem;
+    font-weight: 800;
+    line-height: 0.9;
+    text-align: center;
+  }
+
   .discount-option-label {
     text-align: center;
     font-size: 0.96rem;
@@ -524,6 +546,31 @@
     .discount-options-row {
       grid-template-columns: 1fr;
     }
+  }
+
+  .consumo-slot-row {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+
+  .consumo-slot-btn {
+    padding: 6px;
+    border-radius: 8px;
+    background: #1b2027;
+    color: #e8edf5;
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+
+  .consumo-slot-btn.active {
+    background: #ff9800;
+    color: #1a1a1f;
+    border-color: #ff9800;
+  }
+
+  .consumo-actions button {
+    font-size: 0.66rem;
   }
 
   .modal-close {
@@ -3556,7 +3603,7 @@
     <div class="sidebar-brand-subtitle">Editor visual de carteles</div>
   </div>
   
-  <div class="card">
+  <div class="card" id="tituloCard">
     <div class="card-title"><i class="fa-solid fa-bullhorn" aria-hidden="true"></i> TÍTULO PRINCIPAL</div>
     <textarea id="titulo" rows="2" placeholder="Escribe aquí...">HOY</textarea>
     <div class="tool-group">
@@ -3577,7 +3624,7 @@
     </div>
   </div>
 
-  <div class="card">
+  <div class="card" id="productoCard">
     <div class="card-title"><i class="fa-solid fa-tag" aria-hidden="true"></i> NOMBRE DEL PRODUCTO</div>
     <textarea id="producto" rows="2" placeholder="Escribe aquí...">Lomitos de atún
 Carrefour al
@@ -3600,7 +3647,7 @@ natural 170 g</textarea>
     </div>
   </div>
 
-  <div class="card">
+  <div class="card" id="preciosCard">
     <div class="card-title"><i class="fa-solid fa-sack-dollar" aria-hidden="true"></i> PRECIOS</div>
     <label>Precio Normal:</label>
     <div class="precio-row">
@@ -3620,6 +3667,38 @@ natural 170 g</textarea>
     </div>
     <div id="descuentoInfo" class="descuento-info"><i class="fa-solid fa-tag" aria-hidden="true"></i> Selecciona un fondo para ver el descuento</div>
     
+  </div>
+
+  <div class="card" id="consumoPanel" style="display: none;">
+    <div class="card-title"><i class="fa-solid fa-basket-shopping" aria-hidden="true"></i> CONSUMO INMEDIATO</div>
+    <label>Espacio a editar:</label>
+    <div class="consumo-slot-row" id="consumoSlotButtons">
+      <button class="consumo-slot-btn active" type="button" onclick="seleccionarConsumoSlot(0)">1</button>
+      <button class="consumo-slot-btn" type="button" onclick="seleccionarConsumoSlot(1)">2</button>
+      <button class="consumo-slot-btn" type="button" onclick="seleccionarConsumoSlot(2)">3</button>
+      <button class="consumo-slot-btn" type="button" onclick="seleccionarConsumoSlot(3)">4</button>
+    </div>
+    <label>Nombre del producto:</label>
+    <textarea id="consumoNombre" rows="2" placeholder="Nombre del producto"></textarea>
+    <label>Precio normal:</label>
+    <input id="consumoPrecioNormal" type="number" min="0" step="1" placeholder="Ej: 3500">
+    <label>Monto de descuento:</label>
+    <input id="consumoDescuentoMonto" type="number" min="0" step="1" placeholder="Ej: 1500">
+    <div id="consumoResultado" class="descuento-info">Precio final: $0 · 0% descuento</div>
+    <div class="tool-group consumo-actions">
+      <button type="button" onclick="duplicarConsumoActivoEnVacios()">Duplicar en vacíos</button>
+      <button type="button" onclick="duplicarConsumoActivoEnTodos()">Repetir en 4</button>
+    </div>
+    <label>Copiar producto 1 a:</label>
+    <div class="consumo-slot-row">
+      <button class="consumo-slot-btn" type="button" onclick="copiarConsumoPrimeroA(1)">2</button>
+      <button class="consumo-slot-btn" type="button" onclick="copiarConsumoPrimeroA(2)">3</button>
+      <button class="consumo-slot-btn" type="button" onclick="copiarConsumoPrimeroA(3)">4</button>
+      <button class="consumo-slot-btn" type="button" onclick="copiarConsumoPrimeroEnTodos()">Todos</button>
+    </div>
+    <div class="tool-group consumo-actions">
+      <button class="btn-outline" type="button" onclick="limpiarConsumoActivo()">Limpiar espacio</button>
+    </div>
   </div>
 
 <div class="info-box">
@@ -3738,9 +3817,9 @@ natural 170 g</textarea>
         <div class="discount-preview" style="background-image: url('fondobanco.jpg');"></div>
         <span class="discount-option-label">Cuenta Digital <span style="color:#ff195e;">(15% OFF)</span></span>
       </button>
-      <button class="discount-option" type="button" onclick="seleccionarFondo('qr')">
-        <div class="discount-preview" style="background-image: url('fondoqr.jpg');"></div>
-        <span class="discount-option-label">QR Billeteras <span style="color:#3676ca;">(10% OFF)</span></span>
+      <button class="discount-option" type="button" onclick="seleccionarFondo('consumo')">
+        <div class="discount-preview discount-preview-consumo"></div>
+        <span class="discount-option-label">Consumo inmediato</span>
       </button>
     </div>
   </div>
@@ -3896,6 +3975,10 @@ natural 170 g</textarea>
       fontSize: 88,
       color: "#000000"
     };
+
+    const CONSUMO_MAX_ITEMS = 4;
+    let consumoActiveIndex = 0;
+    let consumoItems = createDefaultConsumoItems();
     
     let imagenObj = null;
     
@@ -3910,9 +3993,47 @@ natural 170 g</textarea>
     const fondos = {
       dni: 'fondodni.jpg',
       mercadopago: 'fondomp.jpg',
-      carrefour: 'fondobanco.jpg',
-      qr: 'fondoqr.jpg'
+      carrefour: 'fondobanco.jpg'
     };
+
+    function createConsumoItem(nombre = '', precioNormal = 0, descuentoMonto = 0) {
+      return {
+        nombre,
+        precioNormal: Math.max(0, Math.round(Number(precioNormal) || 0)),
+        descuentoMonto: Math.max(0, Math.round(Number(descuentoMonto) || 0))
+      };
+    }
+
+    function createDefaultConsumoItems() {
+      return Array.from({ length: CONSUMO_MAX_ITEMS }, () => createConsumoItem());
+    }
+
+    function normalizeConsumoItems(items) {
+      const normalized = Array.isArray(items) ? items.slice(0, CONSUMO_MAX_ITEMS).map((item) => createConsumoItem(
+        item && item.nombre ? String(item.nombre) : '',
+        item && item.precioNormal,
+        item && item.descuentoMonto
+      )) : [];
+      while (normalized.length < CONSUMO_MAX_ITEMS) normalized.push(createConsumoItem());
+      return normalized;
+    }
+
+    function getConsumoItemCalculations(item) {
+      const precioNormal = Math.max(0, Math.round(Number(item && item.precioNormal) || 0));
+      const descuentoMonto = Math.min(precioNormal, Math.max(0, Math.round(Number(item && item.descuentoMonto) || 0)));
+      const precioFinal = Math.max(0, precioNormal - descuentoMonto);
+      const porcentaje = precioNormal > 0 ? Math.round((descuentoMonto / precioNormal) * 100) : 0;
+      return { precioNormal, descuentoMonto, precioFinal, porcentaje };
+    }
+
+    function formatPesos(value) {
+      return Math.round(Number(value) || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
+    function isConsumoMode() {
+      return fondoActual === 'consumo';
+    }
+
     
     // ========== CROP TOOL PROFESIONAL ==========
     class CropTool {
@@ -4231,7 +4352,6 @@ natural 170 g</textarea>
     // ========== FUNCIONES DE DESCUENTO ==========
     function calcularDescuentoPorFondo(tipoFondo) {
       if (tipoFondo === 'mercadopago') return 15;
-      if (tipoFondo === 'qr') return 10;
       if (tipoFondo === 'dni') return 10;   // 5% de descuento para Cuenta DNI
       if (tipoFondo === 'carrefour') return 15; // 12% para Carrefour
       return 0;
@@ -4245,8 +4365,8 @@ natural 170 g</textarea>
           return 'Mercado Pago';
         case 'carrefour':
           return 'Cuenta Digital Carrefour';
-        case 'qr':
-          return 'QR Billeteras';
+        case 'consumo':
+          return 'Consumo inmediato';
         default:
           return 'Fondo';
       }
@@ -4279,7 +4399,15 @@ natural 170 g</textarea>
     function actualizarInfoDescuento(tipoFondo, options = {}) {
       const porcentaje = calcularDescuentoPorFondo(tipoFondo);
       const infoDiv = document.getElementById('descuentoInfo');
-      if (!infoDiv || porcentaje <= 0) return;
+      if (!infoDiv) return;
+      if (tipoFondo === 'consumo') {
+        const alcanceConsumo = options.allPages ? ' en todas las paginas' : '';
+        infoDiv.innerHTML = `Fondo actual: ${getNombreFondo(tipoFondo)}${alcanceConsumo}`;
+        infoDiv.style.background = "#51351f";
+        infoDiv.style.color = "#fff0e5";
+        return;
+      }
+      if (porcentaje <= 0) return;
       const alcance = options.allPages ? ' en todas las paginas' : '';
       infoDiv.innerHTML = `Fondo actual: ${getNombreFondo(tipoFondo)} - ${porcentaje}% de descuento aplicado${alcance}`;
       infoDiv.style.background = "#223551";
@@ -4615,9 +4743,134 @@ natural 170 g</textarea>
       mainCtx.restore();
     }
     
+
+
+    function drawRoundedRect(ctx, x, y, w, h, r) {
+      const radius = Math.min(r, w / 2, h / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + w - radius, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+      ctx.lineTo(x + w, y + h - radius);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
+      ctx.lineTo(x + radius, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.closePath();
+    }
+
+    function drawConsumoLogo(ctx, x, y, w, h) {
+      ctx.save();
+      ctx.fillStyle = '#df7600';
+      drawRoundedRect(ctx, x, y, w, h, 12);
+      ctx.fill();
+
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 8;
+      ctx.beginPath();
+      ctx.arc(x + w * 0.5, y + h * 0.52, Math.min(w, h) * 0.34, Math.PI * 1.05, Math.PI * 1.95);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(x + w * 0.5, y + h * 0.52, Math.min(w, h) * 0.34, Math.PI * 0.1, Math.PI * 0.9);
+      ctx.stroke();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.font = '800 48px Inter, Arial Black, sans-serif';
+      ctx.fillText('Consumo', x + w * 0.5, y + h * 0.46);
+      ctx.font = '800 34px Inter, Arial Black, sans-serif';
+      ctx.fillText('inmediato', x + w * 0.5, y + h * 0.62);
+      ctx.font = '800 18px Inter, Arial, sans-serif';
+      ctx.fillText('PRECIO REDUCIDO', x + w * 0.5, y + h * 0.22);
+      ctx.fillText('PRÓXIMO A VENCER', x + w * 0.5, y + h * 0.82);
+      ctx.restore();
+    }
+
+    function drawWrappedConsumoText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
+      const words = String(text || '').replace(/\s+/g, ' ').trim().split(' ').filter(Boolean);
+      const lines = [];
+      let current = '';
+      words.forEach((word) => {
+        const test = current ? `${current} ${word}` : word;
+        if (ctx.measureText(test).width > maxWidth && current) {
+          lines.push(current);
+          current = word;
+        } else {
+          current = test;
+        }
+      });
+      if (current) lines.push(current);
+      lines.slice(0, maxLines).forEach((line, index) => ctx.fillText(line, x, y + index * lineHeight));
+    }
+
+    function drawConsumoInmediatoLayout() {
+      mainCtx.save();
+      mainCtx.fillStyle = '#ff9b7a';
+      mainCtx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+
+      const marginX = 18;
+      const marginTop = 18;
+      const rowGap = 26;
+      const rowH = (CANVAS_H - (marginTop * 2) - (rowGap * 3)) / 4;
+      const rowW = CANVAS_W - marginX * 2;
+      const logoW = 320;
+
+      consumoItems.forEach((item, index) => {
+        const y = marginTop + index * (rowH + rowGap);
+        drawRoundedRect(mainCtx, marginX, y, rowW, rowH, 10);
+        mainCtx.fillStyle = '#ffffff';
+        mainCtx.fill();
+
+        drawConsumoLogo(mainCtx, marginX, y, logoW, rowH);
+
+        const contentX = marginX + logoW + 28;
+        const contentW = rowW - logoW - 48;
+        const calc = getConsumoItemCalculations(item);
+        const hasData = (item.nombre && item.nombre.trim()) || calc.precioNormal > 0 || calc.descuentoMonto > 0;
+        if (!hasData) return;
+
+        mainCtx.fillStyle = '#111111';
+        mainCtx.textAlign = 'left';
+        mainCtx.textBaseline = 'top';
+        mainCtx.font = '500 32px Inter, Arial, sans-serif';
+        drawWrappedConsumoText(mainCtx, item.nombre || 'NOMBRE DEL PRODUCTO', contentX, y + 38, contentW, 38, 2);
+
+        const badgeX = contentX;
+        const badgeY = y + rowH * 0.47;
+        const badgeW = 118;
+        const badgeH = 52;
+        drawRoundedRect(mainCtx, badgeX, badgeY, badgeW, badgeH, 8);
+        mainCtx.fillStyle = '#ffffff';
+        mainCtx.fill();
+        mainCtx.strokeStyle = '#111111';
+        mainCtx.lineWidth = 3;
+        mainCtx.stroke();
+        mainCtx.fillStyle = '#111111';
+        mainCtx.textAlign = 'center';
+        mainCtx.font = '500 34px Inter, Arial, sans-serif';
+        mainCtx.fillText(`${calc.porcentaje}%`, badgeX + badgeW / 2, badgeY + 8);
+        mainCtx.font = '700 11px Inter, Arial, sans-serif';
+        mainCtx.fillText('DESCUENTO', badgeX + badgeW / 2, badgeY + 36);
+
+        mainCtx.textAlign = 'left';
+        mainCtx.textBaseline = 'alphabetic';
+        mainCtx.fillStyle = '#000000';
+        mainCtx.font = '500 86px Inter, Arial, sans-serif';
+        mainCtx.fillText(`$${formatPesos(calc.precioFinal)}`, badgeX + badgeW + 28, badgeY + 52);
+      });
+      mainCtx.restore();
+    }
+
     function drawToMainCanvas() {
       mainCtx.setTransform(1, 0, 0, 1, 0, 0);
       mainCtx.clearRect(0, 0, CANVAS_W, CANVAS_H);
+
+      if (isConsumoMode()) {
+        drawConsumoInmediatoLayout();
+        return;
+      }
       
       if (fondoPersonalizado && fondoImg.complete && fondoImg.naturalWidth) {
         mainCtx.drawImage(fondoImg, 0, 0, CANVAS_W, CANVAS_H);
@@ -5060,7 +5313,115 @@ natural 170 g</textarea>
       return Number.isFinite(parsedValue) ? parsedValue : fallbackValue;
     }
 
+
+
+    function syncConsumoPanelFromState() {
+      const panel = document.getElementById('consumoPanel');
+      if (!panel) return;
+      consumoItems = normalizeConsumoItems(consumoItems);
+      consumoActiveIndex = Math.min(Math.max(consumoActiveIndex, 0), CONSUMO_MAX_ITEMS - 1);
+      const active = consumoItems[consumoActiveIndex];
+      const nombreInput = document.getElementById('consumoNombre');
+      const precioInput = document.getElementById('consumoPrecioNormal');
+      const descuentoInput = document.getElementById('consumoDescuentoMonto');
+      if (nombreInput) nombreInput.value = active.nombre;
+      if (precioInput) precioInput.value = active.precioNormal || '';
+      if (descuentoInput) descuentoInput.value = active.descuentoMonto || '';
+      document.querySelectorAll('.consumo-slot-btn').forEach((btn, index) => {
+        btn.classList.toggle('active', index === consumoActiveIndex);
+      });
+      updateConsumoResultado();
+    }
+
+    function updateConsumoResultado() {
+      const result = document.getElementById('consumoResultado');
+      if (!result) return;
+      const item = consumoItems[consumoActiveIndex] || createConsumoItem();
+      const calc = getConsumoItemCalculations(item);
+      result.innerHTML = `Precio final: $${formatPesos(calc.precioFinal)} · ${calc.porcentaje}% descuento`;
+    }
+
+    function syncLayoutModePanels() {
+      const consumoMode = isConsumoMode();
+      ['tituloCard', 'productoCard', 'preciosCard'].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = consumoMode ? 'none' : '';
+      });
+      const consumoPanel = document.getElementById('consumoPanel');
+      if (consumoPanel) consumoPanel.style.display = consumoMode ? '' : 'none';
+      const imagePanel = document.getElementById('imageSearchPanel');
+      if (imagePanel) imagePanel.style.display = consumoMode ? 'none' : '';
+      if (consumoMode) syncConsumoPanelFromState();
+    }
+
+    function updateConsumoFromUI() {
+      if (!isConsumoMode()) return;
+      const item = consumoItems[consumoActiveIndex] || createConsumoItem();
+      item.nombre = (document.getElementById('consumoNombre')?.value || '').trim();
+      item.precioNormal = Math.max(0, Math.round(Number(document.getElementById('consumoPrecioNormal')?.value) || 0));
+      item.descuentoMonto = Math.max(0, Math.round(Number(document.getElementById('consumoDescuentoMonto')?.value) || 0));
+      consumoItems[consumoActiveIndex] = item;
+      updateConsumoResultado();
+      updateView();
+      captureStateChange('Producto consumo inmediato actualizado');
+    }
+
+    window.seleccionarConsumoSlot = function(index) {
+      consumoActiveIndex = Math.min(Math.max(Number(index) || 0, 0), CONSUMO_MAX_ITEMS - 1);
+      syncConsumoPanelFromState();
+    };
+
+    window.duplicarConsumoActivoEnVacios = function() {
+      const active = cloneData(consumoItems[consumoActiveIndex] || createConsumoItem());
+      consumoItems = consumoItems.map((item, index) => {
+        if (index === consumoActiveIndex) return item;
+        const calc = getConsumoItemCalculations(item);
+        const empty = !(item.nombre && item.nombre.trim()) && calc.precioNormal === 0 && calc.descuentoMonto === 0;
+        return empty ? cloneData(active) : item;
+      });
+      syncConsumoPanelFromState();
+      updateView();
+      captureStateChange('Producto duplicado en espacios vacios');
+    };
+
+    window.duplicarConsumoActivoEnTodos = function() {
+      const active = cloneData(consumoItems[consumoActiveIndex] || createConsumoItem());
+      consumoItems = Array.from({ length: CONSUMO_MAX_ITEMS }, () => cloneData(active));
+      syncConsumoPanelFromState();
+      updateView();
+      captureStateChange('Producto repetido en los 4 espacios');
+    };
+
+    window.copiarConsumoPrimeroA = function(index) {
+      const targetIndex = Math.min(Math.max(Number(index) || 1, 1), CONSUMO_MAX_ITEMS - 1);
+      consumoItems[targetIndex] = cloneData(consumoItems[0] || createConsumoItem());
+      consumoActiveIndex = targetIndex;
+      syncConsumoPanelFromState();
+      updateView();
+      captureStateChange(`Producto 1 copiado al espacio ${targetIndex + 1}`);
+    };
+
+    window.copiarConsumoPrimeroEnTodos = function() {
+      const first = cloneData(consumoItems[0] || createConsumoItem());
+      consumoItems = Array.from({ length: CONSUMO_MAX_ITEMS }, () => cloneData(first));
+      consumoActiveIndex = 0;
+      syncConsumoPanelFromState();
+      updateView();
+      captureStateChange('Producto 1 copiado en los 4 espacios');
+    };
+
+    window.limpiarConsumoActivo = function() {
+      consumoItems[consumoActiveIndex] = createConsumoItem();
+      syncConsumoPanelFromState();
+      updateView();
+      captureStateChange('Espacio consumo inmediato limpiado');
+    };
+
     function updateFromUI() {
+      if (isConsumoMode()) {
+        updateConsumoFromUI();
+        return;
+      }
       tituloObj.text = document.getElementById("titulo").value;
       tituloObj.fontFamily = document.getElementById("tituloFont").value;
       tituloObj.fontSize = readNumericSelectValue("tituloSize", tituloObj.fontSize);
@@ -5427,12 +5788,39 @@ natural 170 g</textarea>
 
     window.seleccionarFondo = function(tipo) {
       const nombreArchivo = fondos[tipo];
-      if (!nombreArchivo) return;
+      const esConsumo = tipo === 'consumo';
+      if (!nombreArchivo && !esConsumo) return;
       const applyAllCheckbox = document.getElementById('modalApplyDiscountToAll');
       const aplicarATodas = !!(projectSetupComplete && applyAllCheckbox && applyAllCheckbox.checked);
+
+      if (esConsumo) {
+        fondoActual = tipo;
+        fondoPersonalizado = false;
+        imagenObj = null;
+        consumoItems = normalizeConsumoItems(consumoItems);
+        if (aplicarATodas) {
+          saveCurrentPageState();
+          pages = pages.map((page, index) => {
+            const nextPage = normalizePageState(page, index);
+            nextPage.fondoActual = tipo;
+            nextPage.fondoPersonalizado = false;
+            nextPage.imagenObj = null;
+            return nextPage;
+          });
+        }
+        actualizarInfoDescuento(tipo, { allPages: aplicarATodas });
+        syncLayoutModePanels();
+        updateView();
+        projectSetupComplete = true;
+        cerrarModalFondo();
+        captureStateChange(aplicarATodas ? 'Consumo inmediato aplicado en todas las paginas' : 'Consumo inmediato aplicado');
+        return;
+      }
+
       fondoImg.onload = () => {
         fondoPersonalizado = true;
         fondoActual = tipo;
+        syncLayoutModePanels();
         if (aplicarATodas) {
           saveCurrentPageState();
           pages = pages.map((page, index) => {
@@ -5951,6 +6339,9 @@ natural 170 g</textarea>
     document.getElementById("precioOfertaEntero").addEventListener("input", updateFromUI);
     document.getElementById("precioOfertaCentavos").addEventListener("input", updateFromUI);
     document.getElementById("precioOfertaColor").addEventListener("input", updateFromUI);
+    document.getElementById("consumoNombre").addEventListener("input", updateConsumoFromUI);
+    document.getElementById("consumoPrecioNormal").addEventListener("input", updateConsumoFromUI);
+    document.getElementById("consumoDescuentoMonto").addEventListener("input", updateConsumoFromUI);
     
     window.addEventListener('resize', handleResize);
     viewCanvas.addEventListener("mousedown", onMouseDown);
@@ -6137,7 +6528,9 @@ natural 170 g</textarea>
           producto: { shadow: false, outline: false }
         },
         fondoActual: inheritedFondo,
-        fondoPersonalizado: inheritedPersonalizado,
+        fondoPersonalizado: inheritedFondo === 'consumo' ? false : inheritedPersonalizado,
+        consumoItems: createDefaultConsumoItems(),
+        consumoActiveIndex: 0,
         imagenObj: null
       };
     }
@@ -6160,7 +6553,9 @@ natural 170 g</textarea>
         precioOfertaObj: cloneData(pageState && pageState.precioOfertaObj ? pageState.precioOfertaObj : base.precioOfertaObj),
         currentTextEffect: normalizeTextEffectState(pageState && pageState.currentTextEffect ? pageState.currentTextEffect : base.currentTextEffect),
         fondoActual: pageState && pageState.fondoActual ? pageState.fondoActual : null,
-        fondoPersonalizado: !!(pageState && pageState.fondoPersonalizado),
+        fondoPersonalizado: pageState && pageState.fondoActual === 'consumo' ? false : !!(pageState && pageState.fondoPersonalizado),
+        consumoItems: normalizeConsumoItems(pageState && pageState.consumoItems ? pageState.consumoItems : base.consumoItems),
+        consumoActiveIndex: Math.min(Math.max(Number(pageState && pageState.consumoActiveIndex) || 0, 0), CONSUMO_MAX_ITEMS - 1),
         imagenObj: pageState && pageState.imagenObj ? cloneData(pageState.imagenObj) : null
       };
     }
@@ -6176,6 +6571,8 @@ natural 170 g</textarea>
         currentTextEffect: normalizeTextEffectState(currentTextEffect),
         fondoActual,
         fondoPersonalizado,
+        consumoItems: normalizeConsumoItems(consumoItems),
+        consumoActiveIndex,
         imagenObj: imagenObj ? {
           x: imagenObj.x,
           y: imagenObj.y,
@@ -6463,6 +6860,7 @@ natural 170 g</textarea>
       document.getElementById('precioOfertaEntero').value = precioOfertaObj.entero;
       document.getElementById('precioOfertaCentavos').value = String(precioOfertaObj.centavos).padStart(2, '0');
       document.getElementById('precioOfertaColor').value = precioOfertaObj.color;
+      syncLayoutModePanels();
       renderPagesPanel();
     }
 
@@ -6479,6 +6877,8 @@ natural 170 g</textarea>
         productoObj: cloneData(currentPage.productoObj),
         precioNormalObj: cloneData(currentPage.precioNormalObj),
         precioOfertaObj: cloneData(currentPage.precioOfertaObj),
+        consumoItems: normalizeConsumoItems(currentPage.consumoItems),
+        consumoActiveIndex: currentPage.consumoActiveIndex || 0,
         currentTextEffect: cloneData(currentPage.currentTextEffect),
         fondoActual: currentPage.fondoActual,
         fondoPersonalizado: currentPage.fondoPersonalizado,
@@ -6930,6 +7330,8 @@ natural 170 g</textarea>
       normalizeProductObjectWidth(productoObj);
       precioNormalObj = cloneData(pageState.precioNormalObj);
       precioOfertaObj = cloneData(pageState.precioOfertaObj);
+      consumoItems = normalizeConsumoItems(pageState.consumoItems);
+      consumoActiveIndex = Math.min(Math.max(Number(pageState.consumoActiveIndex) || 0, 0), CONSUMO_MAX_ITEMS - 1);
       currentTextEffect = normalizeTextEffectState(pageState.currentTextEffect || {
         titulo: { shadow: false, outline: false },
         producto: { shadow: false, outline: false }
