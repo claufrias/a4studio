@@ -5312,6 +5312,15 @@ natural 170 g</textarea>
       });
       const consumoPanel = document.getElementById('consumoPanel');
       if (consumoPanel) consumoPanel.style.display = consumoMode ? '' : 'none';
+      if (consumoMode) {
+        selected = null;
+        dragging = false;
+        resizing = false;
+        resizeHandle = null;
+        activeEditorMeta = null;
+        if (activeEditor) activeEditor.blur();
+        mostrarHeaderTools(false);
+      }
       const imagePanel = document.getElementById('imageSearchPanel');
       if (imagePanel) imagePanel.style.display = consumoMode ? 'none' : '';
       if (consumoMode) syncConsumoPanelFromState();
@@ -5446,6 +5455,7 @@ natural 170 g</textarea>
     };
     
     function aplicarEfectoTexto(efecto) {
+      if (isConsumoMode()) return;
       if (!selected) return;
       
       if (selected === 'producto') {
@@ -5498,6 +5508,7 @@ natural 170 g</textarea>
     }
     
     function mostrarHeaderTools(mostrar) {
+      if (isConsumoMode()) mostrar = false;
       const tools = document.getElementById('headerTools');
       const info = document.getElementById('selectionInfo');
       const panel = document.getElementById('quickToolsPanel');
@@ -5850,6 +5861,7 @@ natural 170 g</textarea>
     }
 
     function detectObject(worldX, worldY) {
+      if (isConsumoMode()) return null;
       if (imagenObj && !cropMode) {
         if (worldX >= imagenObj.x && worldX <= imagenObj.x + imagenObj.w && worldY >= imagenObj.y && worldY <= imagenObj.y + imagenObj.h) {
           return "img";
@@ -6024,6 +6036,11 @@ natural 170 g</textarea>
     function onMouseDown(e) {
       e.preventDefault();
       closeCanvasContextMenu();
+      if (isConsumoMode()) {
+        if (activeEditor && e.target !== activeEditor) activeEditor.blur();
+        deseleccionarTodo();
+        return;
+      }
       if (activeEditor && e.target !== activeEditor) {
         activeEditor.blur();
       }
@@ -7732,6 +7749,7 @@ natural 170 g</textarea>
       if (mod && e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) window.rehacerCambio(); else window.deshacerCambio(); return; }
       if (mod && e.key.toLowerCase() === 'y') { e.preventDefault(); window.rehacerCambio(); return; }
       if (mod && e.key.toLowerCase() === 's') { e.preventDefault(); return; }
+      if (isConsumoMode()) return;
       if (!writing && (e.key === 'Enter' || e.key === 'F2') && (selected === 'titulo' || selected === 'producto' || selected === 'precioNormal')) {
         e.preventDefault();
         beginInlineEditorForSelection({ selectAll: e.key === 'F2' });
