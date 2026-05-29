@@ -508,25 +508,11 @@
   }
 
   .discount-preview-consumo {
-    background:
-      linear-gradient(90deg, #dd7300 0 34%, #ffffff 34% 100%),
-      #ff9c7a;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .discount-preview-consumo::before {
-    content: "Consumo\A inmediato";
-    white-space: pre;
-    position: absolute;
-    left: 5%;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #ffffff;
-    font-size: 0.7rem;
-    font-weight: 800;
-    line-height: 0.9;
-    text-align: center;
+    background-color: #ff9c7a;
+    background-image: url('consumo-inmediato-logo.svg'), linear-gradient(90deg, #df7600 0 34%, #ffffff 34% 100%);
+    background-size: 34% 100%, 100% 100%;
+    background-repeat: no-repeat;
+    background-position: left center, center;
   }
 
   .discount-option-label {
@@ -3983,6 +3969,11 @@ natural 170 g</textarea>
     let imagenObj = null;
     
     let fondoImg = new Image();
+    let consumoLogoImg = new Image();
+    consumoLogoImg.onload = () => {
+      if (isConsumoMode()) updateView();
+    };
+    consumoLogoImg.src = 'consumo-inmediato-logo.svg';
     let fondoPersonalizado = false;
     let fondoActual = null;
     let projectSetupComplete = false;
@@ -4762,29 +4753,13 @@ natural 170 g</textarea>
 
     function drawConsumoLogo(ctx, x, y, w, h) {
       ctx.save();
-      ctx.fillStyle = '#df7600';
       drawRoundedRect(ctx, x, y, w, h, 12);
-      ctx.fill();
-
-      ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = 8;
-      ctx.beginPath();
-      ctx.arc(x + w * 0.5, y + h * 0.52, Math.min(w, h) * 0.34, Math.PI * 1.05, Math.PI * 1.95);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.arc(x + w * 0.5, y + h * 0.52, Math.min(w, h) * 0.34, Math.PI * 0.1, Math.PI * 0.9);
-      ctx.stroke();
-
-      ctx.fillStyle = '#ffffff';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.font = '800 48px Inter, Arial Black, sans-serif';
-      ctx.fillText('Consumo', x + w * 0.5, y + h * 0.46);
-      ctx.font = '800 34px Inter, Arial Black, sans-serif';
-      ctx.fillText('inmediato', x + w * 0.5, y + h * 0.62);
-      ctx.font = '800 18px Inter, Arial, sans-serif';
-      ctx.fillText('PRECIO REDUCIDO', x + w * 0.5, y + h * 0.22);
-      ctx.fillText('PRÓXIMO A VENCER', x + w * 0.5, y + h * 0.82);
+      ctx.clip();
+      ctx.fillStyle = '#df7600';
+      ctx.fillRect(x, y, w, h);
+      if (consumoLogoImg.complete && consumoLogoImg.naturalWidth) {
+        ctx.drawImage(consumoLogoImg, x, y, w, h);
+      }
       ctx.restore();
     }
 
