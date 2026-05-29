@@ -4,11 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
 <title>A4 Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" referrerpolicy="no-referrer">
 <style>
   :root {
-    --ui-font-stack: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    --ui-font-stack-ios: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
-    --ui-font-stack-android: Roboto, "Noto Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+    --ui-font-stack: "Inter", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    --ui-font-stack-ios: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+    --ui-font-stack-android: "Inter", Roboto, "Noto Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
     --mobile-safe-top: env(safe-area-inset-top, 0px);
     --mobile-safe-bottom: env(safe-area-inset-bottom, 0px);
     --mobile-dock-height: 70px;
@@ -274,7 +278,7 @@
     font-size: 0.9rem;
     border-bottom: 2px solid #ff9800;
     z-index: 9;
-    gap: 10px;
+    gap: 14px;
     overflow-x: auto;
     overflow-y: hidden;
   }
@@ -282,7 +286,7 @@
   .header-left {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 14px;
     flex-shrink: 0;
   }
 
@@ -376,6 +380,9 @@
 
   .modal {
     display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
     position: fixed;
     z-index: 1000;
     left: 0;
@@ -388,11 +395,11 @@
 
   .modal-content {
     background: #25252a;
-    margin: 15% auto;
+    margin: 0;
     padding: 20px;
     border-radius: 16px;
-    width: 320px;
-    max-width: 90%;
+    width: min(620px, 94vw);
+    max-width: 94%;
     text-align: center;
     border: 2px solid #ff9800;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
@@ -414,7 +421,7 @@
     display: none;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 14px;
     margin: 0 0 14px;
     padding: 10px 12px;
     border: 1px solid rgba(255,152,0,0.35);
@@ -455,6 +462,101 @@
     background: #ff9800;
     color: #1a1a1f;
     transform: scale(1.02);
+  }
+
+  .discount-options-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .discount-option {
+    background: rgba(20, 28, 38, 0.7);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+    cursor: pointer;
+    text-align: left;
+    color: #e8edf5;
+    transition: border-color 0.15s ease, transform 0.15s ease, background 0.15s ease;
+  }
+
+  .discount-option:hover {
+    border-color: rgba(255, 152, 0, 0.6);
+    background: rgba(33, 43, 56, 0.9);
+    transform: translateY(-1px);
+  }
+
+  .discount-option:focus-visible {
+    outline: 2px solid rgba(255, 152, 0, 0.8);
+    outline-offset: 2px;
+  }
+
+  .discount-preview {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    max-height: 120px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background-size: cover;
+    background-position: center;
+  }
+
+  .discount-preview-consumo {
+    background-color: #ff9c7a;
+    background-image: url('consumo-inmediato-fondo.svg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
+  .discount-option-label {
+    text-align: center;
+    font-size: 0.96rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  #modalFondo .modal-btn {
+    margin: 0;
+    font-size: 1rem;
+    padding: 12px 10px;
+  }
+
+  @media (max-width: 980px) {
+    .discount-options-row {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .consumo-slot-row {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+
+  .consumo-slot-btn {
+    padding: 6px;
+    border-radius: 8px;
+    background: #1b2027;
+    color: #e8edf5;
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+
+  .consumo-slot-btn.active {
+    background: #ff9800;
+    color: #1a1a1f;
+    border-color: #ff9800;
+  }
+
+  .consumo-actions button {
+    font-size: 0.66rem;
   }
 
   .modal-close {
@@ -575,7 +677,7 @@
   #panel {
     width: 320px;
     padding: 14px 12px 16px;
-    gap: 10px;
+    gap: 14px;
     background:
       linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0) 18%),
       var(--panel-bg);
@@ -869,7 +971,7 @@
   .header-right {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 14px;
   }
 
   .header-center {
@@ -1029,7 +1131,7 @@
   .header-actions-left {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 14px;
     min-width: 0;
   }
 
@@ -1718,7 +1820,7 @@
   .header-left.header-actions-left {
     flex-direction: column;
     align-items: flex-start;
-    gap: 10px;
+    gap: 14px;
   }
 
   .header-center {
@@ -1737,7 +1839,7 @@
     backdrop-filter: none;
     display: flex;
     align-items: flex-start;
-    gap: 10px;
+    gap: 14px;
   }
 
   .header-action-bar,
@@ -1752,7 +1854,7 @@
       left: 308px;
       top: 66px;
       padding: 8px 10px;
-      gap: 10px;
+      gap: 14px;
     }
   }
 
@@ -1760,7 +1862,7 @@
   .floating-panel {
     position: fixed;
     z-index: 38;
-    padding: 8px;
+    padding: 10px;
     border-radius: 14px;
     background: rgba(23,25,29,0.92);
     box-shadow: 0 10px 24px rgba(0,0,0,0.26);
@@ -1772,7 +1874,7 @@
     z-index: 90;
     display: none;
     min-width: 172px;
-    padding: 8px;
+    padding: 10px;
     border-radius: 14px;
     background: rgba(23,25,29,0.96);
     border: 1px solid rgba(255,255,255,0.08);
@@ -3141,7 +3243,7 @@
       display: grid;
       grid-template-columns: 1fr auto 1fr;
       align-items: center;
-      gap: 10px;
+      gap: 14px;
       min-height: 52px;
       padding: calc(6px + var(--mobile-safe-top)) 8px 6px;
       background: linear-gradient(180deg, rgba(13,17,22,0.96) 0%, rgba(13,17,22,0.82) 100%);
@@ -3422,21 +3524,41 @@
       margin-bottom: 8px;
     }
   }
+
+
+  .btn-with-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .btn-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 14px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
 </style>
 </head>
 <body>
 
 <div id="mobileTopBar">
   <div class="mobile-top-side">
-    <button class="mobile-icon-btn" type="button" title="Deshacer" onclick="window.deshacerCambio()">↶</button>
-    <button class="mobile-icon-btn" type="button" title="Rehacer" onclick="window.rehacerCambio()">↷</button>
+    <button class="mobile-icon-btn" type="button" title="Deshacer" onclick="window.deshacerCambio()"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i></button>
+    <button class="mobile-icon-btn" type="button" title="Rehacer" onclick="window.rehacerCambio()"><i class="fa-solid fa-rotate-right" aria-hidden="true"></i></button>
   </div>
   <div class="mobile-top-brand">
     <div class="mobile-top-title">A4 Studio</div>
     <div class="mobile-top-subtitle">Editor móvil</div>
   </div>
   <div class="mobile-top-side mobile-top-side-right">
-    <button class="mobile-icon-btn" type="button" title="Centrar vista" onclick="resetearVista()">⌖</button>
+    <button class="mobile-icon-btn" type="button" title="Centrar vista" onclick="resetearVista()"><i class="fa-solid fa-crosshairs" aria-hidden="true"></i></button>
   </div>
 </div>
 
@@ -3446,15 +3568,15 @@
     <span>Editar</span>
   </button>
   <button class="mobile-dock-btn" type="button" onclick="toggleMobileImagePanel()">
-    <span class="icon">◫</span>
+    <span class="icon"><i class="fa-regular fa-image" aria-hidden="true"></i></span>
     <span>Imagen</span>
   </button>
   <button class="mobile-dock-btn" type="button" onclick="toggleMobilePagesPanel()">
-    <span class="icon">▦</span>
+    <span class="icon"><i class="fa-solid fa-table-cells-large" aria-hidden="true"></i></span>
     <span>Páginas</span>
   </button>
   <button class="mobile-dock-btn" type="button" onclick="toggleMobileActionsPanel()">
-    <span class="icon">⋯</span>
+    <span class="icon"><i class="fa-solid fa-ellipsis" aria-hidden="true"></i></span>
     <span>Proyecto</span>
   </button>
 </div>
@@ -3467,8 +3589,8 @@
     <div class="sidebar-brand-subtitle">Editor visual de carteles</div>
   </div>
   
-  <div class="card">
-    <div class="card-title">&#x1F4E2; TÍTULO PRINCIPAL</div>
+  <div class="card" id="tituloCard">
+    <div class="card-title"><i class="fa-solid fa-bullhorn" aria-hidden="true"></i> TÍTULO PRINCIPAL</div>
     <textarea id="titulo" rows="2" placeholder="Escribe aquí...">HOY</textarea>
     <div class="tool-group">
       <select id="tituloFont">
@@ -3483,13 +3605,13 @@
       </select>
     </div>
     <div class="color-row">
-      <label>&#x1F3A8; Color:</label>
+      <label><i class="fa-solid fa-palette" aria-hidden="true"></i> Color:</label>
       <input type="color" id="tituloColor" value="#FFFFFF">
     </div>
   </div>
 
-  <div class="card">
-    <div class="card-title">&#x1F3F7;&#xFE0F; NOMBRE DEL PRODUCTO</div>
+  <div class="card" id="productoCard">
+    <div class="card-title"><i class="fa-solid fa-tag" aria-hidden="true"></i> NOMBRE DEL PRODUCTO</div>
     <textarea id="producto" rows="2" placeholder="Escribe aquí...">Lomitos de atún
 Carrefour al
 natural 170 g</textarea>
@@ -3506,13 +3628,13 @@ natural 170 g</textarea>
       </select>
     </div>
     <div class="color-row">
-      <label>&#x1F3A8; Color:</label>
+      <label><i class="fa-solid fa-palette" aria-hidden="true"></i> Color:</label>
       <input type="color" id="productoColor" value="#000000">
     </div>
   </div>
 
-  <div class="card">
-    <div class="card-title">&#x1F4B0; PRECIOS</div>
+  <div class="card" id="preciosCard">
+    <div class="card-title"><i class="fa-solid fa-sack-dollar" aria-hidden="true"></i> PRECIOS</div>
     <label>Precio Normal:</label>
     <div class="precio-row">
       <div class="precio-input-group">
@@ -3529,17 +3651,49 @@ natural 170 g</textarea>
       </div>
       <input type="color" id="precioOfertaColor" value="#000000">
     </div>
-    <div id="descuentoInfo" class="descuento-info">&#x1F3F7;&#xFE0F; Selecciona un fondo para ver el descuento</div>
+    <div id="descuentoInfo" class="descuento-info"><i class="fa-solid fa-tag" aria-hidden="true"></i> Selecciona un fondo para ver el descuento</div>
     
   </div>
 
+  <div class="card" id="consumoPanel" style="display: none;">
+    <div class="card-title"><i class="fa-solid fa-basket-shopping" aria-hidden="true"></i> CONSUMO INMEDIATO</div>
+    <label>Espacio a editar:</label>
+    <div class="consumo-slot-row" id="consumoSlotButtons">
+      <button class="consumo-slot-btn active" type="button" onclick="seleccionarConsumoSlot(0)">1</button>
+      <button class="consumo-slot-btn" type="button" onclick="seleccionarConsumoSlot(1)">2</button>
+      <button class="consumo-slot-btn" type="button" onclick="seleccionarConsumoSlot(2)">3</button>
+      <button class="consumo-slot-btn" type="button" onclick="seleccionarConsumoSlot(3)">4</button>
+    </div>
+    <label>Nombre del producto:</label>
+    <textarea id="consumoNombre" rows="2" placeholder="Nombre del producto"></textarea>
+    <label>Precio normal:</label>
+    <input id="consumoPrecioNormal" type="number" min="0" step="1" placeholder="Ej: 3500">
+    <label>Monto de descuento:</label>
+    <input id="consumoDescuentoMonto" type="number" min="0" step="1" placeholder="Ej: 1500">
+    <div id="consumoResultado" class="descuento-info">Precio final: $0 · 0% descuento</div>
+    <div class="tool-group consumo-actions">
+      <button type="button" onclick="duplicarConsumoActivoEnVacios()">Duplicar en vacíos</button>
+      <button type="button" onclick="duplicarConsumoActivoEnTodos()">Repetir en 4</button>
+    </div>
+    <label>Copiar producto 1 a:</label>
+    <div class="consumo-slot-row">
+      <button class="consumo-slot-btn" type="button" onclick="copiarConsumoPrimeroA(1)">2</button>
+      <button class="consumo-slot-btn" type="button" onclick="copiarConsumoPrimeroA(2)">3</button>
+      <button class="consumo-slot-btn" type="button" onclick="copiarConsumoPrimeroA(3)">4</button>
+      <button class="consumo-slot-btn" type="button" onclick="copiarConsumoPrimeroEnTodos()">Todos</button>
+    </div>
+    <div class="tool-group consumo-actions">
+      <button class="btn-outline" type="button" onclick="limpiarConsumoActivo()">Limpiar espacio</button>
+    </div>
+  </div>
+
 <div class="info-box">
-    &#x1F4A1; CONSEJOS:<br>
+    <i class="fa-regular fa-lightbulb" aria-hidden="true"></i> CONSEJOS:<br>
     • <strong>CLICK</strong> en objeto &rarr; seleccionar<br>
     • <strong>CLICK FUERA</strong> &rarr; deseleccionar<br>
     • <strong>DOBLE CLIC</strong> en texto &rarr; editar<br>
     • <strong>ESC</strong> &rarr; deseleccionar todo<br>
-    • <strong>&#x2702;&#xFE0F; RECORTAR</strong> &rarr; Arrastra esquinas, bordes o centro<br>
+    • <strong><i class="fa-solid fa-crop-simple" aria-hidden="true"></i> RECORTAR</strong> &rarr; Arrastra esquinas, bordes o centro<br>
     • <strong>RECORTAR / ENTER / ESC</strong> &rarr; aplicar o cancelar el recorte<br>
     • <strong>SHIFT</strong> &rarr; mantener proporción al recortar<br>
     • Muestra dimensiones y proporción en tiempo real
@@ -3548,19 +3702,19 @@ natural 170 g</textarea>
 
 <div id="undoPanel" class="floating-panel floating-panel-left floating-panel-top">
   <div class="header-history">
-    <button class="header-tool-btn always-visible icon-only" id="btnUndoAdvanced" type="button" title="Deshacer" onclick="window.deshacerCambio()">&#x21B6;</button>
-    <button class="header-tool-btn always-visible icon-only" id="btnRedoAdvanced" type="button" title="Rehacer" onclick="window.rehacerCambio()">&#x21B7;</button>
+    <button class="header-tool-btn always-visible icon-only" id="btnUndoAdvanced" type="button" title="Deshacer" onclick="window.deshacerCambio()"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i></button>
+    <button class="header-tool-btn always-visible icon-only" id="btnRedoAdvanced" type="button" title="Rehacer" onclick="window.rehacerCambio()"><i class="fa-solid fa-rotate-right" aria-hidden="true"></i></button>
   </div>
 </div>
 
 <div id="header" class="floating-panel floating-panel-left floating-panel-bottom">
   <div class="header-action-bar compact-action-buttons">
-    <button class="header-combo-btn" type="button" title="Nuevo proyecto" onclick="nuevoProyecto()">&#x2728; Nuevo</button>
-    <button class="header-combo-btn" type="button" title="Seleccionar descuento" onclick="abrirModalFondo()">&#x1F4AF; Descuento</button>
-    <button class="header-combo-btn" type="button" title="Imprimir" onclick="exportar()">&#x1F5A8;&#xFE0F; Imprimir</button>
-    <button class="header-combo-btn" type="button" title="Centrar vista" onclick="resetearVista()">&#x1F50E; Centrar</button>
-    <button class="header-combo-btn" type="button" title="Guardar JSON" onclick="guardarDisenoEnArchivo()">&#x1F4BE; Guardar</button>
-    <button class="header-combo-btn" type="button" title="Cargar JSON" onclick="cargarDisenoDesdeArchivo()">&#x1F4C2; Cargar</button>
+    <button class="header-combo-btn btn-with-icon" type="button" title="Nuevo proyecto" onclick="nuevoProyecto()"><i class="fa-solid fa-wand-magic-sparkles btn-icon" aria-hidden="true"></i><span>Nuevo</span></button>
+    <button class="header-combo-btn btn-with-icon" type="button" title="Seleccionar descuento" onclick="abrirModalFondo()"><i class="fa-solid fa-bullseye btn-icon" aria-hidden="true"></i><span>Descuento</span></button>
+    <button class="header-combo-btn btn-with-icon" type="button" title="Imprimir" onclick="exportar()"><i class="fa-solid fa-print btn-icon" aria-hidden="true"></i><span>Imprimir</span></button>
+    <button class="header-combo-btn btn-with-icon" type="button" title="Centrar vista" onclick="resetearVista()"><i class="fa-solid fa-crosshairs btn-icon" aria-hidden="true"></i><span>Centrar</span></button>
+    <button class="header-combo-btn btn-with-icon" type="button" title="Guardar JSON" onclick="guardarDisenoEnArchivo()"><i class="fa-solid fa-floppy-disk btn-icon" aria-hidden="true"></i><span>Guardar</span></button>
+    <button class="header-combo-btn btn-with-icon" type="button" title="Cargar JSON" onclick="cargarDisenoDesdeArchivo()"><i class="fa-regular fa-folder-open btn-icon" aria-hidden="true"></i><span>Cargar</span></button>
   </div>
 </div>
 
@@ -3580,19 +3734,19 @@ natural 170 g</textarea>
   <div class="image-search-shell">
     <div class="image-search-label">Imagen</div>
     <div class="image-panel-dual-actions">
-      <button class="header-combo-btn" type="button" onclick="cargarImagen()">🖼️ Agregar</button>
-      <button class="header-combo-btn" type="button" onclick="pegarImagen()">📋 Pegar imagen</button>
+      <button class="header-combo-btn btn-with-icon" type="button" onclick="cargarImagen()"><i class="fa-regular fa-image btn-icon" aria-hidden="true"></i><span>Agregar</span></button>
+      <button class="header-combo-btn btn-with-icon" type="button" onclick="pegarImagen()"><i class="fa-regular fa-paste btn-icon" aria-hidden="true"></i><span>Pegar imagen</span></button>
     </div>
     <div class="image-panel-dual-actions">
-      <button id="cropToggleBtn" onclick="toggleCropMode()" class="header-combo-btn" type="button">&#x2702;&#xFE0F; Recorte</button>
-      <button onclick="resetearImagen()" class="header-combo-btn" type="button">&#x21BA; Restablecer</button>
+      <button id="cropToggleBtn" onclick="toggleCropMode()" class="header-combo-btn btn-with-icon" type="button"><i class="fa-solid fa-crop-simple btn-icon" aria-hidden="true"></i><span>Recorte</span></button>
+      <button onclick="resetearImagen()" class="header-combo-btn btn-with-icon" type="button"><i class="fa-solid fa-rotate-right btn-icon" aria-hidden="true"></i><span>Restablecer</span></button>
     </div>
-    <button class="header-combo-btn" type="button" onclick="eliminarImagen()">🗑️ Eliminar imagen</button>
+    <button class="header-combo-btn btn-with-icon" type="button" onclick="eliminarImagen()"><i class="fa-regular fa-trash-can btn-icon" aria-hidden="true"></i><span>Eliminar imagen</span></button>
     <div class="image-search-label image-search-subtitle">Google Imagenes</div>
     <input id="googleImageSearchInput" class="image-search-field" type="text" placeholder="Buscar producto, marca o packshot">
     <div class="image-search-actions">
-      <button class="header-combo-btn" type="button" onclick="abrirBusquedaGoogleImagenes()">🔎 Buscar en Google</button>
-      <button class="header-combo-btn" type="button" onclick="usarNombreProductoEnBusqueda()">🏷️ Usar producto</button>
+      <button class="header-combo-btn btn-with-icon" type="button" onclick="abrirBusquedaGoogleImagenes()"><i class="fa-solid fa-magnifying-glass btn-icon" aria-hidden="true"></i><span>Buscar en Google</span></button>
+      <button class="header-combo-btn btn-with-icon" type="button" onclick="usarNombreProductoEnBusqueda()"><i class="fa-solid fa-tag btn-icon" aria-hidden="true"></i><span>Usar producto</span></button>
     </div>
     <div class="image-search-chip-row">
       <button class="image-search-chip" type="button" onclick="aplicarSugerenciaBusquedaImagen('packshot')">packshot</button>
@@ -3601,7 +3755,7 @@ natural 170 g</textarea>
     </div>
     <div class="image-search-note">Abre Google Imagenes en una pestaña nueva. Luego copia la imagen y pulsa Pegar imagen.</div>
     <div id="cropIndicator" style="display: none;" class="crop-status">
-&#x2702;&#xFE0F; RECORTE ACTIVO - Arrastra esquinas, bordes o centro. Pulsa RECORTE o ENTER para aplicar, ESC cancela
+<i class="fa-solid fa-crop-simple" aria-hidden="true"></i> RECORTE ACTIVO - Arrastra esquinas, bordes o centro. Pulsa RECORTE o ENTER para aplicar, ESC cancela
     </div>
     <div id="imagePanelStatus" class="image-search-status">Listo para trabajar con imagenes.</div>
   </div>
@@ -3609,7 +3763,7 @@ natural 170 g</textarea>
 
 <div id="titleToolsPanel" class="floating-panel floating-panel-left">
   <div class="compact-action-buttons title-tools-stack">
-    <button onclick="centrarSeleccionado()" class="header-combo-btn" type="button">&#x1F3AF; Centrar</button>
+    <button onclick="centrarSeleccionado()" class="header-combo-btn btn-with-icon" type="button"><i class="fa-solid fa-crosshairs btn-icon" aria-hidden="true"></i><span>Centrar</span></button>
     <div class="title-color-control">
       <span class="title-color-label">Color</span>
       <input id="titleFloatingColor" type="color" value="#ffffff" oninput="actualizarColorTituloFlotante(this.value)">
@@ -3622,32 +3776,44 @@ natural 170 g</textarea>
 </div>
 
 <div id="canvasContextMenu">
-  <button class="context-menu-btn" type="button" onclick="pegarImagenDesdeMenu()">📋 Pegar imagen</button>
-  <button id="ctxCropImageBtn" class="context-menu-btn" type="button" onclick="recortarImagenDesdeMenu()">✂️ Recorte</button>
-  <button id="ctxDeleteImageBtn" class="context-menu-btn" type="button" onclick="eliminarImagenDesdeMenu()">🗑️ Eliminar imagen</button>
+  <button class="context-menu-btn btn-with-icon" type="button" onclick="pegarImagenDesdeMenu()"><i class="fa-regular fa-paste btn-icon" aria-hidden="true"></i><span>Pegar imagen</span></button>
+  <button id="ctxCropImageBtn" class="context-menu-btn btn-with-icon" type="button" onclick="recortarImagenDesdeMenu()"><i class="fa-solid fa-crop-simple btn-icon" aria-hidden="true"></i><span>Recorte</span></button>
+  <button id="ctxDeleteImageBtn" class="context-menu-btn btn-with-icon" type="button" onclick="eliminarImagenDesdeMenu()"><i class="fa-regular fa-trash-can btn-icon" aria-hidden="true"></i><span>Eliminar imagen</span></button>
 </div>
 
 <!-- Modal para seleccionar fondo -->
 <div id="modalFondo" class="modal">
   <div class="modal-content">
-    <h3>&#x1F4AF; Selecciona un descuento</h3>
+    <h3><i class="fa-solid fa-percent" aria-hidden="true"></i> Selecciona un descuento</h3>
     <p style="color: #aaa; margin-bottom: 15px;">Selecciona un fondo para tu cartel</p>
     <div id="modalApplyAllOption" class="modal-option">
       <input id="modalApplyDiscountToAll" type="checkbox">
       <label for="modalApplyDiscountToAll">Aplicar a todas las páginas</label>
     </div>
-    <div class="modal-buttons">
-      <button class="modal-btn" onclick="seleccionarFondo('dni')">Cuenta DNI <span style="color:#19bd70;">(10% OFF)</span></button>
-      <button class="modal-btn" onclick="seleccionarFondo('mercadopago')">Mercado Pago <span style="color:#fffb00;">(15% OFF)</span></button>
-      <button class="modal-btn" onclick="seleccionarFondo('carrefour')">Cuenta Digital <span style="color:#ff195e;">(15% OFF)</span></button>
-      <button class="modal-btn" onclick="seleccionarFondo('qr')">QR Billeteras <span style="color:#3676ca;">(10% OFF)</span></button>
+    <div class="discount-options-row">
+      <button class="discount-option" type="button" onclick="seleccionarFondo('dni')">
+        <div class="discount-preview" style="background-image: url('fondodni.jpg');"></div>
+        <span class="discount-option-label">Cuenta DNI <span style="color:#19bd70;">(10% OFF)</span></span>
+      </button>
+      <button class="discount-option" type="button" onclick="seleccionarFondo('mercadopago')">
+        <div class="discount-preview" style="background-image: url('fondomp.jpg');"></div>
+        <span class="discount-option-label">Mercado Pago <span style="color:#fffb00;">(15% OFF)</span></span>
+      </button>
+      <button class="discount-option" type="button" onclick="seleccionarFondo('carrefour')">
+        <div class="discount-preview" style="background-image: url('fondobanco.jpg');"></div>
+        <span class="discount-option-label">Cuenta Digital <span style="color:#ff195e;">(15% OFF)</span></span>
+      </button>
+      <button class="discount-option" type="button" onclick="seleccionarFondo('consumo')">
+        <div class="discount-preview discount-preview-consumo"></div>
+        <span class="discount-option-label">Consumo inmediato</span>
+      </button>
     </div>
   </div>
 </div>
 
 <div id="modalNuevoProyecto" class="modal">
   <div class="modal-content">
-    <h3>&#x1F195; Crear proyecto nuevo</h3>
+    <h3><i class="fa-solid fa-file-circle-plus" aria-hidden="true"></i> Crear proyecto nuevo</h3>
     <p style="color: #aaa; margin-bottom: 15px;">Se limpiara el proyecto actual y se iniciara uno nuevo desde cero.</p>
     <div class="modal-buttons">
       <button class="modal-btn" onclick="confirmarNuevoProyecto()">Continuar</button>
@@ -3795,10 +3961,19 @@ natural 170 g</textarea>
       fontSize: 88,
       color: "#000000"
     };
+
+    const CONSUMO_MAX_ITEMS = 4;
+    let consumoActiveIndex = 0;
+    let consumoItems = createDefaultConsumoItems();
     
     let imagenObj = null;
     
     let fondoImg = new Image();
+    let consumoFondoImg = new Image();
+    consumoFondoImg.onload = () => {
+      if (isConsumoMode()) updateView();
+    };
+    consumoFondoImg.src = 'consumo-inmediato-fondo.svg';
     let fondoPersonalizado = false;
     let fondoActual = null;
     let projectSetupComplete = false;
@@ -3809,9 +3984,47 @@ natural 170 g</textarea>
     const fondos = {
       dni: 'fondodni.jpg',
       mercadopago: 'fondomp.jpg',
-      carrefour: 'fondobanco.jpg',
-      qr: 'fondoqr.jpg'
+      carrefour: 'fondobanco.jpg'
     };
+
+    function createConsumoItem(nombre = '', precioNormal = 0, descuentoMonto = 0) {
+      return {
+        nombre,
+        precioNormal: Math.max(0, Math.round(Number(precioNormal) || 0)),
+        descuentoMonto: Math.max(0, Math.round(Number(descuentoMonto) || 0))
+      };
+    }
+
+    function createDefaultConsumoItems() {
+      return Array.from({ length: CONSUMO_MAX_ITEMS }, () => createConsumoItem());
+    }
+
+    function normalizeConsumoItems(items) {
+      const normalized = Array.isArray(items) ? items.slice(0, CONSUMO_MAX_ITEMS).map((item) => createConsumoItem(
+        item && item.nombre ? String(item.nombre) : '',
+        item && item.precioNormal,
+        item && item.descuentoMonto
+      )) : [];
+      while (normalized.length < CONSUMO_MAX_ITEMS) normalized.push(createConsumoItem());
+      return normalized;
+    }
+
+    function getConsumoItemCalculations(item) {
+      const precioNormal = Math.max(0, Math.round(Number(item && item.precioNormal) || 0));
+      const descuentoMonto = Math.min(precioNormal, Math.max(0, Math.round(Number(item && item.descuentoMonto) || 0)));
+      const precioFinal = Math.max(0, precioNormal - descuentoMonto);
+      const porcentaje = precioNormal > 0 ? Math.round((descuentoMonto / precioNormal) * 100) : 0;
+      return { precioNormal, descuentoMonto, precioFinal, porcentaje };
+    }
+
+    function formatPesos(value) {
+      return Math.round(Number(value) || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
+    function isConsumoMode() {
+      return fondoActual === 'consumo';
+    }
+
     
     // ========== CROP TOOL PROFESIONAL ==========
     class CropTool {
@@ -4130,7 +4343,6 @@ natural 170 g</textarea>
     // ========== FUNCIONES DE DESCUENTO ==========
     function calcularDescuentoPorFondo(tipoFondo) {
       if (tipoFondo === 'mercadopago') return 15;
-      if (tipoFondo === 'qr') return 10;
       if (tipoFondo === 'dni') return 10;   // 5% de descuento para Cuenta DNI
       if (tipoFondo === 'carrefour') return 15; // 12% para Carrefour
       return 0;
@@ -4144,8 +4356,8 @@ natural 170 g</textarea>
           return 'Mercado Pago';
         case 'carrefour':
           return 'Cuenta Digital Carrefour';
-        case 'qr':
-          return 'QR Billeteras';
+        case 'consumo':
+          return 'Consumo inmediato';
         default:
           return 'Fondo';
       }
@@ -4178,7 +4390,15 @@ natural 170 g</textarea>
     function actualizarInfoDescuento(tipoFondo, options = {}) {
       const porcentaje = calcularDescuentoPorFondo(tipoFondo);
       const infoDiv = document.getElementById('descuentoInfo');
-      if (!infoDiv || porcentaje <= 0) return;
+      if (!infoDiv) return;
+      if (tipoFondo === 'consumo') {
+        const alcanceConsumo = options.allPages ? ' en todas las paginas' : '';
+        infoDiv.innerHTML = `Fondo actual: ${getNombreFondo(tipoFondo)}${alcanceConsumo}`;
+        infoDiv.style.background = "#51351f";
+        infoDiv.style.color = "#fff0e5";
+        return;
+      }
+      if (porcentaje <= 0) return;
       const alcance = options.allPages ? ' en todas las paginas' : '';
       infoDiv.innerHTML = `Fondo actual: ${getNombreFondo(tipoFondo)} - ${porcentaje}% de descuento aplicado${alcance}`;
       infoDiv.style.background = "#223551";
@@ -4514,9 +4734,103 @@ natural 170 g</textarea>
       mainCtx.restore();
     }
     
+
+
+    function drawRoundedRect(ctx, x, y, w, h, r) {
+      const radius = Math.min(r, w / 2, h / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + w - radius, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+      ctx.lineTo(x + w, y + h - radius);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
+      ctx.lineTo(x + radius, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.closePath();
+    }
+
+    function drawWrappedConsumoText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
+      const words = String(text || '').replace(/\s+/g, ' ').trim().split(' ').filter(Boolean);
+      const lines = [];
+      let current = '';
+      words.forEach((word) => {
+        const test = current ? `${current} ${word}` : word;
+        if (ctx.measureText(test).width > maxWidth && current) {
+          lines.push(current);
+          current = word;
+        } else {
+          current = test;
+        }
+      });
+      if (current) lines.push(current);
+      lines.slice(0, maxLines).forEach((line, index) => ctx.fillText(line, x, y + index * lineHeight));
+    }
+
+    function drawConsumoInmediatoLayout() {
+      mainCtx.save();
+      if (consumoFondoImg.complete && consumoFondoImg.naturalWidth) {
+        mainCtx.drawImage(consumoFondoImg, 0, 0, CANVAS_W, CANVAS_H);
+      } else {
+        mainCtx.fillStyle = '#ff9b7a';
+        mainCtx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+      }
+
+      const marginX = 18;
+      const marginTop = 18;
+      const rowGap = 26;
+      const rowH = (CANVAS_H - (marginTop * 2) - (rowGap * 3)) / 4;
+      const logoW = 320;
+
+      consumoItems.forEach((item, index) => {
+        const y = marginTop + index * (rowH + rowGap);
+        const contentX = marginX + logoW + 28;
+        const contentW = CANVAS_W - contentX - 38;
+        const calc = getConsumoItemCalculations(item);
+        const hasData = (item.nombre && item.nombre.trim()) || calc.precioNormal > 0 || calc.descuentoMonto > 0;
+        if (!hasData) return;
+
+        mainCtx.fillStyle = '#111111';
+        mainCtx.textAlign = 'left';
+        mainCtx.textBaseline = 'top';
+        mainCtx.font = '500 32px Inter, Arial, sans-serif';
+        drawWrappedConsumoText(mainCtx, item.nombre || 'NOMBRE DEL PRODUCTO', contentX, y + 38, contentW, 38, 2);
+
+        const badgeX = contentX;
+        const badgeY = y + rowH * 0.47;
+        const badgeW = 118;
+        const badgeH = 52;
+        drawRoundedRect(mainCtx, badgeX, badgeY, badgeW, badgeH, 8);
+        mainCtx.fillStyle = '#ffffff';
+        mainCtx.fill();
+        mainCtx.strokeStyle = '#111111';
+        mainCtx.lineWidth = 3;
+        mainCtx.stroke();
+        mainCtx.fillStyle = '#111111';
+        mainCtx.textAlign = 'center';
+        mainCtx.font = '500 34px Inter, Arial, sans-serif';
+        mainCtx.fillText(`${calc.porcentaje}%`, badgeX + badgeW / 2, badgeY + 8);
+        mainCtx.font = '700 11px Inter, Arial, sans-serif';
+        mainCtx.fillText('DESCUENTO', badgeX + badgeW / 2, badgeY + 36);
+
+        mainCtx.textAlign = 'left';
+        mainCtx.textBaseline = 'alphabetic';
+        mainCtx.fillStyle = '#000000';
+        mainCtx.font = '500 86px Inter, Arial, sans-serif';
+        mainCtx.fillText(`$${formatPesos(calc.precioFinal)}`, badgeX + badgeW + 28, badgeY + 52);
+      });
+      mainCtx.restore();
+    }
+
     function drawToMainCanvas() {
       mainCtx.setTransform(1, 0, 0, 1, 0, 0);
       mainCtx.clearRect(0, 0, CANVAS_W, CANVAS_H);
+
+      if (isConsumoMode()) {
+        drawConsumoInmediatoLayout();
+        return;
+      }
       
       if (fondoPersonalizado && fondoImg.complete && fondoImg.naturalWidth) {
         mainCtx.drawImage(fondoImg, 0, 0, CANVAS_W, CANVAS_H);
@@ -4959,7 +5273,115 @@ natural 170 g</textarea>
       return Number.isFinite(parsedValue) ? parsedValue : fallbackValue;
     }
 
+
+
+    function syncConsumoPanelFromState() {
+      const panel = document.getElementById('consumoPanel');
+      if (!panel) return;
+      consumoItems = normalizeConsumoItems(consumoItems);
+      consumoActiveIndex = Math.min(Math.max(consumoActiveIndex, 0), CONSUMO_MAX_ITEMS - 1);
+      const active = consumoItems[consumoActiveIndex];
+      const nombreInput = document.getElementById('consumoNombre');
+      const precioInput = document.getElementById('consumoPrecioNormal');
+      const descuentoInput = document.getElementById('consumoDescuentoMonto');
+      if (nombreInput) nombreInput.value = active.nombre;
+      if (precioInput) precioInput.value = active.precioNormal || '';
+      if (descuentoInput) descuentoInput.value = active.descuentoMonto || '';
+      document.querySelectorAll('.consumo-slot-btn').forEach((btn, index) => {
+        btn.classList.toggle('active', index === consumoActiveIndex);
+      });
+      updateConsumoResultado();
+    }
+
+    function updateConsumoResultado() {
+      const result = document.getElementById('consumoResultado');
+      if (!result) return;
+      const item = consumoItems[consumoActiveIndex] || createConsumoItem();
+      const calc = getConsumoItemCalculations(item);
+      result.innerHTML = `Precio final: $${formatPesos(calc.precioFinal)} · ${calc.porcentaje}% descuento`;
+    }
+
+    function syncLayoutModePanels() {
+      const consumoMode = isConsumoMode();
+      ['tituloCard', 'productoCard', 'preciosCard'].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = consumoMode ? 'none' : '';
+      });
+      const consumoPanel = document.getElementById('consumoPanel');
+      if (consumoPanel) consumoPanel.style.display = consumoMode ? '' : 'none';
+      const imagePanel = document.getElementById('imageSearchPanel');
+      if (imagePanel) imagePanel.style.display = consumoMode ? 'none' : '';
+      if (consumoMode) syncConsumoPanelFromState();
+    }
+
+    function updateConsumoFromUI() {
+      if (!isConsumoMode()) return;
+      const item = consumoItems[consumoActiveIndex] || createConsumoItem();
+      item.nombre = (document.getElementById('consumoNombre')?.value || '').trim();
+      item.precioNormal = Math.max(0, Math.round(Number(document.getElementById('consumoPrecioNormal')?.value) || 0));
+      item.descuentoMonto = Math.max(0, Math.round(Number(document.getElementById('consumoDescuentoMonto')?.value) || 0));
+      consumoItems[consumoActiveIndex] = item;
+      updateConsumoResultado();
+      updateView();
+      captureStateChange('Producto consumo inmediato actualizado');
+    }
+
+    window.seleccionarConsumoSlot = function(index) {
+      consumoActiveIndex = Math.min(Math.max(Number(index) || 0, 0), CONSUMO_MAX_ITEMS - 1);
+      syncConsumoPanelFromState();
+    };
+
+    window.duplicarConsumoActivoEnVacios = function() {
+      const active = cloneData(consumoItems[consumoActiveIndex] || createConsumoItem());
+      consumoItems = consumoItems.map((item, index) => {
+        if (index === consumoActiveIndex) return item;
+        const calc = getConsumoItemCalculations(item);
+        const empty = !(item.nombre && item.nombre.trim()) && calc.precioNormal === 0 && calc.descuentoMonto === 0;
+        return empty ? cloneData(active) : item;
+      });
+      syncConsumoPanelFromState();
+      updateView();
+      captureStateChange('Producto duplicado en espacios vacios');
+    };
+
+    window.duplicarConsumoActivoEnTodos = function() {
+      const active = cloneData(consumoItems[consumoActiveIndex] || createConsumoItem());
+      consumoItems = Array.from({ length: CONSUMO_MAX_ITEMS }, () => cloneData(active));
+      syncConsumoPanelFromState();
+      updateView();
+      captureStateChange('Producto repetido en los 4 espacios');
+    };
+
+    window.copiarConsumoPrimeroA = function(index) {
+      const targetIndex = Math.min(Math.max(Number(index) || 1, 1), CONSUMO_MAX_ITEMS - 1);
+      consumoItems[targetIndex] = cloneData(consumoItems[0] || createConsumoItem());
+      consumoActiveIndex = targetIndex;
+      syncConsumoPanelFromState();
+      updateView();
+      captureStateChange(`Producto 1 copiado al espacio ${targetIndex + 1}`);
+    };
+
+    window.copiarConsumoPrimeroEnTodos = function() {
+      const first = cloneData(consumoItems[0] || createConsumoItem());
+      consumoItems = Array.from({ length: CONSUMO_MAX_ITEMS }, () => cloneData(first));
+      consumoActiveIndex = 0;
+      syncConsumoPanelFromState();
+      updateView();
+      captureStateChange('Producto 1 copiado en los 4 espacios');
+    };
+
+    window.limpiarConsumoActivo = function() {
+      consumoItems[consumoActiveIndex] = createConsumoItem();
+      syncConsumoPanelFromState();
+      updateView();
+      captureStateChange('Espacio consumo inmediato limpiado');
+    };
+
     function updateFromUI() {
+      if (isConsumoMode()) {
+        updateConsumoFromUI();
+        return;
+      }
       tituloObj.text = document.getElementById("titulo").value;
       tituloObj.fontFamily = document.getElementById("tituloFont").value;
       tituloObj.fontSize = readNumericSelectValue("tituloSize", tituloObj.fontSize);
@@ -5316,7 +5738,7 @@ natural 170 g</textarea>
     window.abrirModalFondo = function(options = {}) {
       const modal = document.getElementById('modalFondo');
       syncModalFondoOptionVisibility(options.showApplyAll !== false);
-      if (modal) modal.style.display = 'block';
+      if (modal) modal.style.display = 'flex';
     };
 
     window.cerrarModalFondo = function() {
@@ -5326,12 +5748,39 @@ natural 170 g</textarea>
 
     window.seleccionarFondo = function(tipo) {
       const nombreArchivo = fondos[tipo];
-      if (!nombreArchivo) return;
+      const esConsumo = tipo === 'consumo';
+      if (!nombreArchivo && !esConsumo) return;
       const applyAllCheckbox = document.getElementById('modalApplyDiscountToAll');
       const aplicarATodas = !!(projectSetupComplete && applyAllCheckbox && applyAllCheckbox.checked);
+
+      if (esConsumo) {
+        fondoActual = tipo;
+        fondoPersonalizado = false;
+        imagenObj = null;
+        consumoItems = normalizeConsumoItems(consumoItems);
+        if (aplicarATodas) {
+          saveCurrentPageState();
+          pages = pages.map((page, index) => {
+            const nextPage = normalizePageState(page, index);
+            nextPage.fondoActual = tipo;
+            nextPage.fondoPersonalizado = false;
+            nextPage.imagenObj = null;
+            return nextPage;
+          });
+        }
+        actualizarInfoDescuento(tipo, { allPages: aplicarATodas });
+        syncLayoutModePanels();
+        updateView();
+        projectSetupComplete = true;
+        cerrarModalFondo();
+        captureStateChange(aplicarATodas ? 'Consumo inmediato aplicado en todas las paginas' : 'Consumo inmediato aplicado');
+        return;
+      }
+
       fondoImg.onload = () => {
         fondoPersonalizado = true;
         fondoActual = tipo;
+        syncLayoutModePanels();
         if (aplicarATodas) {
           saveCurrentPageState();
           pages = pages.map((page, index) => {
@@ -5850,6 +6299,9 @@ natural 170 g</textarea>
     document.getElementById("precioOfertaEntero").addEventListener("input", updateFromUI);
     document.getElementById("precioOfertaCentavos").addEventListener("input", updateFromUI);
     document.getElementById("precioOfertaColor").addEventListener("input", updateFromUI);
+    document.getElementById("consumoNombre").addEventListener("input", updateConsumoFromUI);
+    document.getElementById("consumoPrecioNormal").addEventListener("input", updateConsumoFromUI);
+    document.getElementById("consumoDescuentoMonto").addEventListener("input", updateConsumoFromUI);
     
     window.addEventListener('resize', handleResize);
     viewCanvas.addEventListener("mousedown", onMouseDown);
@@ -5945,16 +6397,16 @@ natural 170 g</textarea>
       panel.className = 'floating-panel floating-panel-left';
       panel.innerHTML = `
         <div class="page-nav-row">
-          <button class="header-tool-btn always-visible icon-only" id="btnPrevPage" type="button" title="Pagina anterior">&#x2039;</button>
+          <button class="header-tool-btn always-visible icon-only" id="btnPrevPage" type="button" title="Pagina anterior"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>
           <div class="page-counter-shell">
             <div id="pagesCounter" class="page-counter">1 / 1</div>
           </div>
-          <button class="header-tool-btn always-visible icon-only" id="btnNextPage" type="button" title="Pagina siguiente">&#x203A;</button>
+          <button class="header-tool-btn always-visible icon-only" id="btnNextPage" type="button" title="Pagina siguiente"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
         </div>
         <div class="page-actions-row">
-          <button class="header-combo-btn page-mini-btn" id="btnAddPage" type="button">+ Nueva</button>
+          <button class="header-combo-btn page-mini-btn" id="btnAddPage" type="button"><i class="fa-solid fa-plus" aria-hidden="true"></i> Nueva</button>
           <button class="header-combo-btn page-mini-btn" id="btnDuplicatePage" type="button">Dup. pagina</button>
-          <button class="header-combo-btn page-mini-btn" id="btnDeletePage" type="button">&#x1F5D1;&#xFE0F; Borrar pagina</button>
+          <button class="header-combo-btn page-mini-btn btn-with-icon" id="btnDeletePage" type="button"><i class="fa-regular fa-trash-can btn-icon" aria-hidden="true"></i><span>Borrar pagina</span></button>
         </div>
         <div id="pagesList" class="pages-list"></div>
         <div id="advancedStatus" class="status-pill">Sistema listo</div>
@@ -6036,7 +6488,9 @@ natural 170 g</textarea>
           producto: { shadow: false, outline: false }
         },
         fondoActual: inheritedFondo,
-        fondoPersonalizado: inheritedPersonalizado,
+        fondoPersonalizado: inheritedFondo === 'consumo' ? false : inheritedPersonalizado,
+        consumoItems: createDefaultConsumoItems(),
+        consumoActiveIndex: 0,
         imagenObj: null
       };
     }
@@ -6059,7 +6513,9 @@ natural 170 g</textarea>
         precioOfertaObj: cloneData(pageState && pageState.precioOfertaObj ? pageState.precioOfertaObj : base.precioOfertaObj),
         currentTextEffect: normalizeTextEffectState(pageState && pageState.currentTextEffect ? pageState.currentTextEffect : base.currentTextEffect),
         fondoActual: pageState && pageState.fondoActual ? pageState.fondoActual : null,
-        fondoPersonalizado: !!(pageState && pageState.fondoPersonalizado),
+        fondoPersonalizado: pageState && pageState.fondoActual === 'consumo' ? false : !!(pageState && pageState.fondoPersonalizado),
+        consumoItems: normalizeConsumoItems(pageState && pageState.consumoItems ? pageState.consumoItems : base.consumoItems),
+        consumoActiveIndex: Math.min(Math.max(Number(pageState && pageState.consumoActiveIndex) || 0, 0), CONSUMO_MAX_ITEMS - 1),
         imagenObj: pageState && pageState.imagenObj ? cloneData(pageState.imagenObj) : null
       };
     }
@@ -6075,6 +6531,8 @@ natural 170 g</textarea>
         currentTextEffect: normalizeTextEffectState(currentTextEffect),
         fondoActual,
         fondoPersonalizado,
+        consumoItems: normalizeConsumoItems(consumoItems),
+        consumoActiveIndex,
         imagenObj: imagenObj ? {
           x: imagenObj.x,
           y: imagenObj.y,
@@ -6362,6 +6820,7 @@ natural 170 g</textarea>
       document.getElementById('precioOfertaEntero').value = precioOfertaObj.entero;
       document.getElementById('precioOfertaCentavos').value = String(precioOfertaObj.centavos).padStart(2, '0');
       document.getElementById('precioOfertaColor').value = precioOfertaObj.color;
+      syncLayoutModePanels();
       renderPagesPanel();
     }
 
@@ -6378,6 +6837,8 @@ natural 170 g</textarea>
         productoObj: cloneData(currentPage.productoObj),
         precioNormalObj: cloneData(currentPage.precioNormalObj),
         precioOfertaObj: cloneData(currentPage.precioOfertaObj),
+        consumoItems: normalizeConsumoItems(currentPage.consumoItems),
+        consumoActiveIndex: currentPage.consumoActiveIndex || 0,
         currentTextEffect: cloneData(currentPage.currentTextEffect),
         fondoActual: currentPage.fondoActual,
         fondoPersonalizado: currentPage.fondoPersonalizado,
@@ -6397,7 +6858,7 @@ natural 170 g</textarea>
 
     window.abrirModalNuevoProyecto = function() {
       const modal = document.getElementById('modalNuevoProyecto');
-      if (modal) modal.style.display = 'block';
+      if (modal) modal.style.display = 'flex';
     };
 
     window.cerrarModalNuevoProyecto = function() {
@@ -6628,9 +7089,9 @@ natural 170 g</textarea>
       if (indicator) {
         indicator.style.display = cropMode ? 'block' : 'none';
         if (message && cropMode) {
-          indicator.innerHTML = `&#x2702;&#xFE0F; ${message}`;
+          indicator.innerHTML = `<i class="fa-solid fa-crop-simple" aria-hidden="true"></i> ${message}`;
         } else if (cropMode) {
-          indicator.innerHTML = '&#x2702;&#xFE0F; RECORTE ACTIVO - Arrastra esquinas, bordes o centro. Pulsa RECORTE o ENTER para aplicar, ESC cancela';
+          indicator.innerHTML = '<i class="fa-solid fa-crop-simple" aria-hidden="true"></i> RECORTE ACTIVO - Arrastra esquinas, bordes o centro. Pulsa RECORTE o ENTER para aplicar, ESC cancela';
         }
       }
     }
@@ -6829,6 +7290,8 @@ natural 170 g</textarea>
       normalizeProductObjectWidth(productoObj);
       precioNormalObj = cloneData(pageState.precioNormalObj);
       precioOfertaObj = cloneData(pageState.precioOfertaObj);
+      consumoItems = normalizeConsumoItems(pageState.consumoItems);
+      consumoActiveIndex = Math.min(Math.max(Number(pageState.consumoActiveIndex) || 0, 0), CONSUMO_MAX_ITEMS - 1);
       currentTextEffect = normalizeTextEffectState(pageState.currentTextEffect || {
         titulo: { shadow: false, outline: false },
         producto: { shadow: false, outline: false }
