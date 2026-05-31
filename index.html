@@ -6177,6 +6177,11 @@ natural 170 g</textarea>
     function onMouseDown(e) {
       e.preventDefault();
       closeCanvasContextMenu();
+      if (isConsumoMode()) {
+        if (activeEditor && e.target !== activeEditor) activeEditor.blur();
+        deseleccionarTodo();
+        return;
+      }
       if (activeEditor && e.target !== activeEditor) {
         activeEditor.blur();
       }
