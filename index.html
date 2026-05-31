@@ -507,12 +507,102 @@
     background-position: center;
   }
 
-  .discount-preview-consumo {
-    background-color: #ff9c7a;
-    background-image: var(--consumo-fondo-src);
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
+  .discount-logo-preview {
+    height: 94px;
+    aspect-ratio: auto;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .discount-logo-preview-mp .mp-logo-mark {
+    width: 112px;
+    height: 70px;
+    border: 8px solid #12108b;
+    border-radius: 50%;
+    background: #18b9eb;
+    color: #12108b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 42px;
+  }
+
+  .discount-logo-preview-dni {
+    background: #25ad4a;
+    color: #ffffff;
+    font-size: 50px;
+  }
+
+  .discount-logo-preview-dni::before,
+  .discount-logo-preview-dni::after {
+    content: '';
+    position: absolute;
+    inset: 16px;
+    border: 7px solid #373737;
+    border-color: #373737 transparent transparent #373737;
+    border-radius: 8px 0 0 0;
+  }
+
+  .discount-logo-preview-dni::after {
+    transform: rotate(180deg);
+  }
+
+  .discount-logo-preview-digital {
+    background: #df70a7;
+  }
+
+  .digital-logo-card {
+    width: 86%;
+    border-radius: 8px;
+    padding: 8px 10px 10px;
+    background: linear-gradient(135deg, #c60b2f, #4b0c18);
+    color: #ffffff;
+    text-align: center;
+    line-height: 1;
+    font-weight: 800;
+  }
+
+  .digital-logo-brand {
+    display: block;
+    font-size: 13px;
+    font-family: Georgia, 'Times New Roman', serif;
+    margin-bottom: 2px;
+  }
+
+  .digital-logo-bank {
+    display: block;
+    font-size: 9px;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+
+  .digital-logo-title {
+    display: block;
+    font-size: 26px;
+    letter-spacing: -0.5px;
+  }
+
+  .discount-logo-preview-consumo {
+    background: #e67700;
+    color: #ffffff;
+    text-align: center;
+    font-weight: 900;
+    line-height: 0.88;
+  }
+
+  .consumo-logo-text {
+    font-size: 28px;
+    letter-spacing: -1px;
+    text-shadow: 0 0 0 #ffffff;
+  }
+
+  .consumo-logo-text small {
+    display: block;
+    font-size: 20px;
   }
 
   .discount-option-label {
@@ -3807,19 +3897,31 @@ natural 170 g</textarea>
     </div>
     <div class="discount-options-row">
       <button class="discount-option" type="button" onclick="seleccionarFondo('dni')">
-        <div class="discount-preview" style="background-image: url('fondodni.jpg');"></div>
+        <div class="discount-preview discount-logo-preview discount-logo-preview-dni" aria-hidden="true">
+          <i class="fa-solid fa-face-smile"></i>
+        </div>
         <span class="discount-option-label">Cuenta DNI <span style="color:#19bd70;">(10% OFF)</span></span>
       </button>
       <button class="discount-option" type="button" onclick="seleccionarFondo('mercadopago')">
-        <div class="discount-preview" style="background-image: url('fondomp.jpg');"></div>
+        <div class="discount-preview discount-logo-preview discount-logo-preview-mp" aria-hidden="true">
+          <span class="mp-logo-mark"><i class="fa-solid fa-handshake"></i></span>
+        </div>
         <span class="discount-option-label">Mercado Pago <span style="color:#fffb00;">(15% OFF)</span></span>
       </button>
       <button class="discount-option" type="button" onclick="seleccionarFondo('carrefour')">
-        <div class="discount-preview" style="background-image: url('fondobanco.jpg');"></div>
+        <div class="discount-preview discount-logo-preview discount-logo-preview-digital" aria-hidden="true">
+          <span class="digital-logo-card">
+            <span class="digital-logo-brand">Carrefour</span>
+            <span class="digital-logo-bank">bank</span>
+            <span class="digital-logo-title">Cuenta Digital</span>
+          </span>
+        </div>
         <span class="discount-option-label">Cuenta Digital <span style="color:#ff195e;">(15% OFF)</span></span>
       </button>
       <button class="discount-option" type="button" onclick="seleccionarFondo('consumo')">
-        <div class="discount-preview discount-preview-consumo"></div>
+        <div class="discount-preview discount-logo-preview discount-logo-preview-consumo" aria-hidden="true">
+          <span class="consumo-logo-text">Consumo<small>inmediato</small></span>
+        </div>
         <span class="discount-option-label">Consumo inmediato</span>
       </button>
     </div>
