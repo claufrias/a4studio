@@ -4812,11 +4812,30 @@ natural 170 g</textarea>
         mainCtx.fillStyle = '#111111';
         mainCtx.textAlign = 'left';
         mainCtx.textBaseline = 'top';
-        mainCtx.font = '500 32px Inter, Arial, sans-serif';
-        drawWrappedConsumoText(mainCtx, item.nombre || 'NOMBRE DEL PRODUCTO', contentX, y + 38, contentW, 38, 2);
+        mainCtx.font = '500 31px Inter, Arial, sans-serif';
+        drawWrappedConsumoText(mainCtx, item.nombre || 'NOMBRE DEL PRODUCTO', contentX, y + 34, contentW, 36, 2);
+
+        const normalLabelY = y + 116;
+        const normalPriceBaseline = y + 158;
+        mainCtx.fillStyle = '#000000';
+        mainCtx.font = '700 12px Inter, Arial, sans-serif';
+        mainCtx.fillText('PRECIO NORMAL', contentX, normalLabelY);
+
+        const normalPriceText = `$${formatPesos(calc.precioNormal)}`;
+        mainCtx.textBaseline = 'alphabetic';
+        mainCtx.fillStyle = '#7f7f7f';
+        mainCtx.font = '700 33px Inter, Arial, sans-serif';
+        mainCtx.fillText(normalPriceText, contentX, normalPriceBaseline);
+        const normalPriceWidth = mainCtx.measureText(normalPriceText).width;
+        mainCtx.strokeStyle = '#7f7f7f';
+        mainCtx.lineWidth = 4;
+        mainCtx.beginPath();
+        mainCtx.moveTo(contentX, normalPriceBaseline - 13);
+        mainCtx.lineTo(contentX + normalPriceWidth, normalPriceBaseline - 13);
+        mainCtx.stroke();
 
         const badgeX = contentX;
-        const badgeY = y + rowH * 0.47;
+        const badgeY = y + 168;
         const badgeW = 118;
         const badgeH = 52;
         drawRoundedRect(mainCtx, badgeX, badgeY, badgeW, badgeH, 8);
@@ -4827,16 +4846,17 @@ natural 170 g</textarea>
         mainCtx.stroke();
         mainCtx.fillStyle = '#111111';
         mainCtx.textAlign = 'center';
+        mainCtx.textBaseline = 'top';
         mainCtx.font = '500 34px Inter, Arial, sans-serif';
-        mainCtx.fillText(`${calc.porcentaje}%`, badgeX + badgeW / 2, badgeY + 8);
+        mainCtx.fillText(`${calc.porcentaje}%`, badgeX + badgeW / 2, badgeY + 7);
         mainCtx.font = '700 11px Inter, Arial, sans-serif';
         mainCtx.fillText('DESCUENTO', badgeX + badgeW / 2, badgeY + 36);
 
         mainCtx.textAlign = 'left';
         mainCtx.textBaseline = 'alphabetic';
         mainCtx.fillStyle = '#000000';
-        mainCtx.font = '500 86px Inter, Arial, sans-serif';
-        mainCtx.fillText(`$${formatPesos(calc.precioFinal)}`, badgeX + badgeW + 28, badgeY + 52);
+        mainCtx.font = '500 88px Inter, Arial, sans-serif';
+        mainCtx.fillText(`$${formatPesos(calc.precioFinal)}`, contentX + 150, y + 205);
       });
       mainCtx.restore();
     }
