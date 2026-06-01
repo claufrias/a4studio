@@ -6354,46 +6354,6 @@ natural 170 g</textarea>
       if (modal) modal.style.display = 'none';
     };
 
-    const standardTips = [
-      '<strong>CLICK</strong> en un objeto para seleccionarlo.',
-      '<strong>CLICK FUERA</strong> para deseleccionar.',
-      '<strong>DOBLE CLIC</strong> en texto o precio normal para editar inline.',
-      '<strong>RUEDA DEL MOUSE PRESIONADA</strong> y mover el mouse para desplazar el canvas.',
-      '<strong>ESC</strong> para deseleccionar o cerrar edición.',
-      '<strong>RECORTAR</strong>: arrastra esquinas, bordes o centro; <strong>SHIFT</strong> mantiene proporción.'
-    ];
-
-    const consumoTips = [
-      'Selecciona el <strong>espacio 1, 2, 3 o 4</strong> antes de editar los datos del producto.',
-      'Carga <strong>nombre, precio normal y monto de descuento</strong>; la app calcula el porcentaje y precio final.',
-      'Usa <strong>Duplicar en vacíos</strong> o <strong>Repetir en 4</strong> para completar la hoja rápido.',
-      'Usa <strong>Copiar espacio actual a</strong> para mandar el producto editado a otro espacio.',
-      '<strong>RUEDA DEL MOUSE PRESIONADA</strong> y mover el mouse desplaza el canvas.'
-    ];
-
-    window.abrirModalConsejos = function() {
-      const modal = document.getElementById('modalConsejos');
-      const title = document.getElementById('tipsModalTitle');
-      const intro = document.getElementById('tipsModalIntro');
-      const list = document.getElementById('tipsModalList');
-      const consumoMode = isConsumoMode();
-      if (title) title.innerHTML = consumoMode
-        ? '<i class="fa-solid fa-basket-shopping" aria-hidden="true"></i> Consejos'
-        : '<i class="fa-regular fa-lightbulb" aria-hidden="true"></i> Consejos';
-      if (intro) intro.textContent = consumoMode
-        ? 'Atajos y flujo recomendado para completar los 4 espacios de la plantilla.'
-        : 'Atajos utiles para mover, editar y recortar elementos del cartel.';
-      if (list) {
-        list.innerHTML = (consumoMode ? consumoTips : standardTips).map((tip) => `<li>${tip}</li>`).join('');
-      }
-      if (modal) modal.style.display = 'flex';
-    };
-
-    window.cerrarModalConsejos = function() {
-      const modal = document.getElementById('modalConsejos');
-      if (modal) modal.style.display = 'none';
-    };
-
     window.seleccionarFondo = function(tipo) {
       const nombreArchivo = fondos[tipo];
       const esConsumo = tipo === 'consumo';
@@ -6472,7 +6432,7 @@ natural 170 g</textarea>
       if (!isFirstLoad) return;
       isFirstLoad = false;
       setTimeout(() => {
-        if (!fondoActual) abrirModalFondo({ showApplyAll: false });
+        if (!fondoActual) abrirModalFondo({ showApplyAll: false, required: true });
       }, 280);
     }
 
