@@ -243,6 +243,58 @@
     border-left: 2px solid #ff9800;
     line-height: 1.3;
   }
+
+  .tips-button {
+    width: 100%;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 152, 0, 0.35);
+    background: rgba(255, 152, 0, 0.1);
+    color: #f6d6a8;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .tips-button:hover {
+    background: rgba(255, 152, 0, 0.18);
+    border-color: rgba(255, 152, 0, 0.6);
+  }
+
+  .tips-modal-content {
+    width: min(520px, 94vw);
+    text-align: left;
+  }
+
+  .tips-modal-content h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .tips-modal-text {
+    color: #cfd7e3;
+    margin: 0 0 14px;
+    line-height: 1.45;
+  }
+
+  .tips-list {
+    margin: 0;
+    padding-left: 20px;
+    color: #e8edf5;
+    line-height: 1.6;
+    font-size: 0.95rem;
+  }
+
+  .tips-list li + li {
+    margin-top: 6px;
+  }
+
+  .tips-list strong {
+    color: #ffca7a;
+  }
   
   .success-msg {
     background: #4caf50;
@@ -3913,17 +3965,10 @@ natural 170 g</textarea>
     </div>
   </div>
 
-<div class="info-box">
-    <i class="fa-regular fa-lightbulb" aria-hidden="true"></i> CONSEJOS:<br>
-    • <strong>CLICK</strong> en objeto &rarr; seleccionar<br>
-    • <strong>CLICK FUERA</strong> &rarr; deseleccionar<br>
-    • <strong>DOBLE CLIC</strong> en texto &rarr; editar<br>
-    • <strong>ESC</strong> &rarr; deseleccionar todo<br>
-    • <strong><i class="fa-solid fa-crop-simple" aria-hidden="true"></i> RECORTAR</strong> &rarr; Arrastra esquinas, bordes o centro<br>
-    • <strong>RECORTAR / ENTER / ESC</strong> &rarr; aplicar o cancelar el recorte<br>
-    • <strong>SHIFT</strong> &rarr; mantener proporción al recortar<br>
-    • Muestra dimensiones y proporción en tiempo real
-  </div>
+  <button class="tips-button btn-with-icon" type="button" onclick="abrirModalConsejos()">
+    <i class="fa-regular fa-lightbulb btn-icon" aria-hidden="true"></i>
+    <span>Consejos</span>
+  </button>
 </div>
 
 <div id="undoPanel" class="floating-panel floating-panel-left floating-panel-top">
@@ -4005,6 +4050,19 @@ natural 170 g</textarea>
   <button class="context-menu-btn btn-with-icon" type="button" onclick="pegarImagenDesdeMenu()"><i class="fa-regular fa-paste btn-icon" aria-hidden="true"></i><span>Pegar imagen</span></button>
   <button id="ctxCropImageBtn" class="context-menu-btn btn-with-icon" type="button" onclick="recortarImagenDesdeMenu()"><i class="fa-solid fa-crop-simple btn-icon" aria-hidden="true"></i><span>Recorte</span></button>
   <button id="ctxDeleteImageBtn" class="context-menu-btn btn-with-icon" type="button" onclick="eliminarImagenDesdeMenu()"><i class="fa-regular fa-trash-can btn-icon" aria-hidden="true"></i><span>Eliminar imagen</span></button>
+</div>
+
+
+<!-- Modal Consejos -->
+<div id="modalConsejos" class="modal">
+  <div class="modal-content tips-modal-content">
+    <h3 id="tipsModalTitle"><i class="fa-regular fa-lightbulb" aria-hidden="true"></i> Consejos</h3>
+    <p id="tipsModalIntro" class="tips-modal-text"></p>
+    <ul id="tipsModalList" class="tips-list"></ul>
+    <div class="modal-buttons" style="margin-top: 18px;">
+      <button class="modal-btn modal-close" type="button" onclick="cerrarModalConsejos()">Cerrar</button>
+    </div>
+  </div>
 </div>
 
 <!-- Modal para seleccionar fondo -->
@@ -6040,6 +6098,47 @@ natural 170 g</textarea>
       if (modal) modal.style.display = 'none';
     };
 
+    const standardTips = [
+      '<strong>CLICK</strong> en un objeto para seleccionarlo.',
+      '<strong>CLICK FUERA</strong> para deseleccionar.',
+      '<strong>DOBLE CLIC</strong> en texto o precio normal para editar inline.',
+      '<strong>RUEDA DEL MOUSE PRESIONADA</strong> y mover el mouse para desplazar el canvas.',
+      '<strong>ESC</strong> para deseleccionar o cerrar edición.',
+      '<strong>RECORTAR</strong>: arrastra esquinas, bordes o centro; <strong>SHIFT</strong> mantiene proporción.'
+    ];
+
+    const consumoTips = [
+      'Selecciona el <strong>espacio 1, 2, 3 o 4</strong> antes de editar los datos del producto.',
+      'Carga <strong>nombre, precio normal y monto de descuento</strong>; la app calcula el porcentaje y precio final.',
+      'Usa <strong>Duplicar en vacíos</strong> o <strong>Repetir en 4</strong> para completar la hoja rápido.',
+      'Usa <strong>Copiar espacio actual a</strong> para mandar el producto editado a otro espacio.',
+      '<strong>RUEDA DEL MOUSE PRESIONADA</strong> y mover el mouse también desplaza el canvas en Consumo inmediato.',
+      'En este modo se bloquean las herramientas de texto/imagen de otras plantillas para evitar cambios accidentales.'
+    ];
+
+    window.abrirModalConsejos = function() {
+      const modal = document.getElementById('modalConsejos');
+      const title = document.getElementById('tipsModalTitle');
+      const intro = document.getElementById('tipsModalIntro');
+      const list = document.getElementById('tipsModalList');
+      const consumoMode = isConsumoMode();
+      if (title) title.innerHTML = consumoMode
+        ? '<i class="fa-solid fa-basket-shopping" aria-hidden="true"></i> Consejos de Consumo inmediato'
+        : '<i class="fa-regular fa-lightbulb" aria-hidden="true"></i> Consejos';
+      if (intro) intro.textContent = consumoMode
+        ? 'Atajos y flujo recomendado para completar los 4 espacios de la plantilla.'
+        : 'Atajos utiles para mover, editar y recortar elementos del cartel.';
+      if (list) {
+        list.innerHTML = (consumoMode ? consumoTips : standardTips).map((tip) => `<li>${tip}</li>`).join('');
+      }
+      if (modal) modal.style.display = 'flex';
+    };
+
+    window.cerrarModalConsejos = function() {
+      const modal = document.getElementById('modalConsejos');
+      if (modal) modal.style.display = 'none';
+    };
+
     window.seleccionarFondo = function(tipo) {
       const nombreArchivo = fondos[tipo];
       const esConsumo = tipo === 'consumo';
@@ -6123,11 +6222,15 @@ natural 170 g</textarea>
     window.onclick = function(event) {
       const modalFondo = document.getElementById('modalFondo');
       const modalNuevoProyecto = document.getElementById('modalNuevoProyecto');
+      const modalConsejos = document.getElementById('modalConsejos');
       if (modalFondo && event.target === modalFondo) {
         cerrarModalFondo();
       }
       if (modalNuevoProyecto && event.target === modalNuevoProyecto) {
         cerrarModalNuevoProyecto();
+      }
+      if (modalConsejos && event.target === modalConsejos) {
+        cerrarModalConsejos();
       }
     };
 
@@ -6313,6 +6416,20 @@ natural 170 g</textarea>
     }
     
     // ========== EVENTOS MOUSE ==========
+    function startCanvasPan(e) {
+      middleMousePressed = true;
+      panning = true;
+      lastPanX = e.clientX;
+      lastPanY = e.clientY;
+      viewCanvas.style.cursor = "grabbing";
+    }
+
+    function stopCanvasPan() {
+      middleMousePressed = false;
+      panning = false;
+      viewCanvas.style.cursor = "default";
+    }
+
     function onMouseDown(e) {
       e.preventDefault();
       closeCanvasContextMenu();
@@ -6321,11 +6438,7 @@ natural 170 g</textarea>
       }
       
       if (e.button === 1) {
-        middleMousePressed = true;
-        panning = true;
-        lastPanX = e.clientX;
-        lastPanY = e.clientY;
-        viewCanvas.style.cursor = "grabbing";
+        startCanvasPan(e);
         return;
       }
 
@@ -6428,7 +6541,16 @@ natural 170 g</textarea>
     }
     
     function onMouseMove(e) {
+      if (!panning && (e.buttons & 4) && e.target === viewCanvas) {
+        startCanvasPan(e);
+        return;
+      }
+
       if (panning && middleMousePressed) {
+        if (typeof e.buttons === 'number' && !(e.buttons & 4)) {
+          stopCanvasPan();
+          return;
+        }
         const dx = e.clientX - lastPanX;
         const dy = e.clientY - lastPanY;
         visualOffsetX += dx / canvasScale;
@@ -6510,10 +6632,8 @@ natural 170 g</textarea>
         commitInteractionHistory('Transformacion aplicada');
       }
       
-      if (e.button === 1) {
-        middleMousePressed = false;
-        panning = false;
-        viewCanvas.style.cursor = "default";
+      if (e.button === 1 || (typeof e.buttons === 'number' && !(e.buttons & 4))) {
+        stopCanvasPan();
       }
     }
     
@@ -6606,6 +6726,9 @@ natural 170 g</textarea>
     window.addEventListener('resize', handleResize);
     viewCanvas.addEventListener("mousedown", onMouseDown);
     viewCanvas.addEventListener("dblclick", onCanvasDoubleClick);
+    viewCanvas.addEventListener("auxclick", (e) => {
+      if (e.button === 1) e.preventDefault();
+    });
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("mouseup", onMouseUp);
     viewCanvas.addEventListener("wheel", onWheel, { passive: false });
