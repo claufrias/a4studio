@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 520" role="img" aria-label="Consumo inmediato">
+  <rect width="640" height="520" rx="24" fill="#df7600"/>
+  <g fill="none" stroke="#fff" stroke-width="18" stroke-linecap="round">
+    <path d="M145 163a190 190 0 0 1 350 0"/>
+    <path d="M497 358a190 190 0 0 1-354 0"/>
+    <circle cx="320" cy="260" r="152" stroke-width="10" opacity="0.95"/>
+  </g>
+  <g fill="#fff" font-family="Inter, Arial Black, Arial, sans-serif" text-anchor="middle">
+    <text x="320" y="122" font-size="34" font-weight="900" letter-spacing="2" transform="rotate(-16 320 122)">PRECIO REDUCIDO</text>
+    <text x="320" y="270" font-size="88" font-weight="900" letter-spacing="-5">Consumo</text>
+    <text x="320" y="352" font-size="70" font-weight="900" letter-spacing="-3">inmediato</text>
+    <text x="320" y="430" font-size="32" font-weight="900" letter-spacing="2" transform="rotate(17 320 430)">PRÓXIMO A VENCER</text>
+  </g>
+  <g fill="#fff">
+    <path d="M300 156h40l-20 19z"/>
+    <path d="M276 170c14-22 37-33 68-33-16 9-25 20-27 33 2 14 11 25 27 34-31 0-54-12-68-34z" opacity="0.95"/>
+  </g>
+</svg>
