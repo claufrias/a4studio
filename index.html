@@ -519,6 +519,8 @@
   #modalFondo .modal-content {
     position: relative;
     width: min(720px, 96vw);
+    max-height: min(94vh, 760px);
+    overflow-y: auto;
     padding: 28px 36px 34px;
     border: 1px solid rgba(91, 142, 214, 0.28);
     border-radius: 28px;
@@ -780,6 +782,103 @@
   .discount-badge-yellow { background: #ffdf1b; color: #07111f; }
   .discount-badge-pink { background: #db2664; }
 
+  .discount-required-note {
+    display: none;
+    position: relative;
+    z-index: 1;
+    margin: 14px 0 0;
+    padding: 9px 12px;
+    border-radius: 12px;
+    background: rgba(255, 223, 27, 0.12);
+    color: #ffe58a;
+    border: 1px solid rgba(255, 223, 27, 0.25);
+    font-size: 0.82rem;
+    font-weight: 800;
+  }
+
+  #modalFondo.required-selection .discount-required-note {
+    display: block;
+  }
+
+  #modalFondo.required-selection .discount-modal-close {
+    display: none;
+  }
+
+  .discount-modal-footer {
+    position: relative;
+    z-index: 1;
+    margin: 16px 0 0;
+    color: #7587a0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .new-project-modal {
+    position: relative;
+    width: min(460px, 94vw);
+    padding: 26px;
+    border: 1px solid rgba(255, 152, 0, 0.26);
+    background:
+      radial-gradient(circle at 15% 0%, rgba(255, 152, 0, 0.18), transparent 34%),
+      linear-gradient(180deg, #202733 0%, #111923 100%);
+    box-shadow: 0 24px 70px rgba(0,0,0,0.55);
+  }
+
+  .new-project-icon {
+    width: 54px;
+    height: 54px;
+    margin: 0 auto 12px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #ffb347, #ff7a18);
+    color: #1a1a1f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    box-shadow: 0 14px 30px rgba(255, 152, 0, 0.28);
+  }
+
+  .new-project-modal h3 {
+    margin: 0 0 8px;
+    color: #ffffff;
+    font-size: 1.35rem;
+  }
+
+  .new-project-modal p {
+    margin: 0;
+    color: #c4cfdd;
+    line-height: 1.45;
+  }
+
+  .new-project-note {
+    margin: 14px 0 0;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: rgba(255, 152, 0, 0.1);
+    color: #ffd28f;
+    border: 1px solid rgba(255, 152, 0, 0.22);
+    font-size: 0.86rem;
+    font-weight: 700;
+  }
+
+  .new-project-modal .modal-buttons {
+    margin-top: 18px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .new-project-modal .modal-btn {
+    min-height: 44px;
+  }
+
+  .new-project-modal .modal-close {
+    border-color: rgba(255,255,255,0.14);
+    background: rgba(255,255,255,0.06);
+    color: #dce5f0;
+  }
+
   #modalFondo .modal-btn {
     margin: 0;
     font-size: 1rem;
@@ -787,12 +886,116 @@
   }
 
   @media (max-width: 680px) {
+    .modal {
+      padding: 10px;
+    }
+
     #modalFondo .modal-content {
-      padding: 24px 14px 22px;
-      width: min(96vw, 420px);
+      width: min(98vw, 430px);
+      max-height: 96dvh;
+      padding: 18px 12px 16px;
+      border-radius: 20px;
+    }
+
+    .discount-modal-close {
+      width: 36px;
+      height: 36px;
+      top: 10px;
+      right: 10px;
+    }
+
+    .discount-modal-icon {
+      width: 42px;
+      height: 42px;
+      margin-bottom: 6px;
+      border-radius: 13px;
+      font-size: 1.25rem;
+    }
+
+    #modalFondo .modal-content h3 {
+      font-size: 1.45rem;
+      padding: 0 34px;
+    }
+
+    .discount-modal-subtitle {
+      margin-bottom: 14px;
+      font-size: 0.86rem;
     }
 
     .discount-options-row {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .discount-option {
+      min-height: 148px;
+      border-radius: 15px;
+    }
+
+    .discount-preview {
+      height: 94px;
+    }
+
+    .discount-preview::before,
+    .discount-preview::after {
+      height: 56px;
+      bottom: -26px;
+    }
+
+    .discount-preview::after {
+      bottom: -36px;
+    }
+
+    .discount-logo-preview img,
+    .discount-option-consumo .discount-logo-preview img,
+    .discount-option-carrefour .discount-logo-preview img {
+      max-width: 58%;
+      max-height: 64px;
+      border-radius: 8px;
+    }
+
+    .discount-option-label {
+      min-height: 52px;
+      padding: 9px 8px;
+      gap: 6px;
+      font-size: 0.78rem;
+    }
+
+    .discount-option-name {
+      gap: 6px;
+    }
+
+    .discount-option-name i {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+    }
+
+    .discount-badge {
+      padding: 5px 6px;
+      border-radius: 8px;
+      font-size: 0.66rem;
+    }
+
+    .discount-option[aria-pressed="true"]::after {
+      width: 28px;
+      height: 28px;
+      top: 10px;
+      right: 10px;
+    }
+
+    .discount-modal-footer {
+      margin-top: 10px;
+      font-size: 0.64rem;
+    }
+
+    .new-project-modal {
+      padding: 22px 16px;
+      border-radius: 18px;
+    }
+
+    .new-project-modal .modal-buttons {
       grid-template-columns: 1fr;
     }
   }
@@ -4014,7 +4217,7 @@ natural 170 g</textarea>
     </div>
     <button class="header-combo-btn btn-with-icon" type="button" onclick="eliminarImagen()"><i class="fa-regular fa-trash-can btn-icon" aria-hidden="true"></i><span>Eliminar imagen</span></button>
     <div class="image-search-label image-search-subtitle">Google Imagenes</div>
-    <input id="googleImageSearchInput" class="image-search-field" type="text" placeholder="Buscar producto, marca o packshot">
+    <input id="googleImageSearchInput" class="image-search-field" type="text" placeholder="Escribe qué imagen quieres buscar (ej: packshot Coca Cola 2L)">
     <div class="image-search-actions">
       <button class="header-combo-btn btn-with-icon" type="button" onclick="abrirBusquedaGoogleImagenes()"><i class="fa-solid fa-magnifying-glass btn-icon" aria-hidden="true"></i><span>Buscar en Google</span></button>
       <button class="header-combo-btn btn-with-icon" type="button" onclick="usarNombreProductoEnBusqueda()"><i class="fa-solid fa-tag btn-icon" aria-hidden="true"></i><span>Usar producto</span></button>
@@ -4115,16 +4318,20 @@ natural 170 g</textarea>
         </span>
       </button>
     </div>
+    <div class="discount-required-note"><i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i> Para comenzar, selecciona una plantilla de descuento.</div>
+    <div class="discount-modal-footer">Desarrollado por Claudio Frias, 2026.</div>
   </div>
 </div>
 
 <div id="modalNuevoProyecto" class="modal">
-  <div class="modal-content">
-    <h3><i class="fa-solid fa-file-circle-plus" aria-hidden="true"></i> Crear proyecto nuevo</h3>
-    <p style="color: #aaa; margin-bottom: 15px;">Se limpiara el proyecto actual y se iniciara uno nuevo desde cero.</p>
+  <div class="modal-content new-project-modal">
+    <div class="new-project-icon" aria-hidden="true"><i class="fa-solid fa-file-circle-plus"></i></div>
+    <h3>Crear proyecto nuevo</h3>
+    <p>Se limpiará el proyecto actual y se iniciará uno nuevo desde cero.</p>
+    <div class="new-project-note"><i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i> Luego deberás elegir una plantilla de descuento para continuar.</div>
     <div class="modal-buttons">
-      <button class="modal-btn" onclick="confirmarNuevoProyecto()">Continuar</button>
-      <button class="modal-btn modal-close" onclick="cerrarModalNuevoProyecto()">Cancelar</button>
+      <button class="modal-btn" type="button" onclick="confirmarNuevoProyecto()">Crear y elegir plantilla</button>
+      <button class="modal-btn modal-close" type="button" onclick="cerrarModalNuevoProyecto()">Cancelar</button>
     </div>
   </div>
 </div>
@@ -4287,6 +4494,7 @@ natural 170 g</textarea>
     let fondoPersonalizado = false;
     let fondoActual = null;
     let projectSetupComplete = false;
+    let discountSelectionRequired = false;
     let pages = [];
     let currentPageIndex = 0;
     let pageSequence = 1;
@@ -6088,13 +6296,61 @@ natural 170 g</textarea>
 
     window.abrirModalFondo = function(options = {}) {
       const modal = document.getElementById('modalFondo');
+      discountSelectionRequired = !!options.required;
       syncModalFondoOptionVisibility(options.showApplyAll !== false);
       syncDiscountOptionSelection();
-      if (modal) modal.style.display = 'flex';
+      if (modal) {
+        modal.classList.toggle('required-selection', discountSelectionRequired);
+        modal.style.display = 'flex';
+      }
     };
 
     window.cerrarModalFondo = function() {
+      if (discountSelectionRequired) return;
       const modal = document.getElementById('modalFondo');
+      if (modal) {
+        modal.classList.remove('required-selection');
+        modal.style.display = 'none';
+      }
+    };
+
+    const standardTips = [
+      '<strong>CLICK</strong> en un objeto para seleccionarlo.',
+      '<strong>CLICK FUERA</strong> para deseleccionar.',
+      '<strong>DOBLE CLIC</strong> en texto o precio normal para editar inline.',
+      '<strong>RUEDA DEL MOUSE PRESIONADA</strong> y mover el mouse para desplazar el canvas.',
+      '<strong>ESC</strong> para deseleccionar o cerrar edición.',
+      '<strong>RECORTAR</strong>: arrastra esquinas, bordes o centro; <strong>SHIFT</strong> mantiene proporción.'
+    ];
+
+    const consumoTips = [
+      'Selecciona el <strong>espacio 1, 2, 3 o 4</strong> antes de editar los datos del producto.',
+      'Carga <strong>nombre, precio normal y monto de descuento</strong>; la app calcula el porcentaje y precio final.',
+      'Usa <strong>Duplicar en vacíos</strong> o <strong>Repetir en 4</strong> para completar la hoja rápido.',
+      'Usa <strong>Copiar espacio actual a</strong> para mandar el producto editado a otro espacio.',
+      '<strong>RUEDA DEL MOUSE PRESIONADA</strong> y mover el mouse desplaza el canvas.'
+    ];
+
+    window.abrirModalConsejos = function() {
+      const modal = document.getElementById('modalConsejos');
+      const title = document.getElementById('tipsModalTitle');
+      const intro = document.getElementById('tipsModalIntro');
+      const list = document.getElementById('tipsModalList');
+      const consumoMode = isConsumoMode();
+      if (title) title.innerHTML = consumoMode
+        ? '<i class="fa-solid fa-basket-shopping" aria-hidden="true"></i> Consejos'
+        : '<i class="fa-regular fa-lightbulb" aria-hidden="true"></i> Consejos';
+      if (intro) intro.textContent = consumoMode
+        ? 'Atajos y flujo recomendado para completar los 4 espacios de la plantilla.'
+        : 'Atajos utiles para mover, editar y recortar elementos del cartel.';
+      if (list) {
+        list.innerHTML = (consumoMode ? consumoTips : standardTips).map((tip) => `<li>${tip}</li>`).join('');
+      }
+      if (modal) modal.style.display = 'flex';
+    };
+
+    window.cerrarModalConsejos = function() {
+      const modal = document.getElementById('modalConsejos');
       if (modal) modal.style.display = 'none';
     };
 
@@ -6144,6 +6400,8 @@ natural 170 g</textarea>
       if (!nombreArchivo && !esConsumo) return;
       const applyAllCheckbox = document.getElementById('modalApplyDiscountToAll');
       const aplicarATodas = !!(projectSetupComplete && applyAllCheckbox && applyAllCheckbox.checked);
+      discountSelectionRequired = false;
+      document.getElementById('modalFondo')?.classList.remove('required-selection');
 
       if (esConsumo) {
         fondoActual = tipo;
@@ -7326,7 +7584,7 @@ natural 170 g</textarea>
         historyStatusMessage: 'Nuevo proyecto listo',
         onComplete: () => {
           setTimeout(() => {
-            window.abrirModalFondo({ showApplyAll: false });
+            window.abrirModalFondo({ showApplyAll: false, required: true });
           }, 120);
         }
       });
