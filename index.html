@@ -5051,6 +5051,66 @@ natural 170 g</textarea>
             this.handle = null;
             return this.rect;
         }
+
+        getApplyButtonRect() {
+            if (!this.active || !this.rect) return null;
+            const width = 156;
+            const height = 34;
+            const gap = 12;
+            const margin = 8;
+            const { x, y, w } = this.rect;
+            const buttonX = Math.max(margin, Math.min(x + (w / 2) - (width / 2), this.canvasW - width - margin));
+            let buttonY = y - height - gap;
+            if (buttonY < margin) {
+                buttonY = Math.min(y + gap, this.canvasH - height - margin);
+            }
+            return { x: buttonX, y: buttonY, w: width, h: height };
+        }
+
+        isPointInApplyButton(mouseX, mouseY) {
+            const btn = this.getApplyButtonRect();
+            if (!btn) return false;
+            return mouseX >= btn.x && mouseX <= btn.x + btn.w && mouseY >= btn.y && mouseY <= btn.y + btn.h;
+        }
+
+        drawRoundedRectPath(ctx, x, y, w, h, r) {
+            const radius = Math.max(0, Math.min(r, w / 2, h / 2));
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + w - radius, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+            ctx.lineTo(x + w, y + h - radius);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
+            ctx.lineTo(x + radius, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+        }
+
+        drawApplyButton(ctx) {
+            const btn = this.getApplyButtonRect();
+            if (!btn) return;
+
+            ctx.save();
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.32)';
+            ctx.shadowBlur = 12;
+            ctx.shadowOffsetY = 4;
+            this.drawRoundedRectPath(ctx, btn.x, btn.y, btn.w, btn.h, 10);
+            ctx.fillStyle = '#ff9800';
+            ctx.fill();
+            ctx.shadowColor = 'transparent';
+            ctx.lineWidth = 1.5;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.72)';
+            ctx.stroke();
+
+            ctx.fillStyle = '#111827';
+            ctx.font = '700 13px "Inter", "Segoe UI", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('Aplicar recorte', btn.x + btn.w / 2, btn.y + btn.h / 2 + 0.5);
+            ctx.restore();
+        }
         
         draw(ctx) {
             if (!this.active) return;
@@ -5137,6 +5197,8 @@ natural 170 g</textarea>
             ctx.fillStyle = '#cccccc';
             ctx.font = '10px monospace';
             ctx.fillText(` (${(w / h).toFixed(2)})`, x + 95, y + 22);
+
+            this.drawApplyButton(ctx);
             
             ctx.restore();
         }
@@ -7026,6 +7088,11 @@ natural 170 g</textarea>
       const { canvasX, canvasY } = screenToCanvasCoords(e.clientX, e.clientY);
       
       if (cropMode && imagenObj) {
+        if (cropTool.isPointInApplyButton(canvasX, canvasY)) {
+          window.aplicarCropFinal();
+          return;
+        }
+
         const handle = cropTool.detectHandle(canvasX, canvasY);
         if (handle) {
           cropTool.startDrag(handle, canvasX, canvasY);
@@ -7146,7 +7213,9 @@ natural 170 g</textarea>
       }
 
       if (cropMode && imagenObj) {
-        viewCanvas.style.cursor = getCropCursor(cropTool.detectHandle(canvasX, canvasY));
+        viewCanvas.style.cursor = cropTool.isPointInApplyButton(canvasX, canvasY)
+          ? 'pointer'
+          : getCropCursor(cropTool.detectHandle(canvasX, canvasY));
       } else if (!dragging && !resizing && !panning) {
         viewCanvas.style.cursor = "default";
       }
