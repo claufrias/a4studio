@@ -5054,9 +5054,9 @@ natural 170 g</textarea>
 
         getApplyButtonRect() {
             if (!this.active || !this.rect) return null;
-            const width = 156;
-            const height = 34;
-            const gap = 12;
+            const width = 186;
+            const height = 42;
+            const gap = 14;
             const margin = 8;
             const { x, y, w } = this.rect;
             const buttonX = Math.max(margin, Math.min(x + (w / 2) - (width / 2), this.canvasW - width - margin));
@@ -5096,7 +5096,7 @@ natural 170 g</textarea>
             ctx.shadowColor = 'rgba(0, 0, 0, 0.32)';
             ctx.shadowBlur = 12;
             ctx.shadowOffsetY = 4;
-            this.drawRoundedRectPath(ctx, btn.x, btn.y, btn.w, btn.h, 10);
+            this.drawRoundedRectPath(ctx, btn.x, btn.y, btn.w, btn.h, 12);
             ctx.fillStyle = '#ff9800';
             ctx.fill();
             ctx.shadowColor = 'transparent';
@@ -5105,7 +5105,7 @@ natural 170 g</textarea>
             ctx.stroke();
 
             ctx.fillStyle = '#111827';
-            ctx.font = '700 13px "Inter", "Segoe UI", sans-serif';
+            ctx.font = '800 15px "Inter", "Segoe UI", sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText('Aplicar recorte', btn.x + btn.w / 2, btn.y + btn.h / 2 + 0.5);
