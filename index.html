@@ -6112,8 +6112,7 @@ natural 170 g</textarea>
       'Carga <strong>nombre, precio normal y monto de descuento</strong>; la app calcula el porcentaje y precio final.',
       'Usa <strong>Duplicar en vacíos</strong> o <strong>Repetir en 4</strong> para completar la hoja rápido.',
       'Usa <strong>Copiar espacio actual a</strong> para mandar el producto editado a otro espacio.',
-      '<strong>RUEDA DEL MOUSE PRESIONADA</strong> y mover el mouse también desplaza el canvas en Consumo inmediato.',
-      'En este modo se bloquean las herramientas de texto/imagen de otras plantillas para evitar cambios accidentales.'
+      '<strong>RUEDA DEL MOUSE PRESIONADA</strong> y mover el mouse desplaza el canvas.'
     ];
 
     window.abrirModalConsejos = function() {
@@ -6123,7 +6122,7 @@ natural 170 g</textarea>
       const list = document.getElementById('tipsModalList');
       const consumoMode = isConsumoMode();
       if (title) title.innerHTML = consumoMode
-        ? '<i class="fa-solid fa-basket-shopping" aria-hidden="true"></i> Consejos de Consumo inmediato'
+        ? '<i class="fa-solid fa-basket-shopping" aria-hidden="true"></i> Consejos'
         : '<i class="fa-regular fa-lightbulb" aria-hidden="true"></i> Consejos';
       if (intro) intro.textContent = consumoMode
         ? 'Atajos y flujo recomendado para completar los 4 espacios de la plantilla.'
