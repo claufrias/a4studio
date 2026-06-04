@@ -929,6 +929,7 @@ natural 170 g</textarea>
     let resizeStartState = null;
     let lastPointerType = 'mouse';
     let activeTouchId = null;
+    let ignoreMouseEventsUntil = 0;
     
     let activeEditor = null;
     let activeEditorMeta = null;
@@ -1257,12 +1258,13 @@ natural 170 g</textarea>
     }
 
     function getResizeHandleVisualSize() {
-      return Math.max(8, Math.min(22, 12 / getCanvasInteractionScale()));
+      const screenSize = lastPointerType === 'touch' ? 16 : 12;
+      return screenSize / getCanvasInteractionScale();
     }
 
     function getResizeHitRadius() {
-      const minScreenRadius = lastPointerType === 'touch' ? 24 : 14;
-      return Math.max(10, minScreenRadius / getCanvasInteractionScale());
+      const minScreenRadius = lastPointerType === 'touch' ? 28 : 16;
+      return minScreenRadius / getCanvasInteractionScale();
     }
 
     function drawResizeHandles(x, y, w, h) {
@@ -1602,8 +1604,6 @@ natural 170 g</textarea>
     }
     
     function updateView() {
-      drawToMainCanvas();
-      
       const container = document.getElementById('canvas-container');
       const containerRect = container.getBoundingClientRect();
       
@@ -1614,9 +1614,10 @@ natural 170 g</textarea>
       canvasOffsetX = (containerRect.width - CANVAS_W * canvasScale) / 2;
       canvasOffsetY = (containerRect.height - CANVAS_H * canvasScale) / 2;
       
-      viewCtx.clearRect(0, 0, viewCanvas.width, viewCanvas.height);
       viewCanvas.width = containerRect.width;
       viewCanvas.height = containerRect.height;
+      viewCtx.clearRect(0, 0, viewCanvas.width, viewCanvas.height);
+      drawToMainCanvas();
       
       viewCtx.save();
       viewCtx.translate(canvasOffsetX + visualOffsetX * canvasScale, canvasOffsetY + visualOffsetY * canvasScale);
@@ -2763,6 +2764,10 @@ natural 170 g</textarea>
 
     function onMouseDown(e) {
       lastPointerType = e.pointerType || e.inputType || 'mouse';
+      if (lastPointerType === 'mouse' && Date.now() < ignoreMouseEventsUntil) {
+        e.preventDefault();
+        return;
+      }
       e.preventDefault();
       closeCanvasContextMenu();
       if (isConsumoMode()) {
@@ -3009,6 +3014,7 @@ natural 170 g</textarea>
 
     function onTouchStart(e) {
       if (!e.changedTouches || !e.changedTouches.length || activeTouchId !== null) return;
+      ignoreMouseEventsUntil = Date.now() + 700;
       lastPointerType = 'touch';
       const touch = e.changedTouches[0];
       activeTouchId = touch.identifier;
@@ -3030,6 +3036,7 @@ natural 170 g</textarea>
       lastPointerType = 'touch';
       onMouseUp(buildTouchMouseEvent(e, touch, 0, 0));
       activeTouchId = null;
+      ignoreMouseEventsUntil = Date.now() + 700;
     }
 
     function onTouchCancel(e) {
@@ -3042,6 +3049,7 @@ natural 170 g</textarea>
       resizeHandle = null;
       resizeStartRect = null;
       resizeStartState = null;
+      ignoreMouseEventsUntil = Date.now() + 700;
     }
 
     function onWheel(e) {
@@ -3133,9 +3141,9 @@ natural 170 g</textarea>
     window.addEventListener('resize', handleResize);
     viewCanvas.addEventListener("mousedown", onMouseDown);
     viewCanvas.addEventListener("touchstart", onTouchStart, { passive: false });
-    viewCanvas.addEventListener("touchmove", onTouchMove, { passive: false });
-    viewCanvas.addEventListener("touchend", onTouchEnd, { passive: false });
-    viewCanvas.addEventListener("touchcancel", onTouchCancel, { passive: false });
+    window.addEventListener("touchmove", onTouchMove, { passive: false });
+    window.addEventListener("touchend", onTouchEnd, { passive: false });
+    window.addEventListener("touchcancel", onTouchCancel, { passive: false });
     viewCanvas.addEventListener("dblclick", onCanvasDoubleClick);
     viewCanvas.addEventListener("auxclick", (e) => {
       if (e.button === 1) e.preventDefault();
