@@ -308,10 +308,10 @@ button:disabled {
   max-height: 100%;
   width: auto;
   height: auto;
-  background: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.22);
-  border-radius: 14px;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
   cursor: grab;
 }
 #viewCanvas:active {
@@ -1401,11 +1401,10 @@ select:focus-visible {
 }
 
 #viewCanvas {
-  border: 1px solid rgba(34, 50, 75, 0.2);
-  border-radius: 20px;
-  box-shadow:
-    0 34px 88px rgba(17, 25, 40, 0.28),
-    0 3px 0 rgba(255, 255, 255, 0.72) inset;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .floating-panel,
