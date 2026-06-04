@@ -1,9 +1,11 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
-<title>A4 Studio</title>
+<title>A4 Studio | Editor visual de carteles</title>
+<meta name="description" content="Editor visual para crear, editar, guardar e imprimir carteles A4 promocionales.">
+<meta name="theme-color" content="#08111f">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -27,19 +29,19 @@
 </div>
 
 <div id="mobileBottomDock">
-  <button class="mobile-dock-btn" type="button" onclick="toggleMobileSidebar()">
+  <button class="mobile-dock-btn" type="button" data-mobile-panel="mobile-panel-open" aria-label="Abrir panel de edición" onclick="toggleMobileSidebar()">
     <span class="icon">Aa</span>
     <span>Editar</span>
   </button>
-  <button class="mobile-dock-btn" type="button" onclick="toggleMobileImagePanel()">
+  <button class="mobile-dock-btn" type="button" data-mobile-panel="mobile-image-open" aria-label="Abrir herramientas de imagen" onclick="toggleMobileImagePanel()">
     <span class="icon"><i class="fa-regular fa-image" aria-hidden="true"></i></span>
     <span>Imagen</span>
   </button>
-  <button class="mobile-dock-btn" type="button" onclick="toggleMobilePagesPanel()">
+  <button class="mobile-dock-btn" type="button" data-mobile-panel="mobile-pages-open" aria-label="Abrir páginas" onclick="toggleMobilePagesPanel()">
     <span class="icon"><i class="fa-solid fa-table-cells-large" aria-hidden="true"></i></span>
     <span>Páginas</span>
   </button>
-  <button class="mobile-dock-btn" type="button" onclick="toggleMobileActionsPanel()">
+  <button class="mobile-dock-btn" type="button" data-mobile-panel="mobile-actions-open" aria-label="Abrir acciones de proyecto" onclick="toggleMobileActionsPanel()">
     <span class="icon"><i class="fa-solid fa-ellipsis" aria-hidden="true"></i></span>
     <span>Proyecto</span>
   </button>
@@ -353,12 +355,27 @@ natural 170 g</textarea>
       document.body.classList.toggle('mobile-ui', mobile);
       if (!mobile) {
         document.body.classList.remove('mobile-panel-open', 'mobile-image-open', 'mobile-pages-open', 'mobile-actions-open', 'mobile-sheet-open');
+        document.querySelectorAll('[data-mobile-panel]').forEach((button) => {
+          button.classList.remove('active');
+          button.setAttribute('aria-pressed', 'false');
+        });
       }
       return mobile;
     }
 
+    function setMobileDockActive(targetClass, isOpen) {
+      document.querySelectorAll('[data-mobile-panel]').forEach((button) => {
+        const active = isOpen && button.dataset.mobilePanel === targetClass;
+        button.classList.toggle('active', active);
+        button.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+    }
+
     function setMobileSheetState(targetClass, forceOpen) {
-      if (!syncMobileUiMode()) return false;
+      if (!syncMobileUiMode()) {
+        setMobileDockActive(targetClass, false);
+        return false;
+      }
       const sheetClasses = ['mobile-panel-open', 'mobile-image-open', 'mobile-pages-open', 'mobile-actions-open'];
       const shouldOpen = typeof forceOpen === 'boolean'
         ? forceOpen
@@ -368,6 +385,7 @@ natural 170 g</textarea>
       if (shouldOpen) {
         document.body.classList.add(targetClass, 'mobile-sheet-open');
       }
+      setMobileDockActive(targetClass, shouldOpen);
       requestAnimationFrame(layoutFloatingPanels);
       return shouldOpen;
     }
@@ -390,6 +408,7 @@ natural 170 g</textarea>
 
     window.closeMobileTransientPanels = function() {
       document.body.classList.remove('mobile-panel-open', 'mobile-image-open', 'mobile-pages-open', 'mobile-actions-open', 'mobile-sheet-open');
+      setMobileDockActive('', false);
       requestAnimationFrame(layoutFloatingPanels);
     };
     
@@ -977,14 +996,19 @@ natural 170 g</textarea>
       const infoDiv = document.getElementById('descuentoInfo');
       if (!infoDiv) return;
       if (tipoFondo === 'consumo') {
-        const alcanceConsumo = options.allPages ? ' en todas las paginas' : '';
+        const alcanceConsumo = options.allPages ? ' en todas las páginas' : '';
         infoDiv.innerHTML = `Fondo actual: ${getNombreFondo(tipoFondo)}${alcanceConsumo}`;
         infoDiv.style.background = "#51351f";
         infoDiv.style.color = "#fff0e5";
         return;
       }
-      if (porcentaje <= 0) return;
-      const alcance = options.allPages ? ' en todas las paginas' : '';
+      if (porcentaje <= 0) {
+        infoDiv.innerHTML = '<i class="fa-solid fa-circle-info" aria-hidden="true"></i> Sin descuento aplicado';
+        infoDiv.style.background = '#121923';
+        infoDiv.style.color = '#9fb3ca';
+        return;
+      }
+      const alcance = options.allPages ? ' en todas las páginas' : '';
       infoDiv.innerHTML = `Fondo actual: ${getNombreFondo(tipoFondo)} - ${porcentaje}% de descuento aplicado${alcance}`;
       infoDiv.style.background = "#223551";
       infoDiv.style.color = "#e9f1ff";
@@ -1011,7 +1035,7 @@ natural 170 g</textarea>
       document.getElementById("precioOfertaCentavos").value = precioNormalObj.centavos;
       
       const infoDiv = document.getElementById('descuentoInfo');
-      infoDiv.innerHTML = `??? Sin descuento aplicado`;
+      infoDiv.innerHTML = `<i class="fa-solid fa-circle-info" aria-hidden="true"></i> Sin descuento aplicado`;
       infoDiv.style.background = "#121923";
       infoDiv.style.color = "#9fb3ca";
       
@@ -4546,7 +4570,7 @@ natural 170 g</textarea>
       if (e.key === 'Escape') closeHeaderMenus();
       if (mod && e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) window.rehacerCambio(); else window.deshacerCambio(); return; }
       if (mod && e.key.toLowerCase() === 'y') { e.preventDefault(); window.rehacerCambio(); return; }
-      if (mod && e.key.toLowerCase() === 's') { e.preventDefault(); return; }
+      if (mod && e.key.toLowerCase() === 's') { e.preventDefault(); window.guardarDisenoEnArchivo(); return; }
       if (isConsumoMode()) return;
       if (!writing && (e.key === 'Enter' || e.key === 'F2') && (selected === 'titulo' || selected === 'producto' || selected === 'precioNormal')) {
         e.preventDefault();
