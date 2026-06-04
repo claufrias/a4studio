@@ -927,6 +927,9 @@ natural 170 g</textarea>
     let objStartX = 0, objStartY = 0;
     let resizeStartRect = null;
     let resizeStartState = null;
+    let lastPointerType = 'mouse';
+    let activeTouchId = null;
+    let ignoreMouseEventsUntil = 0;
     
     let activeEditor = null;
     let activeEditorMeta = null;
@@ -1250,8 +1253,22 @@ natural 170 g</textarea>
       mainCtx.restore();
     }
 
+    function getCanvasInteractionScale() {
+      return Math.max(0.001, canvasScale * visualZoom);
+    }
+
+    function getResizeHandleVisualSize() {
+      const screenSize = lastPointerType === 'touch' ? 16 : 12;
+      return screenSize / getCanvasInteractionScale();
+    }
+
+    function getResizeHitRadius() {
+      const minScreenRadius = lastPointerType === 'touch' ? 28 : 16;
+      return minScreenRadius / getCanvasInteractionScale();
+    }
+
     function drawResizeHandles(x, y, w, h) {
-      const handleSize = 8;
+      const handleSize = getResizeHandleVisualSize();
       const handles = [
         { x: x, y: y },
         { x: x + w/2, y: y },
@@ -1587,8 +1604,6 @@ natural 170 g</textarea>
     }
     
     function updateView() {
-      drawToMainCanvas();
-      
       const container = document.getElementById('canvas-container');
       const containerRect = container.getBoundingClientRect();
       
@@ -1599,9 +1614,10 @@ natural 170 g</textarea>
       canvasOffsetX = (containerRect.width - CANVAS_W * canvasScale) / 2;
       canvasOffsetY = (containerRect.height - CANVAS_H * canvasScale) / 2;
       
-      viewCtx.clearRect(0, 0, viewCanvas.width, viewCanvas.height);
       viewCanvas.width = containerRect.width;
       viewCanvas.height = containerRect.height;
+      viewCtx.clearRect(0, 0, viewCanvas.width, viewCanvas.height);
+      drawToMainCanvas();
       
       viewCtx.save();
       viewCtx.translate(canvasOffsetX + visualOffsetX * canvasScale, canvasOffsetY + visualOffsetY * canvasScale);
@@ -2575,7 +2591,7 @@ natural 170 g</textarea>
       const bounds = getBoundsForType(type);
       if (!bounds) return null;
 
-      const handleSize = 10;
+      const handleSize = getResizeHitRadius();
       const handles = [
         { key: 'nw', x: bounds.x, y: bounds.y },
         { key: 'n', x: bounds.x + bounds.w / 2, y: bounds.y },
@@ -2618,6 +2634,25 @@ natural 170 g</textarea>
       }
 
       return { x: left, y: top, w: right - left, h: bottom - top };
+    }
+
+    function getResizeCursor(handle) {
+      switch (handle) {
+        case 'nw':
+        case 'se':
+          return 'nwse-resize';
+        case 'ne':
+        case 'sw':
+          return 'nesw-resize';
+        case 'n':
+        case 's':
+          return 'ns-resize';
+        case 'w':
+        case 'e':
+          return 'ew-resize';
+        default:
+          return 'default';
+      }
     }
 
     function resizeObject(type, handle, dx, dy, startRect) {
@@ -2728,6 +2763,11 @@ natural 170 g</textarea>
     }
 
     function onMouseDown(e) {
+      lastPointerType = e.pointerType || e.inputType || 'mouse';
+      if (lastPointerType === 'mouse' && Date.now() < ignoreMouseEventsUntil) {
+        e.preventDefault();
+        return;
+      }
       e.preventDefault();
       closeCanvasContextMenu();
       if (isConsumoMode()) {
@@ -2779,6 +2819,7 @@ natural 170 g</textarea>
           beginInteractionHistory();
           resizing = true;
           resizeHandle = handle;
+          viewCanvas.style.cursor = getResizeCursor(handle);
           dragStartWorldX = canvasX;
           dragStartWorldY = canvasY;
           
@@ -2890,7 +2931,8 @@ natural 170 g</textarea>
           ? 'pointer'
           : getCropCursor(cropTool.detectHandle(canvasX, canvasY));
       } else if (!dragging && !resizing && !panning) {
-        viewCanvas.style.cursor = "default";
+        const hoverHandle = selected ? getResizeHandle(selected, canvasX, canvasY) : null;
+        viewCanvas.style.cursor = hoverHandle ? getResizeCursor(hoverHandle) : "default";
       }
       
       if (resizing && selected && resizeStartRect) {
@@ -2951,6 +2993,65 @@ natural 170 g</textarea>
       }
     }
     
+    function getTouchById(touchList, touchId) {
+      for (let i = 0; i < touchList.length; i += 1) {
+        if (touchList[i].identifier === touchId) return touchList[i];
+      }
+      return null;
+    }
+
+    function buildTouchMouseEvent(e, touch, button = 0, buttons = 1) {
+      return {
+        clientX: touch.clientX,
+        clientY: touch.clientY,
+        button,
+        buttons,
+        target: viewCanvas,
+        inputType: 'touch',
+        preventDefault: () => e.preventDefault()
+      };
+    }
+
+    function onTouchStart(e) {
+      if (!e.changedTouches || !e.changedTouches.length || activeTouchId !== null) return;
+      ignoreMouseEventsUntil = Date.now() + 700;
+      lastPointerType = 'touch';
+      const touch = e.changedTouches[0];
+      activeTouchId = touch.identifier;
+      onMouseDown(buildTouchMouseEvent(e, touch, 0, 1));
+    }
+
+    function onTouchMove(e) {
+      if (activeTouchId === null) return;
+      const touch = getTouchById(e.changedTouches, activeTouchId) || getTouchById(e.touches, activeTouchId);
+      if (!touch) return;
+      lastPointerType = 'touch';
+      onMouseMove(buildTouchMouseEvent(e, touch, 0, 1));
+    }
+
+    function onTouchEnd(e) {
+      if (activeTouchId === null) return;
+      const touch = getTouchById(e.changedTouches, activeTouchId);
+      if (!touch) return;
+      lastPointerType = 'touch';
+      onMouseUp(buildTouchMouseEvent(e, touch, 0, 0));
+      activeTouchId = null;
+      ignoreMouseEventsUntil = Date.now() + 700;
+    }
+
+    function onTouchCancel(e) {
+      if (activeTouchId === null) return;
+      const touch = getTouchById(e.changedTouches, activeTouchId) || (e.changedTouches && e.changedTouches[0]);
+      if (touch) onMouseUp(buildTouchMouseEvent(e, touch, 0, 0));
+      activeTouchId = null;
+      dragging = false;
+      resizing = false;
+      resizeHandle = null;
+      resizeStartRect = null;
+      resizeStartState = null;
+      ignoreMouseEventsUntil = Date.now() + 700;
+    }
+
     function onWheel(e) {
       e.preventDefault();
       
@@ -3039,6 +3140,10 @@ natural 170 g</textarea>
     
     window.addEventListener('resize', handleResize);
     viewCanvas.addEventListener("mousedown", onMouseDown);
+    viewCanvas.addEventListener("touchstart", onTouchStart, { passive: false });
+    window.addEventListener("touchmove", onTouchMove, { passive: false });
+    window.addEventListener("touchend", onTouchEnd, { passive: false });
+    window.addEventListener("touchcancel", onTouchCancel, { passive: false });
     viewCanvas.addEventListener("dblclick", onCanvasDoubleClick);
     viewCanvas.addEventListener("auxclick", (e) => {
       if (e.button === 1) e.preventDefault();
