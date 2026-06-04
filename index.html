@@ -576,7 +576,7 @@ natural 170 g</textarea>
         detectHandle(mouseX, mouseY) {
             if (!this.active) return null;
             
-            const margin = 12;
+            const margin = getCropHitRadius();
             const { x, y, w, h } = this.rect;
             
             if (Math.hypot(mouseX - x, mouseY - y) < margin) return 'nw';
@@ -838,7 +838,7 @@ natural 170 g</textarea>
                 ctx.setLineDash([]);
             }
             
-            const handleSize = 12;
+            const handleSize = getCropHandleVisualSize();
             const handles = [
                 { x: x, y: y }, { x: x + w, y: y }, { x: x, y: y + h }, { x: x + w, y: y + h },
                 { x: x + w / 2, y: y }, { x: x + w / 2, y: y + h }, { x: x, y: y + h / 2 }, { x: x + w, y: y + h / 2 }
@@ -1264,6 +1264,16 @@ natural 170 g</textarea>
 
     function getResizeHitRadius() {
       const minScreenRadius = lastPointerType === 'touch' ? 28 : 16;
+      return minScreenRadius / getCanvasInteractionScale();
+    }
+
+    function getCropHandleVisualSize() {
+      const screenSize = lastPointerType === 'touch' ? 18 : 14;
+      return screenSize / getCanvasInteractionScale();
+    }
+
+    function getCropHitRadius() {
+      const minScreenRadius = lastPointerType === 'touch' ? 32 : 18;
       return minScreenRadius / getCanvasInteractionScale();
     }
 
@@ -2612,6 +2622,20 @@ natural 170 g</textarea>
       return null;
     }
     
+    function isCornerResizeHandle(handle) {
+      return handle === 'nw' || handle === 'ne' || handle === 'sw' || handle === 'se';
+    }
+
+    function normalizeRectFromEdges(left, top, right, bottom, minSize = 24) {
+      if (right < left) [left, right] = [right, left];
+      if (bottom < top) [top, bottom] = [bottom, top];
+
+      if (right - left < minSize) right = left + minSize;
+      if (bottom - top < minSize) bottom = top + minSize;
+
+      return { x: left, y: top, w: right - left, h: bottom - top };
+    }
+
     function buildResizedRect(handle, startRect, dx, dy) {
       let left = startRect.x;
       let top = startRect.y;
@@ -2633,7 +2657,52 @@ natural 170 g</textarea>
         else bottom = top + minSize;
       }
 
-      return { x: left, y: top, w: right - left, h: bottom - top };
+      return normalizeRectFromEdges(left, top, right, bottom, minSize);
+    }
+
+    function buildProportionalCornerRect(handle, startRect, dx, dy, minSize = 24) {
+      if (!isCornerResizeHandle(handle) || !startRect.w || !startRect.h) {
+        return buildResizedRect(handle, startRect, dx, dy);
+      }
+
+      const left = startRect.x;
+      const top = startRect.y;
+      const right = startRect.x + startRect.w;
+      const bottom = startRect.y + startRect.h;
+      const anchorX = handle.includes('w') ? right : left;
+      const anchorY = handle.includes('n') ? bottom : top;
+      const startVectorX = handle.includes('w') ? -startRect.w : startRect.w;
+      const startVectorY = handle.includes('n') ? -startRect.h : startRect.h;
+      const currentVectorX = startVectorX + dx;
+      const currentVectorY = startVectorY + dy;
+      const scaleX = currentVectorX / startVectorX;
+      const scaleY = currentVectorY / startVectorY;
+      const dominantScale = Math.abs(scaleX - 1) >= Math.abs(scaleY - 1) ? scaleX : scaleY;
+      const minScale = Math.max(minSize / Math.max(startRect.w, 1), minSize / Math.max(startRect.h, 1));
+      const scale = Math.max(minScale, dominantScale);
+      const movingX = anchorX + (startVectorX * scale);
+      const movingY = anchorY + (startVectorY * scale);
+
+      return normalizeRectFromEdges(anchorX, anchorY, movingX, movingY, minSize);
+    }
+
+    function getResizeCursor(handle) {
+      switch (handle) {
+        case 'nw':
+        case 'se':
+          return 'nwse-resize';
+        case 'ne':
+        case 'sw':
+          return 'nesw-resize';
+        case 'n':
+        case 's':
+          return 'ns-resize';
+        case 'w':
+        case 'e':
+          return 'ew-resize';
+        default:
+          return 'default';
+      }
     }
 
     function getResizeCursor(handle) {
@@ -2658,16 +2727,27 @@ natural 170 g</textarea>
     function resizeObject(type, handle, dx, dy, startRect) {
       if (!resizeStartState) return;
 
-      const rect = buildResizedRect(handle, startRect, dx, dy);
+      const useProportionalCorner = isCornerResizeHandle(handle);
+      const rect = useProportionalCorner
+        ? buildProportionalCornerRect(handle, startRect, dx, dy, type === 'img' ? 40 : 24)
+        : buildResizedRect(handle, startRect, dx, dy);
       const horizontalActive = handle.includes("w") || handle.includes("e");
       const verticalActive = handle.includes("n") || handle.includes("s");
 
-      const alignTextVertically = (target) => {
+      const alignTextBounds = (target) => {
         const bounds = getTextBounds(target);
+
+        if (handle.includes("w")) {
+          target.x += rect.x - bounds.x;
+        } else if (handle.includes("e")) {
+          target.x += (rect.x + rect.w) - (bounds.x + bounds.w);
+        }
+
+        const nextBounds = getTextBounds(target);
         if (handle.includes("n")) {
-          target.y += rect.y - bounds.y;
+          target.y += rect.y - nextBounds.y;
         } else if (handle.includes("s")) {
-          target.y += (rect.y + rect.h) - (bounds.y + bounds.h);
+          target.y += (rect.y + rect.h) - (nextBounds.y + nextBounds.h);
         }
       };
 
@@ -2693,14 +2773,12 @@ natural 170 g</textarea>
         const widthScale = rect.w / Math.max(startRect.w, 1);
         const heightScale = rect.h / Math.max(startRect.h, 1);
 
-        target.x = horizontalActive ? rect.x : base.x;
+        target.x = base.x;
         target.width = horizontalActive ? Math.max(80, Math.round(base.width * widthScale)) : base.width;
         target.fontSize = verticalActive ? Math.max(12, Math.round(base.fontSize * heightScale)) : base.fontSize;
         target.y = base.y;
 
-        alignTextVertically(target);
-        applySnap(target);
-        constrainObjectToZone(type);
+        alignTextBounds(target);
       } else if (type === "precioNormal" || type === "precioOferta") {
         const target = type === "precioNormal" ? precioNormalObj : precioOfertaObj;
         const base = resizeStartState;
@@ -2715,15 +2793,11 @@ natural 170 g</textarea>
         target.fontSize = verticalActive ? Math.max(18, Math.round(base.fontSize * heightScale)) : base.fontSize;
 
         alignPriceBounds(target, isNormal);
-        applySnap(target);
-        constrainObjectToZone(type);
       } else if (type === "img" && imagenObj) {
         imagenObj.x = rect.x;
         imagenObj.y = rect.y;
         imagenObj.w = Math.max(40, rect.w);
         imagenObj.h = Math.max(40, rect.h);
-        applySnap(imagenObj);
-        constrainObjectToZone('img');
       }
 
       updateView();
@@ -2945,27 +3019,22 @@ natural 170 g</textarea>
           tituloObj.x = objStartX + dx;
           tituloObj.y = objStartY + dy;
           applySnap(tituloObj);
-          constrainObjectToZone('titulo');
         } else if (selected === "producto") {
           productoObj.x = objStartX + dx;
           productoObj.y = objStartY + dy;
           applySnap(productoObj);
-          constrainObjectToZone('producto');
         } else if (selected === "precioNormal") {
           precioNormalObj.x = objStartX + dx;
           precioNormalObj.y = objStartY + dy;
           applySnap(precioNormalObj);
-          constrainObjectToZone('precioNormal');
         } else if (selected === "precioOferta") {
           precioOfertaObj.x = objStartX + dx;
           precioOfertaObj.y = objStartY + dy;
           applySnap(precioOfertaObj);
-          constrainObjectToZone('precioOferta');
         } else if (selected === "img" && imagenObj) {
           imagenObj.x = objStartX + dx;
           imagenObj.y = objStartY + dy;
           applySnap(imagenObj);
-          constrainObjectToZone('img');
         }
         updateView();
       }
