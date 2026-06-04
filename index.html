@@ -4583,7 +4583,7 @@ natural 170 g</textarea>
     <div class="image-search-label">Imagen</div>
     <div class="image-panel-dual-actions">
       <button class="header-combo-btn btn-with-icon" type="button" onclick="cargarImagen()"><i class="fa-regular fa-image btn-icon" aria-hidden="true"></i><span>Agregar</span></button>
-      <button class="header-combo-btn btn-with-icon" type="button" onclick="pegarImagen()"><i class="fa-regular fa-paste btn-icon" aria-hidden="true"></i><span>Pegar imagen copiada</span></button>
+      <button class="header-combo-btn btn-with-icon" type="button" onclick="pegarImagen()"><i class="fa-regular fa-paste btn-icon" aria-hidden="true"></i><span>Pegar</span></button>
     </div>
     <div class="image-panel-dual-actions">
       <button id="cropToggleBtn" onclick="toggleCropMode()" class="header-combo-btn btn-with-icon" type="button"><i class="fa-solid fa-crop-simple btn-icon" aria-hidden="true"></i><span>Recorte</span></button>
@@ -4595,18 +4595,6 @@ natural 170 g</textarea>
     <div class="image-search-actions">
       <button class="header-combo-btn btn-with-icon" type="button" onclick="abrirBusquedaGoogleImagenes()"><i class="fa-solid fa-magnifying-glass btn-icon" aria-hidden="true"></i><span>Buscar imagen en Google</span></button>
       <button class="header-combo-btn btn-with-icon" type="button" onclick="usarNombreProductoEnBusqueda()"><i class="fa-solid fa-tag btn-icon" aria-hidden="true"></i><span>Usar producto</span></button>
-    </div>
-    <div class="image-search-chip-row">
-      <button class="image-search-chip" type="button" onclick="aplicarSugerenciaBusquedaImagen('packshot')">packshot</button>
-      <button class="image-search-chip" type="button" onclick="aplicarSugerenciaBusquedaImagen('png')">png</button>
-      <button class="image-search-chip" type="button" onclick="aplicarSugerenciaBusquedaImagen('sin fondo')">sin fondo</button>
-    </div>
-    <div class="image-search-note">
-      <strong>Cómo agregar imágenes:</strong><br>
-      1. Tocá Buscar imagen en Google.<br>
-      2. En Google: clic derecho sobre la imagen → Copiar imagen.<br>
-      3. Volvé acá y tocá Pegar imagen copiada.<br>
-      <strong>No copies enlaces.</strong> También podés pegar con Ctrl+V o arrastrar un archivo al cartel.
     </div>
     <button class="image-search-chip image-help-btn" type="button" onclick="abrirModalConsejos('imagenes')">¿Cómo copio una imagen?</button>
     <div id="cropIndicator" style="display: none;" class="crop-status">
@@ -4631,7 +4619,7 @@ natural 170 g</textarea>
 </div>
 
 <div id="canvasContextMenu">
-  <button class="context-menu-btn btn-with-icon" type="button" onclick="pegarImagenDesdeMenu()"><i class="fa-regular fa-paste btn-icon" aria-hidden="true"></i><span>Pegar imagen copiada</span></button>
+  <button class="context-menu-btn btn-with-icon" type="button" onclick="pegarImagenDesdeMenu()"><i class="fa-regular fa-paste btn-icon" aria-hidden="true"></i><span>Pegar</span></button>
   <button id="ctxCropImageBtn" class="context-menu-btn btn-with-icon" type="button" onclick="recortarImagenDesdeMenu()"><i class="fa-solid fa-crop-simple btn-icon" aria-hidden="true"></i><span>Recorte</span></button>
   <button id="ctxDeleteImageBtn" class="context-menu-btn btn-with-icon" type="button" onclick="eliminarImagenDesdeMenu()"><i class="fa-regular fa-trash-can btn-icon" aria-hidden="true"></i><span>Eliminar imagen</span></button>
 </div>
@@ -6763,13 +6751,13 @@ natural 170 g</textarea>
       'Hacé <strong>clic derecho</strong> sobre la imagen.',
       'Elegí <strong>Copiar imagen</strong>.',
       'Volvé a <strong>A4 Studio</strong>.',
-      'Tocá <strong>Pegar imagen copiada</strong> o presioná <strong>Ctrl+V</strong>.',
+      'Tocá <strong>Pegar</strong> o presioná <strong>Ctrl+V</strong>.',
       '<strong>Importante:</strong> no uses Copiar enlace ni Copiar dirección de imagen. Debe ser <strong>Copiar imagen</strong>.',
       '<strong>Si no funciona:</strong> descargá la imagen y usá <strong>Agregar</strong>.'
     ];
 
     const standardTips = [
-      '<strong>IMÁGENES:</strong> buscá en Google, copiá la imagen y tocá Pegar imagen copiada.',
+      '<strong>IMÁGENES:</strong> buscá en Google, copiá la imagen y tocá Pegar.',
       '<strong>CLICK</strong> en un objeto para seleccionarlo.',
       '<strong>CLICK FUERA</strong> para deseleccionar.',
       '<strong>DOBLE CLIC</strong> en texto o precio normal para editar inline.',
@@ -7723,7 +7711,7 @@ natural 170 g</textarea>
       input.value = query;
       const searchUrl = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query)}`;
       window.open(searchUrl, '_blank', 'noopener');
-      setImageSearchStatus('Google Imágenes se abrió en otra pestaña. Copiá una imagen, no el enlace. Luego volvé y tocá Pegar imagen copiada.');
+      setImageSearchStatus('Google Imágenes se abrió en otra pestaña. Copiá una imagen, no el enlace. Luego volvé y tocá Pegar.');
     };
 
     function syncFloatingPanelViewportMode() {
