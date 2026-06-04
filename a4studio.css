@@ -1503,42 +1503,14 @@ body.mobile-ui #mobileBottomDock {
   z-index: 0;
 }
 
-/* Keep compact floating action buttons visually centered and aligned. */
-.header-action-bar .header-combo-btn,
-.page-actions-row .header-combo-btn,
-.image-search-actions .header-combo-btn,
-#canvasContextMenu .context-menu-btn {
+/* Canvas interaction layer: keep DOM hit-testing coordinates identical to the
+   internal canvas coordinates used by updateView/screenToCanvasCoords. */
+#canvas-container > #viewCanvas {
+  position: absolute;
+  inset: 0;
+  display: block;
   width: 100%;
-}
-
-.header-action-bar .header-combo-btn,
-.page-actions-row .header-combo-btn,
-.image-search-actions .header-combo-btn {
-  justify-content: center;
-  text-align: center;
-}
-
-.header-action-bar .btn-with-icon,
-.page-actions-row .btn-with-icon,
-.image-search-actions .btn-with-icon {
-  display: flex;
-  align-items: center;
-}
-
-.header-action-bar .btn-icon,
-.page-actions-row .btn-icon,
-.image-search-actions .btn-icon {
-  flex: 0 0 16px;
-}
-
-.page-mini-btn {
-  justify-content: center;
-  text-align: center;
-}
-
-.status-pill,
-.header-menu-status,
-.image-search-status,
-.crop-status {
-  text-align: center;
+  height: 100%;
+  max-width: none;
+  max-height: none;
 }
