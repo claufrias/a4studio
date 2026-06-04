@@ -6384,6 +6384,140 @@
     flex-shrink: 0;
   }
 
+
+  /* Definitive modal/layout guard: modals must always own the viewport and hide floating tools behind them. */
+  body.modal-open > :not(.modal):not(script) {
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+
+  body.modal-open .floating-panel,
+  body.modal-open #panel,
+  body.modal-open #canvas-container,
+  body.modal-open #mobileTopBar,
+  body.modal-open #mobileBottomDock,
+  body.modal-open #mobileUiScrim,
+  body.modal-open #canvasContextMenu {
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+
+  body.modal-open .modal {
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+
+  .modal {
+    position: fixed !important;
+    inset: 0 !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+    z-index: 10000 !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: clamp(8px, 2vw, 24px) !important;
+    overflow: auto !important;
+    box-sizing: border-box !important;
+    background: rgba(3, 8, 15, 0.72) !important;
+  }
+
+  .modal[style*="display: flex"],
+  .modal[style*="display:flex"] {
+    display: flex !important;
+  }
+
+  .modal-content {
+    margin: auto !important;
+    box-sizing: border-box !important;
+    max-width: calc(100vw - 24px) !important;
+    max-height: calc(100dvh - 24px) !important;
+    overflow: auto !important;
+  }
+
+  #modalFondo .discount-modal-content {
+    width: min(620px, calc(100vw - 24px)) !important;
+    max-width: calc(100vw - 24px) !important;
+    max-height: calc(100dvh - 24px) !important;
+    padding: 14px 18px 16px !important;
+    border-radius: 20px !important;
+  }
+
+  #modalFondo .discount-options-row {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  #modalFondo .discount-option {
+    min-height: 132px !important;
+    border-radius: 14px !important;
+  }
+
+  #modalFondo .discount-preview {
+    height: 82px !important;
+  }
+
+  #modalFondo .discount-logo-preview img,
+  #modalFondo .discount-option-consumo .discount-logo-preview img,
+  #modalFondo .discount-option-carrefour .discount-logo-preview img {
+    max-width: 54% !important;
+    max-height: 56px !important;
+    border-radius: 8px !important;
+  }
+
+  #modalFondo .discount-option-label {
+    min-height: 48px !important;
+    padding: 8px 9px !important;
+    gap: 6px !important;
+    font-size: 0.9rem !important;
+  }
+
+  @media (max-width: 560px), (max-height: 720px) {
+    #modalFondo .discount-modal-content {
+      width: min(520px, calc(100vw - 16px)) !important;
+      max-height: calc(100dvh - 16px) !important;
+      padding: 10px 12px 12px !important;
+      border-radius: 16px !important;
+    }
+
+    #modalFondo .discount-modal-icon {
+      display: none !important;
+    }
+
+    #modalFondo .discount-modal-subtitle {
+      margin: 4px 0 8px !important;
+      font-size: 0.78rem !important;
+    }
+
+    #modalFondo .discount-option {
+      min-height: 104px !important;
+    }
+
+    #modalFondo .discount-preview {
+      height: 60px !important;
+    }
+
+    #modalFondo .discount-logo-preview img,
+    #modalFondo .discount-option-consumo .discount-logo-preview img,
+    #modalFondo .discount-option-carrefour .discount-logo-preview img {
+      max-height: 42px !important;
+    }
+
+    #modalFondo .discount-option-label {
+      min-height: 38px !important;
+      padding: 6px 7px !important;
+      font-size: 0.72rem !important;
+    }
+  }
+
+  @media (max-width: 420px) {
+    #modalFondo .discount-options-row {
+      grid-template-columns: 1fr !important;
+    }
+  }
+
 </style>
 </head>
 <body>
@@ -8723,6 +8857,34 @@ natural 170 g</textarea>
       updateView(); 
     };
 
+    function refreshModalOpenState() {
+      const hasOpenModal = Array.from(document.querySelectorAll('.modal')).some((modal) => {
+        return modal.style.display !== 'none' && window.getComputedStyle(modal).display !== 'none';
+      });
+      document.body.classList.toggle('modal-open', hasOpenModal);
+    }
+
+    function bindModalStateObserver() {
+      document.querySelectorAll('.modal').forEach((modal) => {
+        if (modal.dataset.modalObserverBound === 'true') return;
+        modal.dataset.modalObserverBound = 'true';
+        new MutationObserver(refreshModalOpenState).observe(modal, { attributes: true, attributeFilter: ['style', 'class'] });
+      });
+      refreshModalOpenState();
+    }
+
+    function showModalElement(modal) {
+      if (!modal) return;
+      modal.style.display = 'flex';
+      refreshModalOpenState();
+    }
+
+    function hideModalElement(modal) {
+      if (!modal) return;
+      modal.style.display = 'none';
+      refreshModalOpenState();
+    }
+
     function syncModalFondoOptionVisibility(showApplyAll = true) {
       const option = document.getElementById('modalApplyAllOption');
       const checkbox = document.getElementById('modalApplyDiscountToAll');
@@ -8744,7 +8906,7 @@ natural 170 g</textarea>
       syncDiscountOptionSelection();
       if (modal) {
         modal.classList.toggle('required-selection', discountSelectionRequired);
-        modal.style.display = 'flex';
+        showModalElement(modal);
       }
     };
 
@@ -8753,9 +8915,11 @@ natural 170 g</textarea>
       const modal = document.getElementById('modalFondo');
       if (modal) {
         modal.classList.remove('required-selection');
-        modal.style.display = 'none';
+        hideModalElement(modal);
       }
     };
+
+    bindModalStateObserver();
 
     const imagePasteTips = [
       'Tocá <strong>Buscar imagen en Google</strong>.',
@@ -8808,12 +8972,12 @@ natural 170 g</textarea>
         const tips = imageSection ? imagePasteTips : (consumoMode ? consumoTips : standardTips);
         list.innerHTML = tips.map((tip) => `<li>${tip}</li>`).join('');
       }
-      if (modal) modal.style.display = 'flex';
+      if (modal) showModalElement(modal);
     };
 
     window.cerrarModalConsejos = function() {
       const modal = document.getElementById('modalConsejos');
-      if (modal) modal.style.display = 'none';
+      if (modal) hideModalElement(modal);
     };
 
     window.seleccionarFondo = function(tipo) {
@@ -10005,12 +10169,12 @@ natural 170 g</textarea>
 
     window.abrirModalNuevoProyecto = function() {
       const modal = document.getElementById('modalNuevoProyecto');
-      if (modal) modal.style.display = 'flex';
+      if (modal) showModalElement(modal);
     };
 
     window.cerrarModalNuevoProyecto = function() {
       const modal = document.getElementById('modalNuevoProyecto');
-      if (modal) modal.style.display = 'none';
+      if (modal) hideModalElement(modal);
     };
 
     function ejecutarNuevoProyecto() {
