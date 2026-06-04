@@ -433,32 +433,2870 @@
     flex-shrink: 0;
   }
 
-  .header-tools {
+  @media (max-width: 680px) {
+    .modal {
+      padding: 10px;
+    }
+
+    #modalFondo .modal-content {
+      width: min(98vw, 430px);
+      max-height: 96dvh;
+      padding: 18px 12px 16px;
+      border-radius: 20px;
+    }
+
+    .discount-modal-close {
+      width: 36px;
+      height: 36px;
+      top: 10px;
+      right: 10px;
+    }
+
+    .discount-modal-icon {
+      width: 42px;
+      height: 42px;
+      margin-bottom: 6px;
+      border-radius: 13px;
+      font-size: 1.25rem;
+    }
+
+    #modalFondo .modal-content h3 {
+      font-size: 1.45rem;
+      padding: 0 34px;
+    }
+
+    .discount-modal-subtitle {
+      margin-bottom: 14px;
+      font-size: 0.86rem;
+    }
+
+    .discount-options-row {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .discount-option {
+      min-height: 148px;
+      border-radius: 15px;
+    }
+
+    .discount-preview {
+      height: 94px;
+    }
+
+    .discount-preview::before,
+    .discount-preview::after {
+      height: 56px;
+      bottom: -26px;
+    }
+
+    .discount-preview::after {
+      bottom: -36px;
+    }
+
+  .modal {
     display: none;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    padding: 24px;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    backdrop-filter: blur(5px);
+  }
+
+  .modal-content {
     background: #25252a;
-    padding: 0px 10px;
-    border-radius: 30px;
-    border: 1px solid #ff9800;
+    margin: 0;
+    padding: 20px;
+    border-radius: 16px;
+    width: min(620px, 94vw);
+    max-width: 94%;
+    text-align: center;
+    border: 2px solid #ff9800;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  }
+
+  @media (max-height: 700px) {
+    #modalFondo .modal-content {
+      width: min(560px, 96vw);
+      padding: 10px 14px;
+      border-radius: 16px;
+    }
+
+    .discount-modal-icon {
+      display: none;
+    }
+
+    #modalFondo .modal-content h3 {
+      font-size: 1.22rem;
+      line-height: 1.1;
+    }
+
+    .discount-modal-subtitle {
+      margin: 3px 0 7px;
+      font-size: 0.76rem;
+    }
+
+    #modalFondo .modal-option {
+      margin-bottom: 6px;
+      padding: 6px 8px;
+    }
+
+    .discount-options-row {
+      gap: 6px;
+    }
+
+    .discount-option {
+      min-height: 104px;
+      border-radius: 12px;
+    }
+
+    .discount-preview {
+      height: 60px;
+    }
+
+    .discount-logo-preview img,
+    .discount-option-consumo .discount-logo-preview img,
+    .discount-option-carrefour .discount-logo-preview img {
+      max-height: 42px;
+    }
+
+    .discount-option-label {
+      min-height: 38px;
+      padding: 6px 7px;
+      font-size: 0.72rem;
+    }
+
+    .discount-option-name i {
+      width: 18px;
+      height: 18px;
+      font-size: 0.62rem;
+    }
+
+    .discount-badge {
+      padding: 4px 5px;
+      font-size: 0.58rem;
+    }
+  }
+
+  @media (max-width: 520px) {
+    #modalFondo .modal-content {
+      width: calc(100vw - 16px);
+      max-height: calc(100dvh - 16px);
+    }
+
+    .discount-options-row {
+      grid-template-columns: 1fr;
+    }
+
+    .discount-option {
+      min-height: 112px;
+    }
+  }
+
+  .modal-option {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin: 0 0 14px;
+    padding: 10px 12px;
+    border: 1px solid rgba(255,152,0,0.35);
+    border-radius: 10px;
+    background: rgba(255,152,0,0.08);
+    color: #f2f2f2;
+    font-size: 0.88rem;
+  }
+
+  .consumo-slot-btn {
+    padding: 6px;
+    border-radius: 8px;
+    background: #1b2027;
+    color: #e8edf5;
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+
+  #consumoSlotButtons .consumo-slot-btn.active {
+    background: #ff9800 !important;
+    color: #1a1a1f !important;
+    border-color: #ffc166 !important;
+    box-shadow: 0 0 0 2px rgba(255,152,0,0.28), inset 0 0 0 1px rgba(255,255,255,0.24);
+    transform: translateY(-1px);
+  }
+
+  .consumo-active-indicator {
+    background: rgba(255,152,0,0.12);
+    border: 1px solid rgba(255,152,0,0.35);
+    border-radius: 8px;
+    color: #ffd08a;
+    font-size: 0.68rem;
+    font-weight: 700;
+    margin: -1px 0 7px;
+    padding: 5px 7px;
+    text-align: center;
+  }
+
+  .consumo-actions button {
+    font-size: 0.66rem;
+  }
+
+  #modalFondo .modal-content {
+    position: relative;
+    width: min(720px, 96vw);
+    max-height: min(94vh, 760px);
+    overflow-y: auto;
+    padding: 28px 36px 34px;
+    border: 1px solid rgba(91, 142, 214, 0.28);
+    border-radius: 28px;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(43, 126, 255, 0.28), transparent 34%),
+      radial-gradient(circle at 0% 100%, rgba(28, 88, 154, 0.26), transparent 42%),
+      linear-gradient(145deg, #0a1322 0%, #101d30 48%, #06101d 100%);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255,255,255,0.08);
+    overscroll-behavior: contain;
+  }
+
+  #modalFondo .modal-content::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  #modalFondo .modal-content::-webkit-scrollbar-thumb {
+    background: rgba(174, 202, 255, 0.28);
+    border-radius: 999px;
+  }
+
+  #modalFondo .modal-content::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(115deg, transparent 0 44%, rgba(255,255,255,0.05) 45%, transparent 58%),
+      radial-gradient(circle at 8% 18%, rgba(61, 134, 255, 0.18), transparent 18%);
+  }
+
+  .discount-modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 2;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid rgba(174, 202, 255, 0.22);
+    background: rgba(8, 18, 34, 0.55);
+    color: #ffffff;
+    font-size: 1.25rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
+  }
+
+  .discount-modal-close:hover {
+    background: rgba(38, 74, 126, 0.65);
+    border-color: rgba(174, 202, 255, 0.44);
+  }
+
+  .discount-modal-icon {
+    position: relative;
+    z-index: 1;
+    width: 54px;
+    height: 54px;
+    margin: 0 auto 8px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #1594ff, #1b54ff);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.65rem;
+    box-shadow: 0 12px 28px rgba(24, 113, 255, 0.42);
+    transform: rotate(-10deg);
+  }
+
+  #modalFondo .modal-content h3 {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    color: #ffffff;
+    font-size: clamp(1.75rem, 4vw, 2.15rem);
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+  }
+
+  .discount-modal-subtitle {
+    position: relative;
+    z-index: 1;
+    margin: 8px 0 22px;
+    color: #aab9cc;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  #modalFondo .modal-option {
+    position: relative;
+    z-index: 1;
+    width: fit-content;
+    margin: 0 auto 18px;
+    border-color: rgba(91, 142, 214, 0.28);
+    background: rgba(8, 18, 34, 0.55);
+    color: #dce8f7;
+  }
+
+  .discount-options-row {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .discount-option {
+    position: relative;
+    background: #ffffff;
+    border: 1px solid rgba(118, 164, 232, 0.32);
+    border-radius: 20px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 214px;
+    cursor: pointer;
+    text-align: left;
+    color: #e8edf5;
+    overflow: hidden;
+    box-shadow: 0 16px 36px rgba(0,0,0,0.24);
+    transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .discount-option:hover,
+  .discount-option[aria-pressed="true"] {
+    border-color: #1687ff;
+    box-shadow: 0 0 0 3px rgba(22, 135, 255, 0.35), 0 18px 42px rgba(0,0,0,0.32);
+    transform: translateY(-1px);
+  }
+
+  .discount-option[aria-pressed="true"]::after {
+    content: '\f00c';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #1687ff;
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    box-shadow: 0 8px 18px rgba(22, 135, 255, 0.45);
+    z-index: 3;
+  }
+
+  .discount-option:focus-visible {
+    outline: 3px solid rgba(42, 145, 255, 0.8);
+    outline-offset: 3px;
+  }
+
+  .discount-preview {
+    position: relative;
+    width: 100%;
+    height: 148px;
+    border: 0;
+    border-radius: 0;
+    background: linear-gradient(180deg, #ffffff 0%, #e9f3ff 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .discount-preview::before,
+  .discount-preview::after {
+    content: '';
+    position: absolute;
+    left: -10%;
+    right: -10%;
+    bottom: -36px;
+    height: 88px;
+    border-radius: 50% 50% 0 0;
+    opacity: 0.78;
+    transform: rotate(-5deg);
+  }
+
+  .discount-preview::after {
+    bottom: -52px;
+    opacity: 0.55;
+    transform: rotate(7deg);
+  }
+
+  .discount-option-dni .discount-preview::before,
+  .discount-option-dni .discount-preview::after { background: #73f29d; }
+  .discount-option-mercadopago .discount-preview::before,
+  .discount-option-mercadopago .discount-preview::after { background: #9ac7ff; }
+  .discount-option-carrefour .discount-preview::before,
+  .discount-option-carrefour .discount-preview::after { background: #ff7faf; }
+  .discount-option-consumo .discount-preview::before,
+  .discount-option-consumo .discount-preview::after { background: #d71920; }
+
+  .discount-logo-preview img {
+    position: relative;
+    z-index: 1;
+    display: block;
+    max-width: 48%;
+    max-height: 92px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 12px rgba(0,0,0,0.28));
+  }
+
+  .discount-option-consumo .discount-logo-preview img,
+  .discount-option-carrefour .discount-logo-preview img {
+    max-width: 52%;
+    max-height: 104px;
+    border-radius: 12px;
+  }
+
+  .discount-option-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    min-height: 62px;
+    padding: 12px 14px;
+    background: rgba(4, 16, 30, 0.96);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    color: #ffffff;
+    font-size: 1.26rem;
+    font-weight: 900;
+    line-height: 1.05;
+  }
+
+  .discount-option-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .discount-option-name i {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    font-size: 0.9rem;
+  }
+
+  .discount-option-dni .discount-option-name i { background: #12b568; }
+  .discount-option-mercadopago .discount-option-name i { background: #1687ff; }
+  .discount-option-carrefour .discount-option-name i { background: #f13a65; }
+  .discount-option-consumo .discount-option-name i { background: #d71920; }
+
+  .discount-badge {
+    flex: 0 0 auto;
+    border-radius: 11px;
+    padding: 7px 10px;
+    font-size: 0.9rem;
+    font-weight: 900;
+    color: #ffffff;
+  }
+
+  .discount-badge-green { background: #1fbd68; }
+  .discount-badge-yellow { background: #ffdf1b; color: #07111f; }
+  .discount-badge-pink { background: #db2664; }
+
+  .discount-required-note {
+    display: none;
+    position: relative;
+    z-index: 1;
+    margin: 14px 0 0;
+    padding: 9px 12px;
+    border-radius: 12px;
+    background: rgba(255, 223, 27, 0.12);
+    color: #ffe58a;
+    border: 1px solid rgba(255, 223, 27, 0.25);
+    font-size: 0.82rem;
+    font-weight: 800;
+  }
+
+  #modalFondo.required-selection .discount-required-note {
+    display: block;
+  }
+
+  #modalFondo.required-selection .discount-modal-close {
+    display: none;
+  }
+
+  .discount-modal-footer {
+    position: relative;
+    z-index: 1;
+    margin: 16px 0 0;
+    color: #7587a0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .new-project-modal {
+    position: relative;
+    width: min(460px, 94vw);
+    padding: 26px;
+    border: 1px solid rgba(255, 152, 0, 0.26);
+    background:
+      radial-gradient(circle at 15% 0%, rgba(255, 152, 0, 0.18), transparent 34%),
+      linear-gradient(180deg, #202733 0%, #111923 100%);
+    box-shadow: 0 24px 70px rgba(0,0,0,0.55);
+  }
+
+  .new-project-icon {
+    width: 54px;
+    height: 54px;
+    margin: 0 auto 12px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #ffb347, #ff7a18);
+    color: #1a1a1f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    box-shadow: 0 14px 30px rgba(255, 152, 0, 0.28);
+  }
+
+  .new-project-modal h3 {
+    margin: 0 0 8px;
+    color: #ffffff;
+    font-size: 1.35rem;
+  }
+
+  .new-project-modal p {
+    margin: 0;
+    color: #c4cfdd;
+    line-height: 1.45;
+  }
+
+  .new-project-note {
+    margin: 14px 0 0;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: rgba(255, 152, 0, 0.1);
+    color: #ffd28f;
+    border: 1px solid rgba(255, 152, 0, 0.22);
+    font-size: 0.86rem;
+    font-weight: 700;
+  }
+
+  .new-project-modal .modal-buttons {
+    margin-top: 18px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .new-project-modal .modal-btn {
+    min-height: 44px;
+  }
+
+  .new-project-modal .modal-close {
+    border-color: rgba(255,255,255,0.14);
+    background: rgba(255,255,255,0.06);
+    color: #dce5f0;
+  }
+
+  #modalFondo .modal-btn {
+    margin: 0;
+    font-size: 1rem;
+    padding: 12px 10px;
+  }
+
+  @media (max-height: 820px) {
+    .modal {
+      padding: 10px;
+    }
+
+    #modalFondo .modal-content {
+      width: min(680px, 96vw);
+      max-height: 96dvh;
+      padding: 18px 24px 16px;
+      border-radius: 22px;
+    }
+
+    .discount-modal-close {
+      width: 38px;
+      height: 38px;
+      top: 12px;
+      right: 12px;
+    }
+
+    .discount-modal-icon {
+      width: 42px;
+      height: 42px;
+      margin-bottom: 6px;
+      border-radius: 13px;
+      font-size: 1.25rem;
+    }
+
+    #modalFondo .modal-content h3 {
+      font-size: 1.62rem;
+    }
+
+    .discount-modal-subtitle {
+      margin: 6px 0 12px;
+      font-size: 0.9rem;
+    }
+
+    #modalFondo .modal-option {
+      margin-bottom: 10px;
+      padding: 8px 10px;
+    }
+
+    .discount-options-row {
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .discount-option {
+      min-height: 158px;
+      border-radius: 16px;
+    }
+
+    .discount-preview {
+      height: 102px;
+    }
+
+    .discount-preview::before,
+    .discount-preview::after {
+      height: 62px;
+      bottom: -28px;
+    }
+
+    .discount-preview::after {
+      bottom: -40px;
+    }
+
+    .discount-logo-preview img,
+    .discount-option-consumo .discount-logo-preview img,
+    .discount-option-carrefour .discount-logo-preview img {
+      max-width: 48%;
+      max-height: 72px;
+      border-radius: 9px;
+    }
+
+    .discount-option-label {
+      min-height: 56px;
+      padding: 9px 11px;
+      font-size: 1rem;
+    }
+
+    .discount-badge {
+      padding: 6px 8px;
+      font-size: 0.76rem;
+    }
+
+    .discount-required-note {
+      margin-top: 10px;
+      padding: 8px 10px;
+      font-size: 0.76rem;
+    }
+
+    .discount-modal-footer {
+      margin-top: 10px;
+      font-size: 0.64rem;
+    }
+  }
+
+  @media (max-height: 620px) {
+    #modalFondo .modal-content {
+      padding: 12px 16px;
+    }
+
+    .discount-modal-icon {
+      display: none;
+    }
+
+    #modalFondo .modal-content h3 {
+      font-size: 1.35rem;
+      padding-right: 36px;
+    }
+
+    .discount-modal-subtitle {
+      margin: 4px 0 8px;
+      font-size: 0.8rem;
+    }
+
+    .discount-option {
+      min-height: 126px;
+    }
+
+    .discount-preview {
+      height: 76px;
+    }
+
+    .discount-logo-preview img,
+    .discount-option-consumo .discount-logo-preview img,
+    .discount-option-carrefour .discount-logo-preview img {
+      max-height: 52px;
+    }
+
+    .discount-option-label {
+      min-height: 44px;
+      padding: 7px 9px;
+      font-size: 0.82rem;
+    }
+
+    .discount-option-name i {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+    }
+
+    .discount-badge {
+      padding: 5px 6px;
+      font-size: 0.64rem;
+    }
+  }
+
+  @media (max-width: 680px) {
+    .modal {
+      padding: 10px;
+    }
+
+    #modalFondo .modal-content {
+      width: min(98vw, 430px);
+      max-height: 96dvh;
+      padding: 18px 12px 16px;
+      border-radius: 20px;
+    }
+
+    .discount-modal-close {
+      width: 36px;
+      height: 36px;
+      top: 10px;
+      right: 10px;
+    }
+
+    .discount-modal-icon {
+      width: 42px;
+      height: 42px;
+      margin-bottom: 6px;
+      border-radius: 13px;
+      font-size: 1.25rem;
+    }
+
+    #modalFondo .modal-content h3 {
+      font-size: 1.45rem;
+      padding: 0 34px;
+    }
+
+    .discount-modal-subtitle {
+      margin-bottom: 14px;
+      font-size: 0.86rem;
+    }
+
+    .discount-options-row {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .discount-option {
+      min-height: 148px;
+      border-radius: 15px;
+    }
+
+    .discount-preview {
+      height: 94px;
+    }
+
+    .discount-preview::before,
+    .discount-preview::after {
+      height: 56px;
+      bottom: -26px;
+    }
+
+    .discount-preview::after {
+      bottom: -36px;
+    }
+
+    .discount-logo-preview img,
+    .discount-option-consumo .discount-logo-preview img,
+    .discount-option-carrefour .discount-logo-preview img {
+      max-width: 58%;
+      max-height: 64px;
+      border-radius: 8px;
+    }
+
+    .discount-option-label {
+      min-height: 52px;
+      padding: 9px 8px;
+      gap: 6px;
+      font-size: 0.78rem;
+    }
+
+    .discount-option-name {
+      gap: 6px;
+    }
+
+    .discount-option-name i {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+    }
+
+    .discount-badge {
+      padding: 5px 6px;
+      border-radius: 8px;
+      font-size: 0.66rem;
+    }
+
+    .discount-option[aria-pressed="true"]::after {
+      width: 28px;
+      height: 28px;
+      top: 10px;
+      right: 10px;
+    }
+
+    .discount-modal-footer {
+      margin-top: 10px;
+      font-size: 0.64rem;
+    }
+
+    .new-project-modal {
+      padding: 22px 16px;
+      border-radius: 18px;
+    }
+
+    .new-project-modal .modal-buttons {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 1440px), (max-height: 900px) {
+    #modalFondo .modal-content {
+      width: min(620px, 96vw);
+      max-height: calc(100dvh - 20px);
+      padding: 14px 18px;
+      border-radius: 20px;
+    }
+
+    .discount-modal-close {
+      width: 36px;
+      height: 36px;
+      top: 10px;
+      right: 10px;
+    }
+
+    .discount-modal-icon {
+      width: 38px;
+      height: 38px;
+      margin-bottom: 4px;
+      border-radius: 12px;
+      font-size: 1.1rem;
+    }
+
+    #modalFondo .modal-content h3 {
+      font-size: 1.45rem;
+      padding: 0 34px;
+    }
+
+    .discount-modal-subtitle {
+      margin: 4px 0 10px;
+      font-size: 0.85rem;
+    }
+
+    #modalFondo .modal-option {
+      margin-bottom: 8px;
+      padding: 7px 10px;
+      font-size: 0.76rem;
+    }
+
+    .discount-options-row {
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .discount-option {
+      min-height: 132px;
+      border-radius: 14px;
+    }
+
+    .discount-preview {
+      height: 82px;
+    }
+
+    .discount-preview::before,
+    .discount-preview::after {
+      height: 48px;
+      bottom: -22px;
+    }
+
+    .discount-preview::after {
+      bottom: -31px;
+    }
+
+    .discount-logo-preview img,
+    .discount-option-consumo .discount-logo-preview img,
+    .discount-option-carrefour .discount-logo-preview img {
+      max-width: 54%;
+      max-height: 56px;
+      border-radius: 8px;
+    }
+
+    .discount-option-label {
+      min-height: 48px;
+      padding: 8px 9px;
+      gap: 6px;
+      font-size: 0.9rem;
+    }
+
+    .discount-option-name {
+      gap: 6px;
+    }
+
+    .discount-option-name i {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+    }
+
+    .discount-badge {
+      padding: 5px 6px;
+      border-radius: 8px;
+      font-size: 0.68rem;
+    }
+
+    .discount-option[aria-pressed="true"]::after {
+      width: 26px;
+      height: 26px;
+      top: 9px;
+      right: 9px;
+      font-size: 0.8rem;
+    }
+
+    .discount-required-note {
+      margin-top: 8px;
+      padding: 7px 10px;
+      font-size: 0.72rem;
+    }
+
+    .discount-modal-footer {
+      margin-top: 8px;
+      font-size: 0.6rem;
+    }
+  }
+
+  @media (max-height: 700px) {
+    #modalFondo .modal-content {
+      width: min(560px, 96vw);
+      padding: 10px 14px;
+      border-radius: 16px;
+    }
+
+    .discount-modal-icon {
+      display: none;
+    }
+
+    #modalFondo .modal-content h3 {
+      font-size: 1.22rem;
+      line-height: 1.1;
+    }
+
+    .discount-modal-subtitle {
+      margin: 3px 0 7px;
+      font-size: 0.76rem;
+    }
+
+    #modalFondo .modal-option {
+      margin-bottom: 6px;
+      padding: 6px 8px;
+    }
+
+    .discount-options-row {
+      gap: 6px;
+    }
+
+    .discount-option {
+      min-height: 104px;
+      border-radius: 12px;
+    }
+
+    .discount-preview {
+      height: 60px;
+    }
+
+    .discount-logo-preview img,
+    .discount-option-consumo .discount-logo-preview img,
+    .discount-option-carrefour .discount-logo-preview img {
+      max-height: 42px;
+    }
+
+    .discount-option-label {
+      min-height: 38px;
+      padding: 6px 7px;
+      font-size: 0.72rem;
+    }
+
+    .discount-option-name i {
+      width: 18px;
+      height: 18px;
+      font-size: 0.62rem;
+    }
+
+    .discount-badge {
+      padding: 4px 5px;
+      font-size: 0.58rem;
+    }
+  }
+
+  @media (max-width: 520px) {
+    #modalFondo .modal-content {
+      width: calc(100vw - 16px);
+      max-height: calc(100dvh - 16px);
+    }
+
+    .discount-options-row {
+      grid-template-columns: 1fr;
+    }
+
+    .discount-option {
+      min-height: 112px;
+    }
+  }
+
+  .consumo-slot-row {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+
+  .consumo-slot-btn {
+    padding: 6px;
+    border-radius: 8px;
+    background: #1b2027;
+    color: #e8edf5;
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+
+  #consumoSlotButtons .consumo-slot-btn.active {
+    background: #ff9800 !important;
+    color: #1a1a1f !important;
+    border-color: #ffc166 !important;
+    box-shadow: 0 0 0 2px rgba(255,152,0,0.28), inset 0 0 0 1px rgba(255,255,255,0.24);
+    transform: translateY(-1px);
+  }
+
+  .consumo-active-indicator {
+    background: rgba(255,152,0,0.12);
+    border: 1px solid rgba(255,152,0,0.35);
+    border-radius: 8px;
+    color: #ffd08a;
+    font-size: 0.68rem;
+    font-weight: 700;
+    margin: -1px 0 7px;
+    padding: 5px 7px;
+    text-align: center;
+  }
+
+  .consumo-actions button {
+    font-size: 0.66rem;
+  }
+
+  #modalFondo .modal-content {
+    position: relative;
+    width: min(720px, 96vw);
+    max-height: min(94vh, 760px);
+    overflow-y: auto;
+    padding: 28px 36px 34px;
+    border: 1px solid rgba(91, 142, 214, 0.28);
+    border-radius: 28px;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(43, 126, 255, 0.28), transparent 34%),
+      radial-gradient(circle at 0% 100%, rgba(28, 88, 154, 0.26), transparent 42%),
+      linear-gradient(145deg, #0a1322 0%, #101d30 48%, #06101d 100%);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255,255,255,0.08);
+    overscroll-behavior: contain;
+  }
+
+  #modalFondo .modal-content::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  #modalFondo .modal-content::-webkit-scrollbar-thumb {
+    background: rgba(174, 202, 255, 0.28);
+    border-radius: 999px;
+  }
+
+  #modalFondo .modal-content::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(115deg, transparent 0 44%, rgba(255,255,255,0.05) 45%, transparent 58%),
+      radial-gradient(circle at 8% 18%, rgba(61, 134, 255, 0.18), transparent 18%);
+  }
+
+  .discount-modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 2;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid rgba(174, 202, 255, 0.22);
+    background: rgba(8, 18, 34, 0.55);
+    color: #ffffff;
+    font-size: 1.25rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
+  }
+
+  .discount-modal-close:hover {
+    background: rgba(38, 74, 126, 0.65);
+    border-color: rgba(174, 202, 255, 0.44);
+  }
+
+  .discount-modal-icon {
+    position: relative;
+    z-index: 1;
+    width: 54px;
+    height: 54px;
+    margin: 0 auto 8px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #1594ff, #1b54ff);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.65rem;
+    box-shadow: 0 12px 28px rgba(24, 113, 255, 0.42);
+    transform: rotate(-10deg);
+  }
+
+  #modalFondo .modal-content h3 {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    color: #ffffff;
+    font-size: clamp(1.75rem, 4vw, 2.15rem);
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+  }
+
+  .discount-modal-subtitle {
+    position: relative;
+    z-index: 1;
+    margin: 8px 0 22px;
+    color: #aab9cc;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  #modalFondo .modal-option {
+    position: relative;
+    z-index: 1;
+    width: fit-content;
+    margin: 0 auto 18px;
+    border-color: rgba(91, 142, 214, 0.28);
+    background: rgba(8, 18, 34, 0.55);
+    color: #dce8f7;
+  }
+
+  .discount-options-row {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .discount-option {
+    position: relative;
+    background: #ffffff;
+    border: 1px solid rgba(118, 164, 232, 0.32);
+    border-radius: 20px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 214px;
+    cursor: pointer;
+    text-align: left;
+    color: #e8edf5;
+    overflow: hidden;
+    box-shadow: 0 16px 36px rgba(0,0,0,0.24);
+    transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .discount-option:hover,
+  .discount-option[aria-pressed="true"] {
+    border-color: #1687ff;
+    box-shadow: 0 0 0 3px rgba(22, 135, 255, 0.35), 0 18px 42px rgba(0,0,0,0.32);
+    transform: translateY(-1px);
+  }
+
+  .discount-option[aria-pressed="true"]::after {
+    content: '\f00c';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #1687ff;
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    box-shadow: 0 8px 18px rgba(22, 135, 255, 0.45);
+    z-index: 3;
+  }
+
+  .discount-option:focus-visible {
+    outline: 3px solid rgba(42, 145, 255, 0.8);
+    outline-offset: 3px;
+  }
+
+  .discount-preview {
+    position: relative;
+    width: 100%;
+    height: 148px;
+    border: 0;
+    border-radius: 0;
+    background: linear-gradient(180deg, #ffffff 0%, #e9f3ff 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .discount-preview::before,
+  .discount-preview::after {
+    content: '';
+    position: absolute;
+    left: -10%;
+    right: -10%;
+    bottom: -36px;
+    height: 88px;
+    border-radius: 50% 50% 0 0;
+    opacity: 0.78;
+    transform: rotate(-5deg);
+  }
+
+  .discount-preview::after {
+    bottom: -52px;
+    opacity: 0.55;
+    transform: rotate(7deg);
+  }
+
+  .discount-option-dni .discount-preview::before,
+  .discount-option-dni .discount-preview::after { background: #73f29d; }
+  .discount-option-mercadopago .discount-preview::before,
+  .discount-option-mercadopago .discount-preview::after { background: #9ac7ff; }
+  .discount-option-carrefour .discount-preview::before,
+  .discount-option-carrefour .discount-preview::after { background: #ff7faf; }
+  .discount-option-consumo .discount-preview::before,
+  .discount-option-consumo .discount-preview::after { background: #d71920; }
+
+  .discount-logo-preview img {
+    position: relative;
+    z-index: 1;
+    display: block;
+    max-width: 48%;
+    max-height: 92px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 12px rgba(0,0,0,0.28));
+  }
+
+  .discount-option-consumo .discount-logo-preview img,
+  .discount-option-carrefour .discount-logo-preview img {
+    max-width: 52%;
+    max-height: 104px;
+    border-radius: 12px;
+  }
+
+  .discount-option-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    min-height: 62px;
+    padding: 12px 14px;
+    background: rgba(4, 16, 30, 0.96);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    color: #ffffff;
+    font-size: 1.26rem;
+    font-weight: 900;
+    line-height: 1.05;
+  }
+
+  .discount-option-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .discount-option-name i {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    font-size: 0.9rem;
+  }
+
+  .discount-option-dni .discount-option-name i { background: #12b568; }
+  .discount-option-mercadopago .discount-option-name i { background: #1687ff; }
+  .discount-option-carrefour .discount-option-name i { background: #f13a65; }
+  .discount-option-consumo .discount-option-name i { background: #d71920; }
+
+  .discount-badge {
+    flex: 0 0 auto;
+    border-radius: 11px;
+    padding: 7px 10px;
+    font-size: 0.9rem;
+    font-weight: 900;
+    color: #ffffff;
+  }
+
+  .discount-badge-green { background: #1fbd68; }
+  .discount-badge-yellow { background: #ffdf1b; color: #07111f; }
+  .discount-badge-pink { background: #db2664; }
+
+  .discount-required-note {
+    display: none;
+    position: relative;
+    z-index: 1;
+    margin: 14px 0 0;
+    padding: 9px 12px;
+    border-radius: 12px;
+    background: rgba(255, 223, 27, 0.12);
+    color: #ffe58a;
+    border: 1px solid rgba(255, 223, 27, 0.25);
+    font-size: 0.82rem;
+    font-weight: 800;
+  }
+
+  #modalFondo.required-selection .discount-required-note {
+    display: block;
+  }
+
+  #modalFondo.required-selection .discount-modal-close {
+    display: none;
+  }
+
+  .discount-modal-footer {
+    position: relative;
+    z-index: 1;
+    margin: 16px 0 0;
+    color: #7587a0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .new-project-modal {
+    position: relative;
+    width: min(460px, 94vw);
+    padding: 26px;
+    border: 1px solid rgba(255, 152, 0, 0.26);
+    background:
+      radial-gradient(circle at 15% 0%, rgba(255, 152, 0, 0.18), transparent 34%),
+      linear-gradient(180deg, #202733 0%, #111923 100%);
+    box-shadow: 0 24px 70px rgba(0,0,0,0.55);
+  }
+
+  .new-project-icon {
+    width: 54px;
+    height: 54px;
+    margin: 0 auto 12px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #ffb347, #ff7a18);
+    color: #1a1a1f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    box-shadow: 0 14px 30px rgba(255, 152, 0, 0.28);
+  }
+
+  .new-project-modal h3 {
+    margin: 0 0 8px;
+    color: #ffffff;
+    font-size: 1.35rem;
+  }
+
+  .new-project-modal p {
+    margin: 0;
+    color: #c4cfdd;
+    line-height: 1.45;
+  }
+
+  .new-project-note {
+    margin: 14px 0 0;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: rgba(255, 152, 0, 0.1);
+    color: #ffd28f;
+    border: 1px solid rgba(255, 152, 0, 0.22);
+    font-size: 0.86rem;
+    font-weight: 700;
+  }
+
+  .new-project-modal .modal-buttons {
+    margin-top: 18px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .new-project-modal .modal-btn {
+    min-height: 44px;
+  }
+
+  .new-project-modal .modal-close {
+    border-color: rgba(255,255,255,0.14);
+    background: rgba(255,255,255,0.06);
+    color: #dce5f0;
+  }
+
+  #modalFondo .modal-btn {
+    margin: 0;
+    font-size: 1rem;
+    padding: 12px 10px;
+  }
+
+  @media (max-height: 820px) {
+    .modal {
+      padding: 10px;
+    }
+
+    #modalFondo .modal-content {
+      width: min(680px, 96vw);
+      max-height: 96dvh;
+      padding: 18px 24px 16px;
+      border-radius: 22px;
+    }
+
+    .discount-modal-close {
+      width: 38px;
+      height: 38px;
+      top: 12px;
+      right: 12px;
+    }
+
+    .discount-modal-icon {
+      width: 42px;
+      height: 42px;
+      margin-bottom: 6px;
+      border-radius: 13px;
+      font-size: 1.25rem;
+    }
+
+    #modalFondo .modal-content h3 {
+      font-size: 1.62rem;
+    }
+
+    .discount-modal-subtitle {
+      margin: 6px 0 12px;
+      font-size: 0.9rem;
+    }
+
+    #modalFondo .modal-option {
+      margin-bottom: 10px;
+      padding: 8px 10px;
+    }
+
+    .discount-options-row {
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .discount-option {
+      min-height: 158px;
+      border-radius: 16px;
+    }
+
+    .discount-preview {
+      height: 102px;
+    }
+
+    .discount-preview::before,
+    .discount-preview::after {
+      height: 62px;
+      bottom: -28px;
+    }
+
+    .discount-preview::after {
+      bottom: -40px;
+    }
+
+    .discount-logo-preview img,
+    .discount-option-consumo .discount-logo-preview img,
+    .discount-option-carrefour .discount-logo-preview img {
+      max-width: 48%;
+      max-height: 72px;
+      border-radius: 9px;
+    }
+
+    .discount-option-label {
+      min-height: 56px;
+      padding: 9px 11px;
+      font-size: 1rem;
+    }
+
+    .discount-badge {
+      padding: 6px 8px;
+      font-size: 0.76rem;
+    }
+
+    .discount-required-note {
+      margin-top: 10px;
+      padding: 8px 10px;
+      font-size: 0.76rem;
+    }
+
+    .discount-modal-footer {
+      margin-top: 10px;
+      font-size: 0.64rem;
+    }
+  }
+
+  @media (max-height: 620px) {
+    #modalFondo .modal-content {
+      padding: 12px 16px;
+    }
+
+    .discount-modal-icon {
+      display: none;
+    }
+
+    #modalFondo .modal-content h3 {
+      font-size: 1.35rem;
+      padding-right: 36px;
+    }
+
+    .discount-modal-subtitle {
+      margin: 4px 0 8px;
+      font-size: 0.8rem;
+    }
+
+    .discount-option {
+      min-height: 126px;
+    }
+
+    .discount-preview {
+      height: 76px;
+    }
+
+    .discount-logo-preview img,
+    .discount-option-consumo .discount-logo-preview img,
+    .discount-option-carrefour .discount-logo-preview img {
+      max-height: 52px;
+    }
+
+    .discount-option-label {
+      min-height: 44px;
+      padding: 7px 9px;
+      font-size: 0.82rem;
+    }
+
+    .discount-option-name i {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+    }
+
+    .discount-badge {
+      padding: 5px 6px;
+      font-size: 0.64rem;
+    }
+  }
+
+  @media (max-width: 680px) {
+    .modal {
+      padding: 10px;
+    }
+
+    #modalFondo .modal-content {
+      width: min(98vw, 430px);
+      max-height: 96dvh;
+      padding: 18px 12px 16px;
+      border-radius: 20px;
+    }
+
+    .discount-modal-close {
+      width: 36px;
+      height: 36px;
+      top: 10px;
+      right: 10px;
+    }
+
+    .discount-modal-icon {
+      width: 42px;
+      height: 42px;
+      margin-bottom: 6px;
+      border-radius: 13px;
+      font-size: 1.25rem;
+    }
+
+    #modalFondo .modal-content h3 {
+      font-size: 1.45rem;
+      padding: 0 34px;
+    }
+
+    .discount-modal-subtitle {
+      margin-bottom: 14px;
+      font-size: 0.86rem;
+    }
+
+    .discount-options-row {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .discount-option {
+      min-height: 148px;
+      border-radius: 15px;
+    }
+
+    .discount-preview {
+      height: 94px;
+    }
+
+    .discount-preview::before,
+    .discount-preview::after {
+      height: 56px;
+      bottom: -26px;
+    }
+
+    .discount-preview::after {
+      bottom: -36px;
+    }
+
+    .discount-logo-preview img,
+    .discount-option-consumo .discount-logo-preview img,
+    .discount-option-carrefour .discount-logo-preview img {
+      max-width: 58%;
+      max-height: 64px;
+      border-radius: 8px;
+    }
+
+    .discount-option-label {
+      min-height: 52px;
+      padding: 9px 8px;
+      gap: 6px;
+      font-size: 0.78rem;
+    }
+
+    .discount-option-name {
+      gap: 6px;
+    }
+
+    .discount-option-name i {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+    }
+
+    .discount-badge {
+      padding: 5px 6px;
+      border-radius: 8px;
+      font-size: 0.66rem;
+    }
+
+    .discount-option[aria-pressed="true"]::after {
+      width: 28px;
+      height: 28px;
+      top: 10px;
+      right: 10px;
+    }
+
+    .discount-modal-footer {
+      margin-top: 10px;
+      font-size: 0.64rem;
+    }
+
+    .new-project-modal {
+      padding: 22px 16px;
+      border-radius: 18px;
+    }
+
+    .new-project-modal .modal-buttons {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 1440px), (max-height: 900px) {
+    #modalFondo .modal-content {
+      width: min(620px, 96vw);
+      max-height: calc(100dvh - 20px);
+      padding: 14px 18px;
+      border-radius: 20px;
+    }
+
+    .discount-modal-close {
+      width: 36px;
+      height: 36px;
+      top: 10px;
+      right: 10px;
+    }
+
+    .discount-modal-icon {
+      width: 38px;
+      height: 38px;
+      margin-bottom: 4px;
+      border-radius: 12px;
+      font-size: 1.1rem;
+    }
+
+    #modalFondo .modal-content h3 {
+      font-size: 1.45rem;
+      padding: 0 34px;
+    }
+
+    .discount-modal-subtitle {
+      margin: 4px 0 10px;
+      font-size: 0.85rem;
+    }
+
+    #modalFondo .modal-option {
+      margin-bottom: 8px;
+      padding: 7px 10px;
+      font-size: 0.76rem;
+    }
+
+    .discount-options-row {
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .discount-option {
+      min-height: 132px;
+      border-radius: 14px;
+    }
+
+    .discount-preview {
+      height: 82px;
+    }
+
+    .discount-preview::before,
+    .discount-preview::after {
+      height: 48px;
+      bottom: -22px;
+    }
+
+    .discount-preview::after {
+      bottom: -31px;
+    }
+
+    .discount-logo-preview img,
+    .discount-option-consumo .discount-logo-preview img,
+    .discount-option-carrefour .discount-logo-preview img {
+      max-width: 54%;
+      max-height: 56px;
+      border-radius: 8px;
+    }
+
+    .discount-option-label {
+      min-height: 48px;
+      padding: 8px 9px;
+      gap: 6px;
+      font-size: 0.9rem;
+    }
+
+    .discount-option-name {
+      gap: 6px;
+    }
+
+    .discount-option-name i {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+    }
+
+    .discount-badge {
+      padding: 5px 6px;
+      border-radius: 8px;
+      font-size: 0.68rem;
+    }
+
+  .info-box {
+    font-size: 0.6rem;
+    text-align: center;
+    background: #25252a;
+    padding: 6px;
+    border-radius: 8px;
+    margin-top: 5px;
+    border-left: 2px solid #ff9800;
+    line-height: 1.3;
+  }
+
+  .tips-button {
+    width: 100%;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 152, 0, 0.35);
+    background: rgba(255, 152, 0, 0.1);
+    color: #f6d6a8;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .tips-button:hover {
+    background: rgba(255, 152, 0, 0.18);
+    border-color: rgba(255, 152, 0, 0.6);
+  }
+
+  .tips-modal-content {
+    width: min(520px, 94vw);
+    text-align: left;
+  }
+
+  .tips-modal-content h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .tips-modal-text {
+    color: #cfd7e3;
+    margin: 0 0 14px;
+    line-height: 1.45;
+  }
+
+  .tips-list {
+    margin: 0;
+    padding-left: 20px;
+    color: #e8edf5;
+    line-height: 1.6;
+    font-size: 0.95rem;
+  }
+
+  .tips-list li + li {
+    margin-top: 6px;
+  }
+
+  .tips-list strong {
+    color: #ffca7a;
+  }
+  
+  .success-msg {
+    background: #4caf50;
+    color: white;
+    padding: 4px;
+    border-radius: 6px;
+    font-size: 0.65rem;
+    text-align: center;
+    margin-top: 4px;
+    animation: fadeOut 2s ease-out forwards;
+  }
+  
+  @keyframes fadeOut {
+    0% { opacity: 1; }
+    70% { opacity: 1; }
+    100% { opacity: 0; display: none; }
+  }
+
+  #header {
+    position: fixed;
+    top: 0;
+    left: 280px;
+    right: 0;
+    height: 40px;
+    background: #0f0f14;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    padding: 0 15px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-bottom: 2px solid #ff9800;
+    z-index: 9;
+    gap: 14px;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
     flex-shrink: 0;
   }
 
-  .header-tools.show {
-    display: flex;
+  @media (max-height: 700px) {
+    #modalFondo .modal-content {
+      width: min(560px, 96vw);
+      padding: 10px 14px;
+      border-radius: 16px;
+    }
+
+    .discount-modal-icon {
+      display: none;
+    }
+
+    #modalFondo .modal-content h3 {
+      font-size: 1.22rem;
+      line-height: 1.1;
+    }
+
+  .header-tool-btn:hover {
+    background: #ff9800;
+    color: #1a1a1f;
   }
 
-  .header-tool-btn {
+  .header-tool-btn.active {
+    background: #ff9800;
+    color: #1a1a1f;
+  }
+
+  .header-selection-info {
+    font-size: 0.7rem;
+    color: #ff9800;
+    background: #25252a;
+    padding: 4px 10px;
+    border-radius: 20px;
+    display: none;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .header-selection-info.show {
+    display: inline-block;
+  }
+
+  .separator-vertical {
+    width: 1px;
+    height: 24px;
+    background: #ff9800;
+    margin: 0 5px;
+  }
+
+  #canvas-container {
+    flex: 1;
+    margin-left: 0px;
+    margin-top: 40px;
+    background: #1a1a1f;
+    overflow: hidden;
+    position: relative;
+    cursor: grab;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #viewCanvas {
+    display: block;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    border-radius: 8px;
+    cursor: default;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+  }
+
+  #viewCanvas:active {
+    cursor: grabbing;
+  }
+
+  .modal {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    backdrop-filter: blur(5px);
+  }
+
+  .modal-content {
+    background: #25252a;
+    margin: 0;
+    padding: 20px;
+    border-radius: 16px;
+    width: min(620px, 94vw);
+    max-width: 94%;
+    text-align: center;
+    border: 2px solid #ff9800;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  }
+
+  .modal-content h3 {
+    color: #ff9800;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+  }
+
+  .modal-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .modal-option {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin: 0 0 14px;
+    padding: 10px 12px;
+    border: 1px solid rgba(255,152,0,0.35);
+    border-radius: 10px;
+    background: rgba(255,152,0,0.08);
+    color: #f2f2f2;
+    font-size: 0.88rem;
+  }
+
+  .modal-option input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: #ff9800;
+    flex: 0 0 auto;
+  }
+
+  .modal-option label {
+    width: auto;
+    margin: 0;
+    cursor: pointer;
+    font-size: inherit;
+  }
+
+  .modal-btn {
+    padding: 12px;
+    font-size: 1rem;
     background: #2a2a30;
     border: 1px solid #ff9800;
-    color: #ff9800;
-    padding: 4px 12px;
-    border-radius: 20px;
+    border-radius: 10px;
+    color: white;
     cursor: pointer;
-    font-size: 0.75rem;
-    font-weight: 600;
     transition: all 0.2s;
+    font-weight: 600;
   }
+
+  .modal-btn:hover {
+    background: #ff9800;
+    color: #1a1a1f;
+    transform: scale(1.02);
+  }
+
+  #modalFondo .modal-content {
+    position: relative;
+    width: min(720px, 96vw);
+    max-height: min(94vh, 760px);
+    overflow-y: auto;
+    padding: 28px 36px 34px;
+    border: 1px solid rgba(91, 142, 214, 0.28);
+    border-radius: 28px;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(43, 126, 255, 0.28), transparent 34%),
+      radial-gradient(circle at 0% 100%, rgba(28, 88, 154, 0.26), transparent 42%),
+      linear-gradient(145deg, #0a1322 0%, #101d30 48%, #06101d 100%);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255,255,255,0.08);
+    overscroll-behavior: contain;
+  }
+
+  #modalFondo .modal-content::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  #modalFondo .modal-content::-webkit-scrollbar-thumb {
+    background: rgba(174, 202, 255, 0.28);
+    border-radius: 999px;
+  }
+
+  #modalFondo .modal-content::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(115deg, transparent 0 44%, rgba(255,255,255,0.05) 45%, transparent 58%),
+      radial-gradient(circle at 8% 18%, rgba(61, 134, 255, 0.18), transparent 18%);
+  }
+
+  .discount-modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 2;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid rgba(174, 202, 255, 0.22);
+    background: rgba(8, 18, 34, 0.55);
+    color: #ffffff;
+    font-size: 1.25rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
+  }
+
+  .discount-modal-close:hover {
+    background: rgba(38, 74, 126, 0.65);
+    border-color: rgba(174, 202, 255, 0.44);
+  }
+
+  .discount-modal-icon {
+    position: relative;
+    z-index: 1;
+    width: 54px;
+    height: 54px;
+    margin: 0 auto 8px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #1594ff, #1b54ff);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.65rem;
+    box-shadow: 0 12px 28px rgba(24, 113, 255, 0.42);
+    transform: rotate(-10deg);
+  }
+
+  #modalFondo .modal-content h3 {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    color: #ffffff;
+    font-size: clamp(1.75rem, 4vw, 2.15rem);
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+  }
+
+  .discount-modal-subtitle {
+    position: relative;
+    z-index: 1;
+    margin: 8px 0 22px;
+    color: #aab9cc;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  #modalFondo .modal-option {
+    position: relative;
+    z-index: 1;
+    width: fit-content;
+    margin: 0 auto 18px;
+    border-color: rgba(91, 142, 214, 0.28);
+    background: rgba(8, 18, 34, 0.55);
+    color: #dce8f7;
+  }
+
+  .discount-options-row {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .discount-option {
+    position: relative;
+    background: #ffffff;
+    border: 1px solid rgba(118, 164, 232, 0.32);
+    border-radius: 20px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 214px;
+    cursor: pointer;
+    text-align: left;
+    color: #e8edf5;
+    overflow: hidden;
+    box-shadow: 0 16px 36px rgba(0,0,0,0.24);
+    transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .discount-option:hover,
+  .discount-option[aria-pressed="true"] {
+    border-color: #1687ff;
+    box-shadow: 0 0 0 3px rgba(22, 135, 255, 0.35), 0 18px 42px rgba(0,0,0,0.32);
+    transform: translateY(-1px);
+  }
+
+  .discount-option[aria-pressed="true"]::after {
+    content: '\f00c';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #1687ff;
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    box-shadow: 0 8px 18px rgba(22, 135, 255, 0.45);
+    z-index: 3;
+  }
+
+  .discount-option:focus-visible {
+    outline: 3px solid rgba(42, 145, 255, 0.8);
+    outline-offset: 3px;
+  }
+
+  .discount-preview {
+    position: relative;
+    width: 100%;
+    height: 148px;
+    border: 0;
+    border-radius: 0;
+    background: linear-gradient(180deg, #ffffff 0%, #e9f3ff 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .discount-preview::before,
+  .discount-preview::after {
+    content: '';
+    position: absolute;
+    left: -10%;
+    right: -10%;
+    bottom: -36px;
+    height: 88px;
+    border-radius: 50% 50% 0 0;
+    opacity: 0.78;
+    transform: rotate(-5deg);
+  }
+
+  .discount-preview::after {
+    bottom: -52px;
+    opacity: 0.55;
+    transform: rotate(7deg);
+  }
+
+  .discount-option-dni .discount-preview::before,
+  .discount-option-dni .discount-preview::after { background: #73f29d; }
+  .discount-option-mercadopago .discount-preview::before,
+  .discount-option-mercadopago .discount-preview::after { background: #9ac7ff; }
+  .discount-option-carrefour .discount-preview::before,
+  .discount-option-carrefour .discount-preview::after { background: #ff7faf; }
+  .discount-option-consumo .discount-preview::before,
+  .discount-option-consumo .discount-preview::after { background: #d71920; }
+
+  .discount-logo-preview img {
+    position: relative;
+    z-index: 1;
+    display: block;
+    max-width: 48%;
+    max-height: 92px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 12px rgba(0,0,0,0.28));
+  }
+
+  .discount-option-consumo .discount-logo-preview img,
+  .discount-option-carrefour .discount-logo-preview img {
+    max-width: 52%;
+    max-height: 104px;
+    border-radius: 12px;
+  }
+
+  .discount-option-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    min-height: 62px;
+    padding: 12px 14px;
+    background: rgba(4, 16, 30, 0.96);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    color: #ffffff;
+    font-size: 1.26rem;
+    font-weight: 900;
+    line-height: 1.05;
+  }
+
+  .discount-option-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .discount-option-name i {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    font-size: 0.9rem;
+  }
+
+  .discount-option-dni .discount-option-name i { background: #12b568; }
+  .discount-option-mercadopago .discount-option-name i { background: #1687ff; }
+  .discount-option-carrefour .discount-option-name i { background: #f13a65; }
+  .discount-option-consumo .discount-option-name i { background: #d71920; }
+
+  .discount-badge {
+    flex: 0 0 auto;
+    border-radius: 11px;
+    padding: 7px 10px;
+    font-size: 0.9rem;
+    font-weight: 900;
+    color: #ffffff;
+  }
+
+  .discount-badge-green { background: #1fbd68; }
+  .discount-badge-yellow { background: #ffdf1b; color: #07111f; }
+  .discount-badge-pink { background: #db2664; }
+
+  .discount-required-note {
+    display: none;
+    position: relative;
+    z-index: 1;
+    margin: 14px 0 0;
+    padding: 9px 12px;
+    border-radius: 12px;
+    background: rgba(255, 223, 27, 0.12);
+    color: #ffe58a;
+    border: 1px solid rgba(255, 223, 27, 0.25);
+    font-size: 0.82rem;
+    font-weight: 800;
+  }
+
+  #modalFondo.required-selection .discount-required-note {
+    display: block;
+  }
+
+  #modalFondo.required-selection .discount-modal-close {
+    display: none;
+  }
+
+  .discount-modal-footer {
+    position: relative;
+    z-index: 1;
+    margin: 16px 0 0;
+    color: #7587a0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .new-project-modal {
+    position: relative;
+    width: min(460px, 94vw);
+    padding: 26px;
+    border: 1px solid rgba(255, 152, 0, 0.26);
+    background:
+      radial-gradient(circle at 15% 0%, rgba(255, 152, 0, 0.18), transparent 34%),
+      linear-gradient(180deg, #202733 0%, #111923 100%);
+    box-shadow: 0 24px 70px rgba(0,0,0,0.55);
+  }
+
+  .new-project-icon {
+    width: 54px;
+    height: 54px;
+    margin: 0 auto 12px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #ffb347, #ff7a18);
+    color: #1a1a1f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    box-shadow: 0 14px 30px rgba(255, 152, 0, 0.28);
+  }
+
+  .new-project-modal h3 {
+    margin: 0 0 8px;
+    color: #ffffff;
+    font-size: 1.35rem;
+  }
+
+  .new-project-modal p {
+    margin: 0;
+    color: #c4cfdd;
+    line-height: 1.45;
+  }
+
+  .new-project-note {
+    margin: 14px 0 0;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: rgba(255, 152, 0, 0.1);
+    color: #ffd28f;
+    border: 1px solid rgba(255, 152, 0, 0.22);
+    font-size: 0.86rem;
+    font-weight: 700;
+  }
+
+  .new-project-modal .modal-buttons {
+    margin-top: 18px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .new-project-modal .modal-btn {
+    min-height: 44px;
+  }
+
+  .new-project-modal .modal-close {
+    border-color: rgba(255,255,255,0.14);
+    background: rgba(255,255,255,0.06);
+    color: #dce5f0;
+  }
+
+  #modalFondo .modal-btn {
+    margin: 0;
+    font-size: 1rem;
+    padding: 12px 10px;
+  }
+
+  @media (max-height: 820px) {
+    .modal {
+      padding: 10px;
+    }
+
+    #modalFondo .modal-content {
+      width: min(680px, 96vw);
+      max-height: 96dvh;
+      padding: 18px 24px 16px;
+      border-radius: 22px;
+    }
+
+    .discount-modal-close {
+      width: 38px;
+      height: 38px;
+      top: 12px;
+      right: 12px;
+    }
+
+    .discount-modal-icon {
+      width: 42px;
+      height: 42px;
+      margin-bottom: 6px;
+      border-radius: 13px;
+      font-size: 1.25rem;
+    }
+
+    #modalFondo .modal-content h3 {
+      font-size: 1.62rem;
+    }
+
+    .discount-modal-subtitle {
+      margin: 6px 0 12px;
+      font-size: 0.9rem;
+    }
+
+    #modalFondo .modal-option {
+      margin-bottom: 10px;
+      padding: 8px 10px;
+    }
+
+    .discount-options-row {
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .discount-option {
+      min-height: 158px;
+      border-radius: 16px;
+    }
+
+    .discount-preview {
+      height: 102px;
+    }
+
+    .discount-preview::before,
+    .discount-preview::after {
+      height: 62px;
+      bottom: -28px;
+    }
+
+    .discount-preview::after {
+      bottom: -40px;
+    }
+
+    .discount-logo-preview img,
+    .discount-option-consumo .discount-logo-preview img,
+    .discount-option-carrefour .discount-logo-preview img {
+      max-width: 48%;
+      max-height: 72px;
+      border-radius: 9px;
+    }
+
+    .discount-option-label {
+      min-height: 56px;
+      padding: 9px 11px;
+      font-size: 1rem;
+    }
+
+    .discount-badge {
+      padding: 6px 8px;
+      font-size: 0.76rem;
+    }
+
+    .discount-required-note {
+      margin-top: 10px;
+      padding: 8px 10px;
+      font-size: 0.76rem;
+    }
+
+    .discount-modal-footer {
+      margin-top: 10px;
+      font-size: 0.64rem;
+    }
+  }
+
+  @media (max-height: 620px) {
+    #modalFondo .modal-content {
+      padding: 12px 16px;
+    }
+
+    .discount-modal-icon {
+      display: none;
+    }
+
+    #modalFondo .modal-content h3 {
+      font-size: 1.35rem;
+      padding-right: 36px;
+    }
+
+    .discount-modal-subtitle {
+      margin: 4px 0 8px;
+      font-size: 0.8rem;
+    }
+
+    .discount-option {
+      min-height: 126px;
+    }
+
+    .discount-preview {
+      height: 76px;
+    }
+
+    .discount-logo-preview img,
+    .discount-option-consumo .discount-logo-preview img,
+    .discount-option-carrefour .discount-logo-preview img {
+      max-height: 52px;
+    }
+
+    .discount-option-label {
+      min-height: 44px;
+      padding: 7px 9px;
+      font-size: 0.82rem;
+    }
+
+    .discount-option-name i {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+    }
+
+    .discount-badge {
+      padding: 5px 6px;
+      font-size: 0.64rem;
+    }
+  }
+
+  @media (max-width: 680px) {
+    .modal {
+      padding: 10px;
+    }
+
+    #modalFondo .modal-content {
+      width: min(98vw, 430px);
+      max-height: 96dvh;
+      padding: 18px 12px 16px;
+      border-radius: 20px;
+    }
+
+    .discount-modal-close {
+      width: 36px;
+      height: 36px;
+      top: 10px;
+      right: 10px;
+    }
+
+    .discount-modal-icon {
+      width: 42px;
+      height: 42px;
+      margin-bottom: 6px;
+      border-radius: 13px;
+      font-size: 1.25rem;
+    }
+
+    #modalFondo .modal-content h3 {
+      font-size: 1.45rem;
+      padding: 0 34px;
+    }
+
+    .discount-modal-subtitle {
+      margin-bottom: 14px;
+      font-size: 0.86rem;
+    }
+
+    .discount-options-row {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .discount-option {
+      min-height: 148px;
+      border-radius: 15px;
+    }
+
+    .discount-preview {
+      height: 94px;
+    }
+
+    .discount-preview::before,
+    .discount-preview::after {
+      height: 56px;
+      bottom: -26px;
+    }
+
+    .discount-preview::after {
+      bottom: -36px;
+    }
+
+    .discount-logo-preview img,
+    .discount-option-consumo .discount-logo-preview img,
+    .discount-option-carrefour .discount-logo-preview img {
+      max-width: 58%;
+      max-height: 64px;
+      border-radius: 8px;
+    }
+
+    .discount-option-label {
+      min-height: 52px;
+      padding: 9px 8px;
+      gap: 6px;
+      font-size: 0.78rem;
+    }
+
+    .discount-option-name {
+      gap: 6px;
+    }
+
+    .discount-option-name i {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+    }
+
+    .discount-badge {
+      padding: 5px 6px;
+      border-radius: 8px;
+      font-size: 0.66rem;
+    }
+
+    .discount-option[aria-pressed="true"]::after {
+      width: 28px;
+      height: 28px;
+      top: 10px;
+      right: 10px;
+    }
+
+    .discount-modal-footer {
+      margin-top: 10px;
+      font-size: 0.64rem;
+    }
+
+    .new-project-modal {
+      padding: 22px 16px;
+      border-radius: 18px;
+    }
+
+    .new-project-modal .modal-buttons {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 1440px), (max-height: 900px) {
+    #modalFondo .modal-content {
+      width: min(620px, 96vw);
+      max-height: calc(100dvh - 20px);
+      padding: 14px 18px;
+      border-radius: 20px;
+    }
+
+    .discount-modal-close {
+      width: 36px;
+      height: 36px;
+      top: 10px;
+      right: 10px;
+    }
+
+    .discount-modal-icon {
+      width: 38px;
+      height: 38px;
+      margin-bottom: 4px;
+      border-radius: 12px;
+      font-size: 1.1rem;
+    }
+
+    #modalFondo .modal-content h3 {
+      font-size: 1.45rem;
+      padding: 0 34px;
+    }
+
+    .discount-modal-subtitle {
+      margin: 4px 0 10px;
+      font-size: 0.85rem;
+    }
+
+    #modalFondo .modal-option {
+      margin-bottom: 8px;
+      padding: 7px 10px;
+      font-size: 0.76rem;
+    }
+
+    .discount-options-row {
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .discount-option {
+      min-height: 132px;
+      border-radius: 14px;
+    }
+
+    .discount-preview {
+      height: 82px;
+    }
+
+    .discount-preview::before,
+    .discount-preview::after {
+      height: 48px;
+      bottom: -22px;
+    }
+
+    .discount-preview::after {
+      bottom: -31px;
+    }
+
+    .discount-logo-preview img,
+    .discount-option-consumo .discount-logo-preview img,
+    .discount-option-carrefour .discount-logo-preview img {
+      max-width: 54%;
+      max-height: 56px;
+      border-radius: 8px;
+    }
+
+    .discount-option-label {
+      min-height: 48px;
+      padding: 8px 9px;
+      gap: 6px;
+      font-size: 0.9rem;
+    }
+
+    .discount-option-name {
+      gap: 6px;
+    }
+
+    .discount-option-name i {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+    }
+
+    .discount-badge {
+      padding: 5px 6px;
+      border-radius: 8px;
+      font-size: 0.68rem;
+    }
+
+    .discount-option[aria-pressed="true"]::after {
+      width: 26px;
+      height: 26px;
+      top: 9px;
+      right: 9px;
+      font-size: 0.8rem;
+    }
+
+    .discount-required-note {
+      margin-top: 8px;
+      padding: 7px 10px;
+      font-size: 0.72rem;
+    }
+
+    .discount-modal-footer {
+      margin-top: 8px;
+      font-size: 0.6rem;
+    }
+  }
+
+  @media (max-height: 700px) {
+    #modalFondo .modal-content {
+      width: min(560px, 96vw);
+      padding: 10px 14px;
+      border-radius: 16px;
+    }
+
+    .discount-modal-icon {
+      display: none;
+    }
+
+    #modalFondo .modal-content h3 {
+      font-size: 1.22rem;
+      line-height: 1.1;
+    }
 
   .header-tool-btn:hover {
     background: #ff9800;
@@ -7381,6 +10219,11 @@ natural 170 g</textarea>
     function onMouseDown(e) {
       e.preventDefault();
       closeCanvasContextMenu();
+      if (isConsumoMode()) {
+        if (activeEditor && e.target !== activeEditor) activeEditor.blur();
+        deseleccionarTodo();
+        return;
+      }
       if (activeEditor && e.target !== activeEditor) {
         activeEditor.blur();
       }
