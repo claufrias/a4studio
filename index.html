@@ -169,12 +169,19 @@ natural 170 g</textarea>
 
 <div id="header" class="floating-panel floating-panel-left floating-panel-bottom">
   <div class="header-action-bar compact-action-buttons">
-    <button class="header-combo-btn btn-with-icon" type="button" title="Nuevo proyecto" onclick="nuevoProyecto()"><i class="fa-solid fa-wand-magic-sparkles btn-icon" aria-hidden="true"></i><span>Nuevo</span></button>
-    <button class="header-combo-btn btn-with-icon" type="button" title="Seleccionar descuento" onclick="abrirModalFondo()"><i class="fa-solid fa-bullseye btn-icon" aria-hidden="true"></i><span>Descuento</span></button>
-    <button class="header-combo-btn btn-with-icon" type="button" title="Imprimir" onclick="exportar()"><i class="fa-solid fa-print btn-icon" aria-hidden="true"></i><span>Imprimir</span></button>
-    <button class="header-combo-btn btn-with-icon" type="button" title="Centrar vista" onclick="resetearVista()"><i class="fa-solid fa-crosshairs btn-icon" aria-hidden="true"></i><span>Centrar</span></button>
-    <button class="header-combo-btn btn-with-icon" type="button" title="Guardar JSON" onclick="guardarDisenoEnArchivo()"><i class="fa-solid fa-floppy-disk btn-icon" aria-hidden="true"></i><span>Guardar</span></button>
-    <button class="header-combo-btn btn-with-icon" type="button" title="Cargar JSON" onclick="cargarDisenoDesdeArchivo()"><i class="fa-regular fa-folder-open btn-icon" aria-hidden="true"></i><span>Cargar</span></button>
+    <button class="header-combo-btn btn-with-icon btn-secondary-action" type="button" title="Nuevo proyecto" onclick="nuevoProyecto()"><i class="fa-solid fa-wand-magic-sparkles btn-icon" aria-hidden="true"></i><span>Nuevo</span></button>
+    <button class="header-combo-btn btn-with-icon btn-secondary-action" type="button" title="Seleccionar fondo y descuento" onclick="abrirModalFondo()"><i class="fa-solid fa-bullseye btn-icon" aria-hidden="true"></i><span>Fondo / descuento</span></button>
+    <button class="header-combo-btn btn-with-icon btn-primary-action" type="button" title="Imprimir" onclick="exportar()"><i class="fa-solid fa-print btn-icon" aria-hidden="true"></i><span>Imprimir</span></button>
+    <button class="header-combo-btn btn-with-icon btn-secondary-action" type="button" title="Ajustar vista" onclick="ajustarVista()"><i class="fa-solid fa-crosshairs btn-icon" aria-hidden="true"></i><span>Ajustar</span></button>
+    <button class="header-combo-btn btn-with-icon btn-secondary-action" type="button" title="Guardar JSON" onclick="guardarDisenoEnArchivo()"><i class="fa-solid fa-floppy-disk btn-icon" aria-hidden="true"></i><span>Guardar</span></button>
+    <button class="header-combo-btn btn-with-icon btn-secondary-action" type="button" title="Cargar JSON" onclick="cargarDisenoDesdeArchivo()"><i class="fa-regular fa-folder-open btn-icon" aria-hidden="true"></i><span>Cargar</span></button>
+    <div class="topbar-divider" aria-hidden="true"></div>
+    <div class="zoom-control-group" aria-label="Controles de zoom">
+      <button class="header-combo-btn zoom-btn" type="button" title="Alejar" onclick="zoomVista(-1)"><i class="fa-solid fa-minus" aria-hidden="true"></i></button>
+      <button class="header-combo-btn zoom-fit-btn" type="button" title="Ajustar a pantalla" onclick="ajustarVista()">Ajustar</button>
+      <button class="header-combo-btn zoom-btn" type="button" title="Acercar" onclick="zoomVista(1)"><i class="fa-solid fa-plus" aria-hidden="true"></i></button>
+      <span id="zoomLevel" class="zoom-level" aria-live="polite">100%</span>
+    </div>
   </div>
 </div>
 
@@ -190,30 +197,36 @@ natural 170 g</textarea>
   </div>
 </div>
 
-<div id="imageSearchPanel" class="floating-panel floating-panel-right show-panel">
+<div id="imageSearchPanel" class="floating-panel floating-panel-right show-panel inspector-panel">
   <div class="image-search-shell">
-    <div class="image-search-label">Imagen</div>
-    <div class="image-panel-dual-actions">
-      <button class="header-combo-btn btn-with-icon" type="button" onclick="cargarImagen()"><i class="fa-regular fa-image btn-icon" aria-hidden="true"></i><span>Agregar</span></button>
-      <button class="header-combo-btn btn-with-icon" type="button" onclick="pegarImagen()"><i class="fa-regular fa-paste btn-icon" aria-hidden="true"></i><span>Pegar</span></button>
+    <div class="inspector-heading">
+      <div>
+        <div class="image-search-label">Inspector</div>
+        <div id="inspectorContextLabel" class="inspector-context-label">Documento e imagen</div>
+      </div>
+      <span id="inspectorStatePill" class="inspector-state-pill">Listo</span>
     </div>
     <div class="image-panel-dual-actions">
-      <button id="cropToggleBtn" onclick="toggleCropMode()" class="header-combo-btn btn-with-icon" type="button"><i class="fa-solid fa-crop-simple btn-icon" aria-hidden="true"></i><span>Recorte</span></button>
-      <button onclick="resetearImagen()" class="header-combo-btn btn-with-icon" type="button"><i class="fa-solid fa-rotate-right btn-icon" aria-hidden="true"></i><span>Restablecer</span></button>
+      <button class="header-combo-btn btn-with-icon btn-primary-action" type="button" onclick="cargarImagen()"><i class="fa-regular fa-image btn-icon" aria-hidden="true"></i><span>Agregar</span></button>
+      <button class="header-combo-btn btn-with-icon btn-secondary-action" type="button" onclick="pegarImagen()"><i class="fa-regular fa-paste btn-icon" aria-hidden="true"></i><span>Pegar</span></button>
     </div>
-    <button class="header-combo-btn btn-with-icon" type="button" onclick="eliminarImagen()"><i class="fa-regular fa-trash-can btn-icon" aria-hidden="true"></i><span>Eliminar imagen</span></button>
-    <div class="image-search-label image-search-subtitle">Google Imagenes</div>
+    <div class="image-panel-dual-actions">
+      <button id="cropToggleBtn" onclick="toggleCropMode()" class="header-combo-btn btn-with-icon btn-secondary-action" type="button"><i class="fa-solid fa-crop-simple btn-icon" aria-hidden="true"></i><span>Recorte</span></button>
+      <button onclick="resetearImagen()" class="header-combo-btn btn-with-icon btn-secondary-action" type="button"><i class="fa-solid fa-rotate-right btn-icon" aria-hidden="true"></i><span>Restablecer</span></button>
+    </div>
+    <button class="header-combo-btn btn-with-icon btn-danger-action" type="button" onclick="eliminarImagen()"><i class="fa-regular fa-trash-can btn-icon" aria-hidden="true"></i><span>Eliminar imagen</span></button>
+    <div class="image-search-label image-search-subtitle">Google Imágenes</div>
     <input id="googleImageSearchInput" class="image-search-field" type="text" placeholder="Producto a buscar en Google Imágenes">
     <div class="image-search-actions">
-      <button class="header-combo-btn btn-with-icon" type="button" onclick="abrirBusquedaGoogleImagenes()"><i class="fa-solid fa-magnifying-glass btn-icon" aria-hidden="true"></i><span>Buscar imagen en Google</span></button>
+      <button class="header-combo-btn btn-with-icon" type="button" onclick="abrirBusquedaGoogleImagenes()"><i class="fa-solid fa-magnifying-glass btn-icon" aria-hidden="true"></i><span>Buscar</span></button>
       <button class="header-combo-btn btn-with-icon" type="button" onclick="usarNombreProductoEnBusqueda()"><i class="fa-solid fa-tag btn-icon" aria-hidden="true"></i><span>Usar producto</span></button>
     </div>
-    <button class="image-search-chip image-help-btn" type="button" onclick="abrirModalConsejos('imagenes')">¿Cómo copio una imagen?</button>
+    <button class="image-search-chip image-help-btn" type="button" onclick="abrirModalConsejos('imagenes')">Ayuda para copiar imágenes</button>
     <div class="image-search-note"><i class="fa-solid fa-arrow-pointer" aria-hidden="true"></i> También podés arrastrar una imagen desde tu computadora o desde una web y soltarla sobre el cartel.</div>
     <div id="cropIndicator" class="crop-status">
 <i class="fa-solid fa-crop-simple" aria-hidden="true"></i> RECORTE ACTIVO - Arrastra esquinas, bordes o centro. Pulsa RECORTE o ENTER para aplicar, ESC cancela
     </div>
-    <div id="imagePanelStatus" class="image-search-status">Listo para trabajar con imagenes.</div>
+    <div id="imagePanelStatus" class="image-search-status">Listo para trabajar con imágenes.</div>
   </div>
 </div>
 
@@ -1586,6 +1599,7 @@ natural 170 g</textarea>
     }
     
     function updateView() {
+      updateZoomIndicator();
       drawToMainCanvas();
       
       const container = document.getElementById('canvas-container');
@@ -2137,14 +2151,23 @@ natural 170 g</textarea>
       captureStateChange();
     }
     
+    function setInspectorContext(label, state = 'Listo') {
+      const labelEl = document.getElementById('inspectorContextLabel');
+      const pillEl = document.getElementById('inspectorStatePill');
+      if (labelEl) labelEl.textContent = label;
+      if (pillEl) pillEl.textContent = state;
+    }
+
     function mostrarHeaderTools(mostrar) {
       if (isConsumoMode()) mostrar = false;
       const tools = document.getElementById('headerTools');
       const info = document.getElementById('selectionInfo');
       const panel = document.getElementById('quickToolsPanel');
       const titlePanel = document.getElementById('titleToolsPanel');
+      setInspectorContext('Documento e imagen', 'Listo');
 
       if (mostrar && selected === 'producto') {
+        setInspectorContext('Producto seleccionado', 'Texto');
         tools.classList.add('show');
         info.classList.remove('show');
         panel.classList.add('show-panel');
@@ -2156,6 +2179,7 @@ natural 170 g</textarea>
         document.getElementById('btnShadow').classList.toggle('active', efecto.shadow);
         document.getElementById('btnOutline').classList.toggle('active', efecto.outline);
       } else if (mostrar && selected === 'titulo') {
+        setInspectorContext('Título seleccionado', 'Texto');
         tools.classList.remove('show');
         info.classList.remove('show');
         panel.classList.remove('show-panel');
@@ -2165,6 +2189,7 @@ natural 170 g</textarea>
           if (colorInput) colorInput.value = tituloObj.color || '#ffffff';
         }
       } else if (mostrar && selected === 'img' && imagenObj) {
+        setInspectorContext('Imagen seleccionada', cropMode ? 'Recorte' : 'Imagen');
         tools.classList.remove('show');
         info.classList.remove('show');
         panel.classList.remove('show-panel');
@@ -2274,11 +2299,11 @@ natural 170 g</textarea>
       try {
         selected = null;
         mostrarHeaderTools(false);
-        setAdvancedStatus('Preparando PDF multipagina...');
+        setAdvancedStatus('Preparando PDF multipágina...');
 
         for (let i = 0; i < normalized.pages.length; i += 1) {
           currentPageIndex = i;
-          await loadPageIntoEditorAsync(normalized.pages[i], `Renderizando pagina ${i + 1}`, {
+          await loadPageIntoEditorAsync(normalized.pages[i], `Renderizando página ${i + 1}`, {
             recordHistory: false,
             suppressStatus: true
           });
@@ -2303,12 +2328,25 @@ natural 170 g</textarea>
       }
     };
     
-    window.resetearVista = function() { 
-      visualZoom = 1; 
-      visualOffsetX = 0; 
-      visualOffsetY = 0; 
-      updateView(); 
+    function updateZoomIndicator() {
+      const zoomEl = document.getElementById('zoomLevel');
+      if (zoomEl) zoomEl.textContent = `${Math.round(visualZoom * 100)}%`;
+    }
+
+    window.zoomVista = function(direction) {
+      const factor = Number(direction) > 0 ? 1.12 : 0.88;
+      visualZoom = Math.min(3, Math.max(0.3, visualZoom * factor));
+      updateView();
     };
+
+    window.ajustarVista = function() {
+      visualZoom = 1;
+      visualOffsetX = 0;
+      visualOffsetY = 0;
+      updateView();
+    };
+
+    window.resetearVista = window.ajustarVista;
 
     function refreshModalOpenState() {
       const hasOpenModal = Array.from(document.querySelectorAll('.modal')).some((modal) => {
@@ -2420,7 +2458,7 @@ natural 170 g</textarea>
         ? 'Pasos para copiar una imagen desde Google u otra web y pegarla en el cartel.'
         : consumoMode
           ? 'Atajos y flujo recomendado para completar los 4 espacios de la plantilla.'
-          : 'Atajos utiles para mover, editar, recortar y agregar imagenes al cartel.';
+          : 'Atajos útiles para mover, editar, recortar y agregar imágenes al cartel.';
       if (list) {
         const tips = imageSection ? imagePasteTips : (consumoMode ? consumoTips : standardTips);
         list.innerHTML = tips.map((tip) => `<li>${tip}</li>`).join('');
@@ -2462,7 +2500,7 @@ natural 170 g</textarea>
         updateView();
         projectSetupComplete = true;
         cerrarModalFondo();
-        captureStateChange(aplicarATodas ? 'Consumo inmediato aplicado en todas las paginas' : 'Consumo inmediato aplicado');
+        captureStateChange(aplicarATodas ? 'Consumo inmediato aplicado en todas las páginas' : 'Consumo inmediato aplicado');
         return;
       }
 
@@ -2494,7 +2532,7 @@ natural 170 g</textarea>
         }
         projectSetupComplete = true;
         cerrarModalFondo();
-        captureStateChange(aplicarATodas ? 'Fondo actualizado en todas las paginas' : 'Fondo actualizado');
+        captureStateChange(aplicarATodas ? 'Fondo actualizado en todas las páginas' : 'Fondo actualizado');
       };
       fondoImg.onerror = () => {
         setAdvancedStatus('No se pudo cargar el fondo seleccionado', true);
@@ -3157,16 +3195,16 @@ natural 170 g</textarea>
       panel.className = 'floating-panel floating-panel-left';
       panel.innerHTML = `
         <div class="page-nav-row">
-          <button class="header-tool-btn always-visible icon-only" id="btnPrevPage" type="button" title="Pagina anterior"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>
+          <button class="header-tool-btn always-visible icon-only" id="btnPrevPage" type="button" title="Página anterior"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>
           <div class="page-counter-shell">
             <div id="pagesCounter" class="page-counter">1 / 1</div>
           </div>
-          <button class="header-tool-btn always-visible icon-only" id="btnNextPage" type="button" title="Pagina siguiente"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
+          <button class="header-tool-btn always-visible icon-only" id="btnNextPage" type="button" title="Página siguiente"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
         </div>
         <div class="page-actions-row">
-          <button class="header-combo-btn page-mini-btn" id="btnAddPage" type="button"><i class="fa-solid fa-plus" aria-hidden="true"></i> Nueva</button>
-          <button class="header-combo-btn page-mini-btn" id="btnDuplicatePage" type="button">Dup. pagina</button>
-          <button class="header-combo-btn page-mini-btn btn-with-icon" id="btnDeletePage" type="button"><i class="fa-regular fa-trash-can btn-icon" aria-hidden="true"></i><span>Borrar pagina</span></button>
+          <button class="header-combo-btn page-mini-btn btn-primary-action" id="btnAddPage" type="button"><i class="fa-solid fa-plus" aria-hidden="true"></i> Nueva página</button>
+          <button class="header-combo-btn page-mini-btn btn-secondary-action" id="btnDuplicatePage" type="button">Duplicar página</button>
+          <button class="header-combo-btn page-mini-btn btn-with-icon btn-danger-action" id="btnDeletePage" type="button"><i class="fa-regular fa-trash-can btn-icon" aria-hidden="true"></i><span>Borrar página</span></button>
         </div>
         <div id="pagesList" class="pages-list"></div>
         <div id="advancedStatus" class="status-pill">Sistema listo</div>
@@ -3206,7 +3244,7 @@ natural 170 g</textarea>
       const ofertaEntero = Math.floor(discountedTotal);
       const ofertaCentavos = Math.round((discountedTotal - ofertaEntero) * 100);
       return {
-        name: name || `Pagina ${pages.length + 1}`,
+        name: name || `Página ${pages.length + 1}`,
         tituloObj: {
           x: 150, y: 75,
           text: 'HOY',
@@ -3263,7 +3301,7 @@ natural 170 g</textarea>
     }
 
     function normalizePageState(pageState, index = 0) {
-      const base = createBlankPageTemplate(`Pagina ${index + 1}`);
+      const base = createBlankPageTemplate(`Página ${index + 1}`);
       return {
         id: pageState && pageState.id ? pageState.id : createPageId(),
         name: pageState && pageState.name ? pageState.name : base.name,
@@ -3283,7 +3321,7 @@ natural 170 g</textarea>
     function buildPageStateFromCurrent(meta = {}) {
       return {
         id: meta.id || createPageId(),
-        name: meta.name || `Pagina ${currentPageIndex + 1}`,
+        name: meta.name || `Página ${currentPageIndex + 1}`,
         tituloObj: cloneData(tituloObj),
         productoObj: cloneData(productoObj),
         precioNormalObj: cloneData(precioNormalObj),
@@ -3306,7 +3344,7 @@ natural 170 g</textarea>
 
     function ensurePagesState() {
       if (!pages.length) {
-        pages = [createBlankPageState('Pagina 1')];
+        pages = [createBlankPageState('Página 1')];
         currentPageIndex = 0;
       }
       if (currentPageIndex < 0) currentPageIndex = 0;
@@ -3315,7 +3353,7 @@ natural 170 g</textarea>
 
     function saveCurrentPageState() {
       ensurePagesState();
-      const currentMeta = pages[currentPageIndex] || { id: createPageId(), name: `Pagina ${currentPageIndex + 1}` };
+      const currentMeta = pages[currentPageIndex] || { id: createPageId(), name: `Página ${currentPageIndex + 1}` };
       pages[currentPageIndex] = buildPageStateFromCurrent(currentMeta);
     }
 
@@ -3361,7 +3399,7 @@ natural 170 g</textarea>
       if (!input) return;
       const query = (forceQuery || input.value || getSuggestedGoogleImageQuery()).replace(/\s+/g, ' ').trim();
       if (!query) {
-        setImageSearchStatus('Escribe algo para buscar en Google Imagenes.', true);
+        setImageSearchStatus('Escribe algo para buscar en Google Imágenes.', true);
         return;
       }
       input.value = query;
@@ -3449,81 +3487,87 @@ natural 170 g</textarea>
         }
         return;
       }
+
       const gap = tight ? 8 : compact ? 10 : 12;
-      const baseTop = tight ? 10 : compact ? 12 : 18;
-      const edgePadding = tight ? 10 : compact ? 12 : 18;
-      const leftPanelWidth = tight ? 124 : compact ? 132 : 142;
+      const baseTop = tight ? 10 : compact ? 12 : 16;
+      const edgePadding = tight ? 10 : compact ? 12 : 16;
       const sidebarRight = sidebar ? sidebar.getBoundingClientRect().right : 320;
-      const leftOffset = Math.round(sidebarRight + edgePadding);
+      const inspectorWidth = tight ? 260 : compact ? 286 : 310;
       const rightOffset = edgePadding;
-      const leftPanels = [undoPanel, headerPanel, pagesPanel];
-      leftPanels.forEach((panel) => {
-        if (!panel) return;
-        panel.style.left = `${leftOffset}px`;
-        panel.style.right = 'auto';
-        setFloatingPanelWidth(panel, leftPanelWidth);
+      const leftOffset = Math.round(sidebarRight + edgePadding);
+      const rightBoundary = rightOffset + inspectorWidth + edgePadding;
+      const availableMainWidth = Math.max(300, window.innerWidth - leftOffset - rightBoundary);
+
+      undoPanel.style.left = `${leftOffset}px`;
+      undoPanel.style.right = 'auto';
+      undoPanel.style.top = `${baseTop}px`;
+      undoPanel.style.bottom = 'auto';
+      undoPanel.style.width = 'auto';
+      undoPanel.style.minWidth = '0';
+      undoPanel.style.maxWidth = 'none';
+
+      const undoWidth = Math.max(92, undoPanel.offsetWidth || 92);
+      headerPanel.style.left = `${leftOffset + undoWidth + gap}px`;
+      headerPanel.style.right = `${rightBoundary}px`;
+      headerPanel.style.top = `${baseTop}px`;
+      headerPanel.style.bottom = 'auto';
+      headerPanel.style.width = `${Math.max(260, availableMainWidth - undoWidth - gap)}px`;
+      headerPanel.style.minWidth = '0';
+      headerPanel.style.maxWidth = 'none';
+
+      const titleVisible = !!(titleToolsPanel && titleToolsPanel.classList.contains('show-panel'));
+      const quickVisible = !!(quickPanel && quickPanel.classList.contains('show-panel'));
+      const activeContextPanel = titleVisible ? titleToolsPanel : (quickVisible ? quickPanel : null);
+      const inspectorTop = baseTop;
+      const inspectorLeft = window.innerWidth - rightOffset - inspectorWidth;
+
+      if (activeContextPanel) {
+        activeContextPanel.style.left = `${inspectorLeft}px`;
+        activeContextPanel.style.right = `${rightOffset}px`;
+        activeContextPanel.style.top = `${inspectorTop}px`;
+        activeContextPanel.style.bottom = 'auto';
+        activeContextPanel.style.width = `${inspectorWidth}px`;
+        activeContextPanel.style.minWidth = `${inspectorWidth}px`;
+        activeContextPanel.style.maxWidth = `${inspectorWidth}px`;
+        activeContextPanel.style.maxHeight = `${Math.max(84, Math.round(window.innerHeight * 0.26))}px`;
+        activeContextPanel.style.overflowY = 'auto';
+      }
+
+      [titleToolsPanel, quickPanel].forEach((panel) => {
+        if (!panel || panel === activeContextPanel) return;
+        panel.style.left = `${inspectorLeft}px`;
+        panel.style.right = `${rightOffset}px`;
+        panel.style.width = `${inspectorWidth}px`;
+        panel.style.minWidth = `${inspectorWidth}px`;
+        panel.style.maxWidth = `${inspectorWidth}px`;
+        panel.style.maxHeight = '';
       });
 
       if (imageSearchPanel) {
-        const imagePanelMinWidth = tight ? 152 : compact ? 164 : 190;
-        const imagePanelMaxWidth = tight ? 184 : compact ? 202 : 220;
-        const availableRightWidth = window.innerWidth - leftOffset - leftPanelWidth - (edgePadding * 3);
-        const imagePanelWidth = Math.max(
-          tight ? 148 : compact ? 158 : 176,
-          Math.min(imagePanelMaxWidth, availableRightWidth > 0 ? availableRightWidth : imagePanelMinWidth)
-        );
-        imageSearchPanel.style.left = 'auto';
+        const imageTop = activeContextPanel
+          ? inspectorTop + activeContextPanel.offsetHeight + gap
+          : inspectorTop;
+        imageSearchPanel.style.left = `${inspectorLeft}px`;
         imageSearchPanel.style.right = `${rightOffset}px`;
-        imageSearchPanel.style.top = `${baseTop}px`;
-        imageSearchPanel.style.width = `${Math.max(imagePanelMinWidth, imagePanelWidth)}px`;
-        imageSearchPanel.style.minWidth = `${imagePanelMinWidth}px`;
-        imageSearchPanel.style.maxWidth = `${imagePanelMaxWidth}px`;
-        imageSearchPanel.style.maxHeight = `${Math.max(220, window.innerHeight - (edgePadding * 2))}px`;
+        imageSearchPanel.style.top = `${imageTop}px`;
+        imageSearchPanel.style.bottom = 'auto';
+        imageSearchPanel.style.width = `${inspectorWidth}px`;
+        imageSearchPanel.style.minWidth = `${inspectorWidth}px`;
+        imageSearchPanel.style.maxWidth = `${inspectorWidth}px`;
+        imageSearchPanel.style.maxHeight = `${Math.max(260, window.innerHeight - imageTop - edgePadding)}px`;
         imageSearchPanel.style.overflowY = 'auto';
+        imageSearchPanel.style.overflowX = 'hidden';
       }
 
-      undoPanel.style.top = `${baseTop}px`;
-      headerPanel.style.top = `${baseTop + undoPanel.offsetHeight + gap}px`;
-      const titleVisible = !!(titleToolsPanel && titleToolsPanel.classList.contains('show-panel'));
-      const quickVisible = !!(quickPanel && quickPanel.classList.contains('show-panel'));
-      const contextPanelLeft = leftOffset + leftPanelWidth + gap;
-      const contextPanelWidth = leftPanelWidth;
-
-      if (titleToolsPanel) {
-        titleToolsPanel.style.left = `${contextPanelLeft}px`;
-        titleToolsPanel.style.right = 'auto';
-        setFloatingPanelWidth(titleToolsPanel, contextPanelWidth);
-      }
-
-      if (quickPanel) {
-        quickPanel.style.left = `${contextPanelLeft}px`;
-        quickPanel.style.right = 'auto';
-        setFloatingPanelWidth(quickPanel, contextPanelWidth);
-      }
-
-      if (titleToolsPanel && titleToolsPanel.classList.contains('show-panel')) {
-        const maxTitleHeight = Math.max(74, window.innerHeight - baseTop - edgePadding);
-        titleToolsPanel.style.maxHeight = `${maxTitleHeight}px`;
-        titleToolsPanel.style.overflowY = 'auto';
-        titleToolsPanel.style.top = `${baseTop}px`;
-      } else if (titleToolsPanel) {
-        titleToolsPanel.style.maxHeight = '';
-      }
-
-      if (quickPanel) {
-        quickPanel.style.maxHeight = `${Math.max(92, window.innerHeight - baseTop - edgePadding)}px`;
-        quickPanel.style.overflowY = 'auto';
-        quickPanel.style.top = `${baseTop}px`;
-      }
-
-      pagesPanel.style.maxHeight = '';
-      pagesPanel.style.overflowY = 'auto';
-      pagesPanel.style.top = `${baseTop + undoPanel.offsetHeight + headerPanel.offsetHeight + (gap * 2)}px`;
-      const maxPagesHeight = Math.max(
-        tight ? 118 : compact ? 150 : 190,
-        window.innerHeight - baseTop - undoPanel.offsetHeight - headerPanel.offsetHeight - (gap * 2) - edgePadding
-      );
-      pagesPanel.style.maxHeight = `${maxPagesHeight}px`;
+      pagesPanel.style.left = `${leftOffset}px`;
+      pagesPanel.style.right = `${rightBoundary}px`;
+      pagesPanel.style.top = 'auto';
+      pagesPanel.style.bottom = `${edgePadding}px`;
+      pagesPanel.style.width = `${availableMainWidth}px`;
+      pagesPanel.style.minWidth = '0';
+      pagesPanel.style.maxWidth = 'none';
+      pagesPanel.style.maxHeight = '112px';
+      pagesPanel.style.overflow = 'hidden';
     }
 
     function renderPagesPanel() {
@@ -3544,9 +3588,9 @@ natural 170 g</textarea>
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'page-chip' + (index === currentPageIndex ? ' active' : '');
-        btn.textContent = String(index + 1);
-        btn.title = page.name || `Pagina ${index + 1}`;
-        btn.setAttribute('aria-label', page.name || `Pagina ${index + 1}`);
+        btn.innerHTML = `<span class="page-thumb" aria-hidden="true"><span></span></span><span class="page-chip-label">${index + 1}</span>`;
+        btn.title = page.name || `Página ${index + 1}`;
+        btn.setAttribute('aria-label', page.name || `Página ${index + 1}`);
         btn.addEventListener('click', () => window.irAPagina(index));
         list.appendChild(btn);
       });
@@ -3641,7 +3685,7 @@ natural 170 g</textarea>
       visualOffsetY = 0;
       pageSequence = 1;
 
-      const blankPage = createBlankPageState('Pagina 1', { inheritFromFirstPage: false });
+      const blankPage = createBlankPageState('Página 1', { inheritFromFirstPage: false });
       applySerializedState({
         version: 3,
         currentPageIndex: 0,
@@ -4069,12 +4113,12 @@ natural 170 g</textarea>
         layoutFloatingPanels();
                 if (options.recordHistory) {
           lastSerializedSnapshot = options.previousSnapshot || '';
-          persistSnapshot(options.historyMessage || message || 'Pagina actualizada', { resetRedo: true });
+          persistSnapshot(options.historyMessage || message || 'Página actualizada', { resetRedo: true });
         } else {
           lastSerializedSnapshot = currentSnapshot;
         }
         if (!options.suppressStatus) {
-          setAdvancedStatus(message || 'Diseno restaurado');
+          setAdvancedStatus(message || 'Diseño restaurado');
         }
         if (typeof options.onComplete === 'function') {
           options.onComplete();
@@ -4121,7 +4165,7 @@ natural 170 g</textarea>
       catch (error) {
         historySuspended = false;
         historyTransitionInProgress = false;
-        setAdvancedStatus('No se pudo restaurar el diseno', true);
+        setAdvancedStatus('No se pudo restaurar el diseño', true);
         if (typeof options.onComplete === 'function') options.onComplete();
       }
     }
@@ -4131,10 +4175,10 @@ natural 170 g</textarea>
       if (index < 0 || index >= pages.length || index === currentPageIndex) return;
       const previousSnapshot = JSON.stringify(serializeState());
       currentPageIndex = index;
-      loadPageIntoEditor(pages[currentPageIndex], `Pagina ${currentPageIndex + 1} abierta`, {
+      loadPageIntoEditor(pages[currentPageIndex], `Página ${currentPageIndex + 1} abierta`, {
         recordHistory: true,
         previousSnapshot,
-        historyMessage: `Cambio a ${pages[currentPageIndex].name || `Pagina ${currentPageIndex + 1}`}`
+        historyMessage: `Cambio a ${pages[currentPageIndex].name || `Página ${currentPageIndex + 1}`}`
       });
     };
 
@@ -4149,24 +4193,24 @@ natural 170 g</textarea>
     window.crearNuevaPagina = function() {
       ensurePagesState();
       if (pages.length >= MAX_PAGES) {
-        setAdvancedStatus(`Se permiten hasta ${MAX_PAGES} paginas`, true);
+        setAdvancedStatus(`Se permiten hasta ${MAX_PAGES} páginas`, true);
         return;
       }
       const previousSnapshot = JSON.stringify(serializeState());
-      const newPage = createBlankPageState(`Pagina ${pages.length + 1}`);
+      const newPage = createBlankPageState(`Página ${pages.length + 1}`);
       pages.splice(currentPageIndex + 1, 0, newPage);
       currentPageIndex += 1;
-      loadPageIntoEditor(newPage, 'Nueva pagina creada', {
+      loadPageIntoEditor(newPage, 'Nueva página creada', {
         recordHistory: true,
         previousSnapshot,
-        historyMessage: 'Pagina creada'
+        historyMessage: 'Página creada'
       });
     };
 
     window.duplicarPaginaActual = function() {
       ensurePagesState();
       if (pages.length >= MAX_PAGES) {
-        setAdvancedStatus(`Se permiten hasta ${MAX_PAGES} paginas`, true);
+        setAdvancedStatus(`Se permiten hasta ${MAX_PAGES} páginas`, true);
         return;
       }
       const previousSnapshot = JSON.stringify(serializeState());
@@ -4174,30 +4218,30 @@ natural 170 g</textarea>
       const duplicatedPage = normalizePageState({
         ...source,
         id: createPageId(),
-        name: `${source.name || `Pagina ${currentPageIndex + 1}`} copia`
+        name: `${source.name || `Página ${currentPageIndex + 1}`} copia`
       }, currentPageIndex + 1);
       pages.splice(currentPageIndex + 1, 0, duplicatedPage);
       currentPageIndex += 1;
-      loadPageIntoEditor(duplicatedPage, 'Pagina duplicada', {
+      loadPageIntoEditor(duplicatedPage, 'Página duplicada', {
         recordHistory: true,
         previousSnapshot,
-        historyMessage: 'Pagina duplicada'
+        historyMessage: 'Página duplicada'
       });
     };
 
     window.eliminarPaginaActual = function() {
       ensurePagesState();
       if (pages.length <= 1) {
-        setAdvancedStatus('Debe quedar al menos una pagina', true);
+        setAdvancedStatus('Debe quedar al menos una página', true);
         return;
       }
       const previousSnapshot = JSON.stringify(serializeState());
       pages.splice(currentPageIndex, 1);
       currentPageIndex = Math.max(0, Math.min(currentPageIndex, pages.length - 1));
-      loadPageIntoEditor(pages[currentPageIndex], 'Pagina eliminada', {
+      loadPageIntoEditor(pages[currentPageIndex], 'Página eliminada', {
         recordHistory: true,
         previousSnapshot,
-        historyMessage: 'Pagina eliminada'
+        historyMessage: 'Página eliminada'
       });
     };
 
@@ -4235,7 +4279,7 @@ natural 170 g</textarea>
       try {
         const state = buildProjectExportState();
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-        setAdvancedStatus(`Proyecto guardado localmente (${state.totalPages} paginas)`);
+        setAdvancedStatus(`Proyecto guardado localmente (${state.totalPages} páginas)`);
       }
       catch (error) { setAdvancedStatus('No se pudo guardar localmente', true); }
     };
@@ -4256,7 +4300,7 @@ natural 170 g</textarea>
       link.download = 'a4-express-proyecto.json';
       link.click();
       setTimeout(() => URL.revokeObjectURL(url), 500);
-      setAdvancedStatus(`Proyecto exportado con ${state.totalPages} paginas`);
+      setAdvancedStatus(`Proyecto exportado con ${state.totalPages} páginas`);
     };
 
     window.cargarDisenoDesdeArchivo = function() {
@@ -4268,8 +4312,8 @@ natural 170 g</textarea>
         if (!file) return;
         const reader = new FileReader();
         reader.onload = () => {
-          try { restoreHistorySnapshot(reader.result, 'Diseno JSON cargado', { resetHistory: true, markProjectInitialized: true }); }
-          catch (error) { setAdvancedStatus('El archivo JSON no es valido', true); }
+          try { restoreHistorySnapshot(reader.result, 'Diseño JSON cargado', { resetHistory: true, markProjectInitialized: true }); }
+          catch (error) { setAdvancedStatus('El archivo JSON no es válido', true); }
         };
         reader.readAsText(file);
       };
@@ -4323,7 +4367,7 @@ natural 170 g</textarea>
         precioNormalObj.color = precioOfertaObj.color;
         selected = 'precioNormal';
       } else {
-        setAdvancedStatus('La imagen solo admite una instancia en este diseno', true);
+        setAdvancedStatus('La imagen solo admite una instancia en este diseño', true);
         return;
       }
       syncUIFromObjects();
@@ -4499,6 +4543,27 @@ natural 170 g</textarea>
     }
     window.closeHeaderMenus = closeHeaderMenus;
 
+    function initSidebarAccordions() {
+      document.querySelectorAll('#panel .card').forEach((card) => {
+        const title = card.querySelector('.card-title');
+        if (!title || title.querySelector('.card-collapse-btn')) return;
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'card-collapse-btn';
+        button.setAttribute('aria-label', 'Plegar sección');
+        button.innerHTML = '<i class="fa-solid fa-chevron-up" aria-hidden="true"></i>';
+        button.addEventListener('click', () => {
+          const collapsed = card.classList.toggle('collapsed');
+          button.setAttribute('aria-label', collapsed ? 'Desplegar sección' : 'Plegar sección');
+          button.innerHTML = collapsed
+            ? '<i class="fa-solid fa-chevron-down" aria-hidden="true"></i>'
+            : '<i class="fa-solid fa-chevron-up" aria-hidden="true"></i>';
+          requestAnimationFrame(layoutFloatingPanels);
+        });
+        title.appendChild(button);
+      });
+    }
+
     function closeCanvasContextMenu() {
       const menu = document.getElementById('canvasContextMenu');
       if (!menu) return;
@@ -4596,12 +4661,13 @@ natural 170 g</textarea>
     injectAdvancedPanel();
     bindAdvancedButtons();
     applyPlatformClass();
+    initSidebarAccordions();
     syncMobileUiMode();
     document.addEventListener('click', (e) => {
       if (!e.target.closest('.header-menu-shell')) closeHeaderMenus();
     });
     normalizeProductObjectWidth(productoObj);
-    pages = [buildPageStateFromCurrent({ id: createPageId(), name: 'Pagina 1' })];
+    pages = [buildPageStateFromCurrent({ id: createPageId(), name: 'Página 1' })];
     currentPageIndex = 0;
     syncUIFromObjects();
     layoutFloatingPanels();
