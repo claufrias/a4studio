@@ -2740,6 +2740,26 @@
     box-shadow: 0 20px 44px rgba(11, 18, 28, 0.16), 0 0 0 4px rgba(141,180,234,0.16) !important;
   }
 
+  #canvas-container.drag-over::after {
+    content: 'Soltá la imagen para agregarla al cartel';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 6;
+    padding: 14px 18px;
+    border-radius: 16px;
+    border: 1px solid rgba(141,180,234,0.72);
+    background: rgba(10, 18, 30, 0.9);
+    color: #f4f8ff;
+    font-size: 0.86rem;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    box-shadow: 0 18px 46px rgba(0,0,0,0.34);
+    pointer-events: none;
+    text-align: center;
+  }
+
   .floating-panel-title {
     display: none;
   }
@@ -3036,6 +3056,14 @@
     font-size: 0.56rem;
     font-weight: 600;
     letter-spacing: 0.01em;
+  }
+
+  #imageSearchPanel .image-help-btn {
+    width: 100%;
+    justify-content: center;
+    color: #d6e5ff;
+    border-color: rgba(141,180,234,0.28);
+    background: rgba(141,180,234,0.08);
   }
 
   #imageSearchPanel .image-search-note {
@@ -4555,7 +4583,7 @@ natural 170 g</textarea>
     <div class="image-search-label">Imagen</div>
     <div class="image-panel-dual-actions">
       <button class="header-combo-btn btn-with-icon" type="button" onclick="cargarImagen()"><i class="fa-regular fa-image btn-icon" aria-hidden="true"></i><span>Agregar</span></button>
-      <button class="header-combo-btn btn-with-icon" type="button" onclick="pegarImagen()"><i class="fa-regular fa-paste btn-icon" aria-hidden="true"></i><span>Pegar imagen</span></button>
+      <button class="header-combo-btn btn-with-icon" type="button" onclick="pegarImagen()"><i class="fa-regular fa-paste btn-icon" aria-hidden="true"></i><span>Pegar imagen copiada</span></button>
     </div>
     <div class="image-panel-dual-actions">
       <button id="cropToggleBtn" onclick="toggleCropMode()" class="header-combo-btn btn-with-icon" type="button"><i class="fa-solid fa-crop-simple btn-icon" aria-hidden="true"></i><span>Recorte</span></button>
@@ -4563,9 +4591,9 @@ natural 170 g</textarea>
     </div>
     <button class="header-combo-btn btn-with-icon" type="button" onclick="eliminarImagen()"><i class="fa-regular fa-trash-can btn-icon" aria-hidden="true"></i><span>Eliminar imagen</span></button>
     <div class="image-search-label image-search-subtitle">Google Imagenes</div>
-    <input id="googleImageSearchInput" class="image-search-field" type="text" placeholder="Escribe qué imagen quieres buscar (ej: packshot Coca Cola 2L)">
+    <input id="googleImageSearchInput" class="image-search-field" type="text" placeholder="Producto a buscar en Google Imágenes">
     <div class="image-search-actions">
-      <button class="header-combo-btn btn-with-icon" type="button" onclick="abrirBusquedaGoogleImagenes()"><i class="fa-solid fa-magnifying-glass btn-icon" aria-hidden="true"></i><span>Buscar en Google</span></button>
+      <button class="header-combo-btn btn-with-icon" type="button" onclick="abrirBusquedaGoogleImagenes()"><i class="fa-solid fa-magnifying-glass btn-icon" aria-hidden="true"></i><span>Buscar imagen en Google</span></button>
       <button class="header-combo-btn btn-with-icon" type="button" onclick="usarNombreProductoEnBusqueda()"><i class="fa-solid fa-tag btn-icon" aria-hidden="true"></i><span>Usar producto</span></button>
     </div>
     <div class="image-search-chip-row">
@@ -4573,7 +4601,14 @@ natural 170 g</textarea>
       <button class="image-search-chip" type="button" onclick="aplicarSugerenciaBusquedaImagen('png')">png</button>
       <button class="image-search-chip" type="button" onclick="aplicarSugerenciaBusquedaImagen('sin fondo')">sin fondo</button>
     </div>
-    <div class="image-search-note">Abre Google Imagenes en una pestaña nueva. Luego copia la imagen y pulsa Pegar imagen.</div>
+    <div class="image-search-note">
+      <strong>Cómo agregar imágenes:</strong><br>
+      1. Tocá Buscar imagen en Google.<br>
+      2. En Google: clic derecho sobre la imagen → Copiar imagen.<br>
+      3. Volvé acá y tocá Pegar imagen copiada.<br>
+      <strong>No copies enlaces.</strong> También podés pegar con Ctrl+V o arrastrar un archivo al cartel.
+    </div>
+    <button class="image-search-chip image-help-btn" type="button" onclick="abrirModalConsejos('imagenes')">¿Cómo copio una imagen?</button>
     <div id="cropIndicator" style="display: none;" class="crop-status">
 <i class="fa-solid fa-crop-simple" aria-hidden="true"></i> RECORTE ACTIVO - Arrastra esquinas, bordes o centro. Pulsa RECORTE o ENTER para aplicar, ESC cancela
     </div>
@@ -4596,7 +4631,7 @@ natural 170 g</textarea>
 </div>
 
 <div id="canvasContextMenu">
-  <button class="context-menu-btn btn-with-icon" type="button" onclick="pegarImagenDesdeMenu()"><i class="fa-regular fa-paste btn-icon" aria-hidden="true"></i><span>Pegar imagen</span></button>
+  <button class="context-menu-btn btn-with-icon" type="button" onclick="pegarImagenDesdeMenu()"><i class="fa-regular fa-paste btn-icon" aria-hidden="true"></i><span>Pegar imagen copiada</span></button>
   <button id="ctxCropImageBtn" class="context-menu-btn btn-with-icon" type="button" onclick="recortarImagenDesdeMenu()"><i class="fa-solid fa-crop-simple btn-icon" aria-hidden="true"></i><span>Recorte</span></button>
   <button id="ctxDeleteImageBtn" class="context-menu-btn btn-with-icon" type="button" onclick="eliminarImagenDesdeMenu()"><i class="fa-regular fa-trash-can btn-icon" aria-hidden="true"></i><span>Eliminar imagen</span></button>
 </div>
@@ -6722,7 +6757,19 @@ natural 170 g</textarea>
       }
     };
 
+    const imagePasteTips = [
+      'Tocá <strong>Buscar imagen en Google</strong>.',
+      'En Google, abrí la imagen que quieras usar.',
+      'Hacé <strong>clic derecho</strong> sobre la imagen.',
+      'Elegí <strong>Copiar imagen</strong>.',
+      'Volvé a <strong>A4 Studio</strong>.',
+      'Tocá <strong>Pegar imagen copiada</strong> o presioná <strong>Ctrl+V</strong>.',
+      '<strong>Importante:</strong> no uses Copiar enlace ni Copiar dirección de imagen. Debe ser <strong>Copiar imagen</strong>.',
+      '<strong>Si no funciona:</strong> descargá la imagen y usá <strong>Agregar</strong>.'
+    ];
+
     const standardTips = [
+      '<strong>IMÁGENES:</strong> buscá en Google, copiá la imagen y tocá Pegar imagen copiada.',
       '<strong>CLICK</strong> en un objeto para seleccionarlo.',
       '<strong>CLICK FUERA</strong> para deseleccionar.',
       '<strong>DOBLE CLIC</strong> en texto o precio normal para editar inline.',
@@ -6739,20 +6786,27 @@ natural 170 g</textarea>
       '<strong>RUEDA DEL MOUSE PRESIONADA</strong> y mover el mouse desplaza el canvas.'
     ];
 
-    window.abrirModalConsejos = function() {
+    window.abrirModalConsejos = function(section = '') {
       const modal = document.getElementById('modalConsejos');
       const title = document.getElementById('tipsModalTitle');
       const intro = document.getElementById('tipsModalIntro');
       const list = document.getElementById('tipsModalList');
       const consumoMode = isConsumoMode();
-      if (title) title.innerHTML = consumoMode
-        ? '<i class="fa-solid fa-basket-shopping" aria-hidden="true"></i> Consejos'
-        : '<i class="fa-regular fa-lightbulb" aria-hidden="true"></i> Consejos';
-      if (intro) intro.textContent = consumoMode
-        ? 'Atajos y flujo recomendado para completar los 4 espacios de la plantilla.'
-        : 'Atajos utiles para mover, editar y recortar elementos del cartel.';
+      const imageSection = section === 'imagenes';
+
+      if (title) title.innerHTML = imageSection
+        ? '<i class="fa-regular fa-image" aria-hidden="true"></i> Cómo agregar imágenes'
+        : consumoMode
+          ? '<i class="fa-solid fa-basket-shopping" aria-hidden="true"></i> Consejos'
+          : '<i class="fa-regular fa-lightbulb" aria-hidden="true"></i> Consejos';
+      if (intro) intro.textContent = imageSection
+        ? 'Pasos para copiar una imagen desde Google u otra web y pegarla en el cartel.'
+        : consumoMode
+          ? 'Atajos y flujo recomendado para completar los 4 espacios de la plantilla.'
+          : 'Atajos utiles para mover, editar, recortar y agregar imagenes al cartel.';
       if (list) {
-        list.innerHTML = (consumoMode ? consumoTips : standardTips).map((tip) => `<li>${tip}</li>`).join('');
+        const tips = imageSection ? imagePasteTips : (consumoMode ? consumoTips : standardTips);
+        list.innerHTML = tips.map((tip) => `<li>${tip}</li>`).join('');
       }
       if (modal) modal.style.display = 'flex';
     };
@@ -7364,6 +7418,7 @@ natural 170 g</textarea>
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("mouseup", onMouseUp);
     viewCanvas.addEventListener("wheel", onWheel, { passive: false });
+    window.addEventListener("paste", handlePasteEvent);
     window.addEventListener("keydown", (e) => {
       if (e.code === "Enter" && cropMode) {
         e.preventDefault();
@@ -7389,6 +7444,7 @@ natural 170 g</textarea>
         e.preventDefault();
         canvasDragDepth += 1;
         canvasContainer.classList.add('drag-over');
+        setImageSearchStatus('Soltá la imagen sobre el cartel para agregarla.');
       });
       canvasContainer.addEventListener('dragover', (e) => {
         e.preventDefault();
@@ -7410,10 +7466,10 @@ natural 170 g</textarea>
         const files = Array.from(e.dataTransfer?.files || []);
         const imageFile = files.find((file) => (file.type || '').startsWith('image/'));
         if (!imageFile) {
-          setImageSearchStatus('Arrastra una imagen valida al area de trabajo.', true);
+          setImageSearchStatus('Soltá un archivo de imagen válido. Si estás desde Google, descargá la imagen y arrastrá el archivo.', true);
           return;
         }
-        loadImageFromFile(imageFile, 'Imagen soltada correctamente.', 'Imagen soltada');
+        loadImageFromFile(imageFile, 'Imagen soltada correctamente. Podés moverla o usar Recorte.', 'Imagen soltada');
       });
       canvasContainer.addEventListener("contextmenu", (e) => {
         e.preventDefault();
@@ -7638,7 +7694,7 @@ natural 170 g</textarea>
       const input = document.getElementById('googleImageSearchInput');
       if (!input) return;
       input.value = getSuggestedGoogleImageQuery();
-      setImageSearchStatus('Consulta lista. Pulsa Buscar en Google para ver imagenes.');
+      setImageSearchStatus('Consulta lista. Pulsá Buscar imagen en Google para abrir resultados.');
       input.focus();
       input.select();
     };
@@ -7667,7 +7723,7 @@ natural 170 g</textarea>
       input.value = query;
       const searchUrl = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query)}`;
       window.open(searchUrl, '_blank', 'noopener');
-      setImageSearchStatus('Google Imagenes abierto. Copia una imagen y luego pulsa Pegar imagen.');
+      setImageSearchStatus('Google Imágenes se abrió en otra pestaña. Copiá una imagen, no el enlace. Luego volvé y tocá Pegar imagen copiada.');
     };
 
     function syncFloatingPanelViewportMode() {
@@ -8673,6 +8729,85 @@ natural 170 g</textarea>
       reader.readAsDataURL(file);
     }
 
+    function isEditablePasteTarget(target) {
+      if (!target) return false;
+      const tagName = (target.tagName || '').toLowerCase();
+      return target.isContentEditable || tagName === 'input' || tagName === 'textarea' || tagName === 'select';
+    }
+
+    function isProbablyImageUrl(text) {
+      const value = (text || '').trim();
+      if (!value) return false;
+      return /^https?:\/\//i.test(value) || /^www\./i.test(value);
+    }
+
+    function showClipboardTextWarning(text = '') {
+      if (isProbablyImageUrl(text)) {
+        setImageSearchStatus('Copiaste un enlace, no una imagen. En Google usá clic derecho sobre la imagen → Copiar imagen.', true);
+        return;
+      }
+      setImageSearchStatus('El portapapeles contiene texto, no una imagen. Copiá la imagen o usá Agregar.', true);
+    }
+
+    function getImageFileFromClipboardData(clipboardData) {
+      const files = Array.from(clipboardData?.files || []);
+      const imageFile = files.find((file) => (file.type || '').startsWith('image/'));
+      if (imageFile) return imageFile;
+
+      const items = Array.from(clipboardData?.items || []);
+      for (const item of items) {
+        if (item.kind === 'file' && (item.type || '').startsWith('image/')) {
+          return item.getAsFile();
+        }
+      }
+      return null;
+    }
+
+    function getTextFromClipboardData(clipboardData) {
+      if (!clipboardData) return '';
+      return clipboardData.getData('text/uri-list') || clipboardData.getData('text/plain') || '';
+    }
+
+    async function readClipboardTextFromItems(clipboardItems) {
+      for (const item of clipboardItems || []) {
+        if (item.types && item.types.includes('text/plain')) {
+          const blob = await item.getType('text/plain');
+          return await blob.text();
+        }
+      }
+      if (navigator.clipboard && navigator.clipboard.readText) {
+        return await navigator.clipboard.readText();
+      }
+      return '';
+    }
+
+    async function showNoImageClipboardMessage(clipboardItems = []) {
+      try {
+        const text = (await readClipboardTextFromItems(clipboardItems)).trim();
+        if (text) {
+          showClipboardTextWarning(text);
+          return;
+        }
+      } catch (error) {
+        // Si no se puede leer texto, mostramos la ayuda general de imagen.
+      }
+      setImageSearchStatus('No encontré una imagen copiada. Primero copiá una imagen desde Google: clic derecho → Copiar imagen.', true);
+    }
+
+    function handlePasteEvent(e) {
+      const imageFile = getImageFileFromClipboardData(e.clipboardData);
+      if (imageFile) {
+        e.preventDefault();
+        loadImageFromFile(imageFile, 'Imagen pegada con Ctrl+V correctamente. Podés moverla o usar Recorte.', 'Imagen pegada');
+        return;
+      }
+
+      const text = getTextFromClipboardData(e.clipboardData).trim();
+      if (text && !isEditablePasteTarget(e.target)) {
+        showClipboardTextWarning(text);
+      }
+    }
+
     window.cargarImagen = function() {
       const input = document.createElement('input');
       input.type = 'file';
@@ -8688,7 +8823,7 @@ natural 170 g</textarea>
     window.pegarImagen = async function() {
       try {
         if (!navigator.clipboard || !navigator.clipboard.read) {
-          setImageSearchStatus('Usa Chrome, Edge o Safari para pegar imagenes.', true);
+          setImageSearchStatus('Tu navegador no permite leer imágenes con este botón. Probá Ctrl+V o descargá la imagen y usá Agregar.', true);
           return;
         }
         const clipboardItems = await navigator.clipboard.read();
@@ -8696,13 +8831,16 @@ natural 170 g</textarea>
           const imageTypes = item.types.filter(type => type.startsWith('image/'));
           for (const type of imageTypes) {
             const blob = await item.getType(type);
-            loadImageFromFile(blob, 'Imagen pegada correctamente.', 'Imagen pegada');
+            loadImageFromFile(blob, 'Imagen pegada correctamente. Podés moverla o usar Recorte.', 'Imagen pegada');
             return;
           }
         }
-        setImageSearchStatus('No se encontro una imagen en el portapapeles.', true);
+        await showNoImageClipboardMessage(clipboardItems);
       } catch (error) {
-        setImageSearchStatus('No se pudo leer el portapapeles.', true);
+        const blocked = error && ['NotAllowedError', 'SecurityError', 'NotFoundError'].includes(error.name);
+        setImageSearchStatus(blocked
+          ? 'El navegador bloqueó el acceso al portapapeles. Probá Ctrl+V o descargá la imagen y usá Agregar.'
+          : 'No se pudo leer el portapapeles. Probá Ctrl+V o usá Agregar.', true);
       }
     };
 
