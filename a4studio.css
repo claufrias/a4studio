@@ -469,11 +469,24 @@ button:disabled {
   display: block;
   width: 230px;
   max-height: calc(100vh - 36px);
+  overflow-x: hidden;
   overflow-y: auto;
+}
+#imageSearchPanel .header-combo-btn,
+#imageSearchPanel .image-search-chip {
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
+}
+#imageSearchPanel .header-combo-btn span,
+#imageSearchPanel .image-search-chip {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 .image-search-shell {
   display: grid;
   gap: 8px;
+  min-width: 0;
 }
 .image-search-label {
   color: var(--muted);
@@ -484,8 +497,12 @@ button:disabled {
 }
 .image-panel-dual-actions {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 7px;
+}
+.image-panel-dual-actions > .header-combo-btn {
+  justify-content: center;
+  text-align: center;
 }
 .image-search-actions {
   display: grid;
@@ -1009,6 +1026,21 @@ body.modal-open .modal {
     inset: 0;
     z-index: 72;
     background: rgba(0, 0, 0, 0.45);
+  }
+  body.mobile-ui #imageSearchPanel {
+    overflow-x: hidden;
+    padding: 10px;
+  }
+  body.mobile-ui #imageSearchPanel .image-panel-dual-actions > .header-combo-btn {
+    flex-direction: column;
+    gap: 4px;
+    line-height: 1.15;
+  }
+  body.mobile-ui #imageSearchPanel .image-search-field,
+  body.mobile-ui #imageSearchPanel .image-search-note,
+  body.mobile-ui #imageSearchPanel .image-search-status,
+  body.mobile-ui #imageSearchPanel .crop-status {
+    max-width: 100%;
   }
   body.mobile-ui.mobile-sheet-open #mobileUiScrim {
     display: block;
