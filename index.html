@@ -576,7 +576,7 @@ natural 170 g</textarea>
         detectHandle(mouseX, mouseY) {
             if (!this.active) return null;
             
-            const margin = 12;
+            const margin = getCropHitRadius();
             const { x, y, w, h } = this.rect;
             
             if (Math.hypot(mouseX - x, mouseY - y) < margin) return 'nw';
@@ -838,7 +838,7 @@ natural 170 g</textarea>
                 ctx.setLineDash([]);
             }
             
-            const handleSize = 12;
+            const handleSize = getCropHandleVisualSize();
             const handles = [
                 { x: x, y: y }, { x: x + w, y: y }, { x: x, y: y + h }, { x: x + w, y: y + h },
                 { x: x + w / 2, y: y }, { x: x + w / 2, y: y + h }, { x: x, y: y + h / 2 }, { x: x + w, y: y + h / 2 }
@@ -927,6 +927,9 @@ natural 170 g</textarea>
     let objStartX = 0, objStartY = 0;
     let resizeStartRect = null;
     let resizeStartState = null;
+    let lastPointerType = 'mouse';
+    let activeTouchId = null;
+    let ignoreMouseEventsUntil = 0;
     
     let activeEditor = null;
     let activeEditorMeta = null;
@@ -1250,8 +1253,32 @@ natural 170 g</textarea>
       mainCtx.restore();
     }
 
+    function getCanvasInteractionScale() {
+      return Math.max(0.001, canvasScale * visualZoom);
+    }
+
+    function getResizeHandleVisualSize() {
+      const screenSize = lastPointerType === 'touch' ? 16 : 12;
+      return screenSize / getCanvasInteractionScale();
+    }
+
+    function getResizeHitRadius() {
+      const minScreenRadius = lastPointerType === 'touch' ? 28 : 16;
+      return minScreenRadius / getCanvasInteractionScale();
+    }
+
+    function getCropHandleVisualSize() {
+      const screenSize = lastPointerType === 'touch' ? 18 : 14;
+      return screenSize / getCanvasInteractionScale();
+    }
+
+    function getCropHitRadius() {
+      const minScreenRadius = lastPointerType === 'touch' ? 32 : 18;
+      return minScreenRadius / getCanvasInteractionScale();
+    }
+
     function drawResizeHandles(x, y, w, h) {
-      const handleSize = 8;
+      const handleSize = getResizeHandleVisualSize();
       const handles = [
         { x: x, y: y },
         { x: x + w/2, y: y },
@@ -1587,8 +1614,6 @@ natural 170 g</textarea>
     }
     
     function updateView() {
-      drawToMainCanvas();
-      
       const container = document.getElementById('canvas-container');
       const containerRect = container.getBoundingClientRect();
       
@@ -1599,9 +1624,10 @@ natural 170 g</textarea>
       canvasOffsetX = (containerRect.width - CANVAS_W * canvasScale) / 2;
       canvasOffsetY = (containerRect.height - CANVAS_H * canvasScale) / 2;
       
-      viewCtx.clearRect(0, 0, viewCanvas.width, viewCanvas.height);
       viewCanvas.width = containerRect.width;
       viewCanvas.height = containerRect.height;
+      viewCtx.clearRect(0, 0, viewCanvas.width, viewCanvas.height);
+      drawToMainCanvas();
       
       viewCtx.save();
       viewCtx.translate(canvasOffsetX + visualOffsetX * canvasScale, canvasOffsetY + visualOffsetY * canvasScale);
@@ -2575,7 +2601,7 @@ natural 170 g</textarea>
       const bounds = getBoundsForType(type);
       if (!bounds) return null;
 
-      const handleSize = 10;
+      const handleSize = getResizeHitRadius();
       const handles = [
         { key: 'nw', x: bounds.x, y: bounds.y },
         { key: 'n', x: bounds.x + bounds.w / 2, y: bounds.y },
@@ -2596,6 +2622,20 @@ natural 170 g</textarea>
       return null;
     }
     
+    function isCornerResizeHandle(handle) {
+      return handle === 'nw' || handle === 'ne' || handle === 'sw' || handle === 'se';
+    }
+
+    function normalizeRectFromEdges(left, top, right, bottom, minSize = 24) {
+      if (right < left) [left, right] = [right, left];
+      if (bottom < top) [top, bottom] = [bottom, top];
+
+      if (right - left < minSize) right = left + minSize;
+      if (bottom - top < minSize) bottom = top + minSize;
+
+      return { x: left, y: top, w: right - left, h: bottom - top };
+    }
+
     function buildResizedRect(handle, startRect, dx, dy) {
       let left = startRect.x;
       let top = startRect.y;
@@ -2617,22 +2657,78 @@ natural 170 g</textarea>
         else bottom = top + minSize;
       }
 
-      return { x: left, y: top, w: right - left, h: bottom - top };
+      return normalizeRectFromEdges(left, top, right, bottom, minSize);
+    }
+
+    function buildProportionalCornerRect(handle, startRect, dx, dy, minSize = 24) {
+      if (!isCornerResizeHandle(handle) || !startRect.w || !startRect.h) {
+        return buildResizedRect(handle, startRect, dx, dy);
+      }
+
+      const left = startRect.x;
+      const top = startRect.y;
+      const right = startRect.x + startRect.w;
+      const bottom = startRect.y + startRect.h;
+      const anchorX = handle.includes('w') ? right : left;
+      const anchorY = handle.includes('n') ? bottom : top;
+      const startVectorX = handle.includes('w') ? -startRect.w : startRect.w;
+      const startVectorY = handle.includes('n') ? -startRect.h : startRect.h;
+      const currentVectorX = startVectorX + dx;
+      const currentVectorY = startVectorY + dy;
+      const scaleX = currentVectorX / startVectorX;
+      const scaleY = currentVectorY / startVectorY;
+      const dominantScale = Math.abs(scaleX - 1) >= Math.abs(scaleY - 1) ? scaleX : scaleY;
+      const minScale = Math.max(minSize / Math.max(startRect.w, 1), minSize / Math.max(startRect.h, 1));
+      const scale = Math.max(minScale, dominantScale);
+      const movingX = anchorX + (startVectorX * scale);
+      const movingY = anchorY + (startVectorY * scale);
+
+      return normalizeRectFromEdges(anchorX, anchorY, movingX, movingY, minSize);
+    }
+
+    function getResizeCursor(handle) {
+      switch (handle) {
+        case 'nw':
+        case 'se':
+          return 'nwse-resize';
+        case 'ne':
+        case 'sw':
+          return 'nesw-resize';
+        case 'n':
+        case 's':
+          return 'ns-resize';
+        case 'w':
+        case 'e':
+          return 'ew-resize';
+        default:
+          return 'default';
+      }
     }
 
     function resizeObject(type, handle, dx, dy, startRect) {
       if (!resizeStartState) return;
 
-      const rect = buildResizedRect(handle, startRect, dx, dy);
+      const useProportionalCorner = isCornerResizeHandle(handle);
+      const rect = useProportionalCorner
+        ? buildProportionalCornerRect(handle, startRect, dx, dy, type === 'img' ? 40 : 24)
+        : buildResizedRect(handle, startRect, dx, dy);
       const horizontalActive = handle.includes("w") || handle.includes("e");
       const verticalActive = handle.includes("n") || handle.includes("s");
 
-      const alignTextVertically = (target) => {
+      const alignTextBounds = (target) => {
         const bounds = getTextBounds(target);
+
+        if (handle.includes("w")) {
+          target.x += rect.x - bounds.x;
+        } else if (handle.includes("e")) {
+          target.x += (rect.x + rect.w) - (bounds.x + bounds.w);
+        }
+
+        const nextBounds = getTextBounds(target);
         if (handle.includes("n")) {
-          target.y += rect.y - bounds.y;
+          target.y += rect.y - nextBounds.y;
         } else if (handle.includes("s")) {
-          target.y += (rect.y + rect.h) - (bounds.y + bounds.h);
+          target.y += (rect.y + rect.h) - (nextBounds.y + nextBounds.h);
         }
       };
 
@@ -2658,14 +2754,12 @@ natural 170 g</textarea>
         const widthScale = rect.w / Math.max(startRect.w, 1);
         const heightScale = rect.h / Math.max(startRect.h, 1);
 
-        target.x = horizontalActive ? rect.x : base.x;
+        target.x = base.x;
         target.width = horizontalActive ? Math.max(80, Math.round(base.width * widthScale)) : base.width;
         target.fontSize = verticalActive ? Math.max(12, Math.round(base.fontSize * heightScale)) : base.fontSize;
         target.y = base.y;
 
-        alignTextVertically(target);
-        applySnap(target);
-        constrainObjectToZone(type);
+        alignTextBounds(target);
       } else if (type === "precioNormal" || type === "precioOferta") {
         const target = type === "precioNormal" ? precioNormalObj : precioOfertaObj;
         const base = resizeStartState;
@@ -2680,15 +2774,11 @@ natural 170 g</textarea>
         target.fontSize = verticalActive ? Math.max(18, Math.round(base.fontSize * heightScale)) : base.fontSize;
 
         alignPriceBounds(target, isNormal);
-        applySnap(target);
-        constrainObjectToZone(type);
       } else if (type === "img" && imagenObj) {
         imagenObj.x = rect.x;
         imagenObj.y = rect.y;
         imagenObj.w = Math.max(40, rect.w);
         imagenObj.h = Math.max(40, rect.h);
-        applySnap(imagenObj);
-        constrainObjectToZone('img');
       }
 
       updateView();
@@ -2728,6 +2818,11 @@ natural 170 g</textarea>
     }
 
     function onMouseDown(e) {
+      lastPointerType = e.pointerType || e.inputType || 'mouse';
+      if (lastPointerType === 'mouse' && Date.now() < ignoreMouseEventsUntil) {
+        e.preventDefault();
+        return;
+      }
       e.preventDefault();
       closeCanvasContextMenu();
       if (isConsumoMode()) {
@@ -2779,6 +2874,7 @@ natural 170 g</textarea>
           beginInteractionHistory();
           resizing = true;
           resizeHandle = handle;
+          viewCanvas.style.cursor = getResizeCursor(handle);
           dragStartWorldX = canvasX;
           dragStartWorldY = canvasY;
           
@@ -2890,7 +2986,8 @@ natural 170 g</textarea>
           ? 'pointer'
           : getCropCursor(cropTool.detectHandle(canvasX, canvasY));
       } else if (!dragging && !resizing && !panning) {
-        viewCanvas.style.cursor = "default";
+        const hoverHandle = selected ? getResizeHandle(selected, canvasX, canvasY) : null;
+        viewCanvas.style.cursor = hoverHandle ? getResizeCursor(hoverHandle) : "default";
       }
       
       if (resizing && selected && resizeStartRect) {
@@ -2903,27 +3000,22 @@ natural 170 g</textarea>
           tituloObj.x = objStartX + dx;
           tituloObj.y = objStartY + dy;
           applySnap(tituloObj);
-          constrainObjectToZone('titulo');
         } else if (selected === "producto") {
           productoObj.x = objStartX + dx;
           productoObj.y = objStartY + dy;
           applySnap(productoObj);
-          constrainObjectToZone('producto');
         } else if (selected === "precioNormal") {
           precioNormalObj.x = objStartX + dx;
           precioNormalObj.y = objStartY + dy;
           applySnap(precioNormalObj);
-          constrainObjectToZone('precioNormal');
         } else if (selected === "precioOferta") {
           precioOfertaObj.x = objStartX + dx;
           precioOfertaObj.y = objStartY + dy;
           applySnap(precioOfertaObj);
-          constrainObjectToZone('precioOferta');
         } else if (selected === "img" && imagenObj) {
           imagenObj.x = objStartX + dx;
           imagenObj.y = objStartY + dy;
           applySnap(imagenObj);
-          constrainObjectToZone('img');
         }
         updateView();
       }
@@ -2951,6 +3043,65 @@ natural 170 g</textarea>
       }
     }
     
+    function getTouchById(touchList, touchId) {
+      for (let i = 0; i < touchList.length; i += 1) {
+        if (touchList[i].identifier === touchId) return touchList[i];
+      }
+      return null;
+    }
+
+    function buildTouchMouseEvent(e, touch, button = 0, buttons = 1) {
+      return {
+        clientX: touch.clientX,
+        clientY: touch.clientY,
+        button,
+        buttons,
+        target: viewCanvas,
+        inputType: 'touch',
+        preventDefault: () => e.preventDefault()
+      };
+    }
+
+    function onTouchStart(e) {
+      if (!e.changedTouches || !e.changedTouches.length || activeTouchId !== null) return;
+      ignoreMouseEventsUntil = Date.now() + 700;
+      lastPointerType = 'touch';
+      const touch = e.changedTouches[0];
+      activeTouchId = touch.identifier;
+      onMouseDown(buildTouchMouseEvent(e, touch, 0, 1));
+    }
+
+    function onTouchMove(e) {
+      if (activeTouchId === null) return;
+      const touch = getTouchById(e.changedTouches, activeTouchId) || getTouchById(e.touches, activeTouchId);
+      if (!touch) return;
+      lastPointerType = 'touch';
+      onMouseMove(buildTouchMouseEvent(e, touch, 0, 1));
+    }
+
+    function onTouchEnd(e) {
+      if (activeTouchId === null) return;
+      const touch = getTouchById(e.changedTouches, activeTouchId);
+      if (!touch) return;
+      lastPointerType = 'touch';
+      onMouseUp(buildTouchMouseEvent(e, touch, 0, 0));
+      activeTouchId = null;
+      ignoreMouseEventsUntil = Date.now() + 700;
+    }
+
+    function onTouchCancel(e) {
+      if (activeTouchId === null) return;
+      const touch = getTouchById(e.changedTouches, activeTouchId) || (e.changedTouches && e.changedTouches[0]);
+      if (touch) onMouseUp(buildTouchMouseEvent(e, touch, 0, 0));
+      activeTouchId = null;
+      dragging = false;
+      resizing = false;
+      resizeHandle = null;
+      resizeStartRect = null;
+      resizeStartState = null;
+      ignoreMouseEventsUntil = Date.now() + 700;
+    }
+
     function onWheel(e) {
       e.preventDefault();
       
@@ -3039,6 +3190,10 @@ natural 170 g</textarea>
     
     window.addEventListener('resize', handleResize);
     viewCanvas.addEventListener("mousedown", onMouseDown);
+    viewCanvas.addEventListener("touchstart", onTouchStart, { passive: false });
+    window.addEventListener("touchmove", onTouchMove, { passive: false });
+    window.addEventListener("touchend", onTouchEnd, { passive: false });
+    window.addEventListener("touchcancel", onTouchCancel, { passive: false });
     viewCanvas.addEventListener("dblclick", onCanvasDoubleClick);
     viewCanvas.addEventListener("auxclick", (e) => {
       if (e.button === 1) e.preventDefault();
