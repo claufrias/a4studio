@@ -2705,6 +2705,25 @@ natural 170 g</textarea>
       }
     }
 
+    function getResizeCursor(handle) {
+      switch (handle) {
+        case 'nw':
+        case 'se':
+          return 'nwse-resize';
+        case 'ne':
+        case 'sw':
+          return 'nesw-resize';
+        case 'n':
+        case 's':
+          return 'ns-resize';
+        case 'w':
+        case 'e':
+          return 'ew-resize';
+        default:
+          return 'default';
+      }
+    }
+
     function resizeObject(type, handle, dx, dy, startRect) {
       if (!resizeStartState) return;
 
