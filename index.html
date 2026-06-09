@@ -199,7 +199,25 @@ natural 170 g</textarea>
     </div>
     <div class="image-panel-dual-actions">
       <button id="cropToggleBtn" onclick="toggleCropMode()" class="header-combo-btn btn-with-icon" type="button"><i class="fa-solid fa-crop-simple btn-icon" aria-hidden="true"></i><span>Recorte</span></button>
-      <button onclick="resetearImagen()" class="header-combo-btn btn-with-icon" type="button"><i class="fa-solid fa-rotate-right btn-icon" aria-hidden="true"></i><span>Restablecer</span></button>
+      <button onclick="resetearImagen()" class="header-combo-btn btn-with-icon image-reset-btn" type="button"><i class="fa-solid fa-rotate-right btn-icon" aria-hidden="true"></i><span>Restablecer</span></button>
+    </div>
+    <div id="cropControls" class="crop-controls" hidden>
+      <div class="crop-control-row">
+        <label for="cropAspectSelect">Proporcion</label>
+        <select id="cropAspectSelect" onchange="setCropAspectRatio(this.value)">
+          <option value="free">Libre</option>
+          <option value="original">Original</option>
+          <option value="1:1">1:1</option>
+          <option value="4:5">4:5</option>
+          <option value="16:9">16:9</option>
+          <option value="a4">A4</option>
+        </select>
+      </div>
+      <div class="crop-action-row">
+        <button class="header-combo-btn btn-with-icon crop-apply-btn" type="button" onclick="aplicarCropFinal()"><i class="fa-solid fa-check btn-icon" aria-hidden="true"></i><span>Aplicar</span></button>
+        <button class="header-combo-btn btn-with-icon" type="button" onclick="cancelarCrop()"><i class="fa-solid fa-xmark btn-icon" aria-hidden="true"></i><span>Cancelar</span></button>
+      </div>
+      <button class="header-combo-btn btn-with-icon" type="button" onclick="resetCropBox()"><i class="fa-solid fa-expand btn-icon" aria-hidden="true"></i><span>Marco completo</span></button>
     </div>
     <button class="header-combo-btn btn-with-icon" type="button" onclick="eliminarImagen()"><i class="fa-regular fa-trash-can btn-icon" aria-hidden="true"></i><span>Eliminar imagen</span></button>
     <div class="image-search-label image-search-subtitle">Google Imagenes</div>
@@ -270,6 +288,7 @@ natural 170 g</textarea>
         </div>
         <span class="discount-option-label">
           <span class="discount-option-name"><i class="fa-solid fa-tag" aria-hidden="true"></i> Cuenta DNI</span>
+          <span class="discount-option-type">Descuento fijo</span>
           <span class="discount-badge discount-badge-green">10% OFF</span>
         </span>
       </button>
@@ -279,6 +298,7 @@ natural 170 g</textarea>
         </div>
         <span class="discount-option-label">
           <span class="discount-option-name"><i class="fa-solid fa-wallet" aria-hidden="true"></i> Mercado Pago</span>
+          <span class="discount-option-type">Descuento fijo</span>
           <span class="discount-badge discount-badge-yellow">15% OFF</span>
         </span>
       </button>
@@ -288,6 +308,7 @@ natural 170 g</textarea>
         </div>
         <span class="discount-option-label">
           <span class="discount-option-name"><i class="fa-solid fa-credit-card" aria-hidden="true"></i> Cuenta Digital</span>
+          <span class="discount-option-type">Descuento fijo</span>
           <span class="discount-badge discount-badge-pink">15% OFF</span>
         </span>
       </button>
@@ -297,9 +318,15 @@ natural 170 g</textarea>
         </div>
         <span class="discount-option-label">
           <span class="discount-option-name"><i class="fa-solid fa-basket-shopping" aria-hidden="true"></i> Consumo inmediato</span>
+          <span class="discount-option-type">Descuento variable</span>
           <span class="discount-badge discount-badge-red">Variable</span>
         </span>
       </button>
+    </div>
+    <div class="discount-modal-hint">
+      <span class="discount-modal-hint-icon"><i class="fa-solid fa-info" aria-hidden="true"></i></span>
+      <span>Los descuentos se aplicaran automaticamente en el diseno de tu cartel.</span>
+      <span class="discount-modal-hint-ticket" aria-hidden="true"><i class="fa-solid fa-ticket-simple"></i></span>
     </div>
     <div class="discount-required-note"><i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i> Para comenzar, selecciona una plantilla de descuento.</div>
     <div class="discount-modal-footer">Desarrollado por Claudio Frias, 2026.</div>
@@ -563,14 +590,118 @@ natural 170 g</textarea>
                 thirds: true,
                 center: true
             };
-            this.overlayOpacity = 0.45;
-            this.snapDistance = 10;
+            this.overlayOpacity = 0.5;
+            this.snapDistance = 8;
             this.snapActive = true;
+            this.bounds = { x: 0, y: 0, w: this.canvasW, h: this.canvasH };
+            this.aspectRatio = null;
+            this.aspectLabel = 'Libre';
+            this.originalRatio = null;
         }
         
         initFromImage(imgX, imgY, imgW, imgH) {
             this.rect = { x: imgX, y: imgY, w: imgW, h: imgH };
+            this.bounds = { x: imgX, y: imgY, w: imgW, h: imgH };
+            this.originalRatio = imgW && imgH ? imgW / imgH : null;
             this.active = true;
+        }
+
+        setBounds(bounds) {
+            if (!bounds) return;
+            this.bounds = { ...bounds };
+            if (!this.originalRatio && bounds.w && bounds.h) this.originalRatio = bounds.w / bounds.h;
+        }
+
+        setAspectRatio(ratio, label = 'Libre') {
+            this.aspectRatio = ratio && Number.isFinite(ratio) ? ratio : null;
+            this.aspectLabel = label;
+        }
+
+        getEffectiveRatio(keepProportion = false) {
+            if (this.aspectRatio) return this.aspectRatio;
+            if (keepProportion && this.startRect && this.startRect.h) return this.startRect.w / this.startRect.h;
+            return null;
+        }
+
+        clampRectToBounds(rect, ratio = null) {
+            const bounds = this.bounds || { x: 0, y: 0, w: this.canvasW, h: this.canvasH };
+            const minSize = 24;
+            let w = Math.max(minSize, Math.abs(rect.w));
+            let h = Math.max(minSize, Math.abs(rect.h));
+
+            if (ratio) {
+                if (w / h > ratio) w = h * ratio;
+                else h = w / ratio;
+                if (w > bounds.w) {
+                    w = bounds.w;
+                    h = w / ratio;
+                }
+                if (h > bounds.h) {
+                    h = bounds.h;
+                    w = h * ratio;
+                }
+            } else {
+                w = Math.min(w, bounds.w);
+                h = Math.min(h, bounds.h);
+            }
+
+            const x = Math.max(bounds.x, Math.min(rect.x, bounds.x + bounds.w - w));
+            const y = Math.max(bounds.y, Math.min(rect.y, bounds.y + bounds.h - h));
+            return { x, y, w, h };
+        }
+
+        snapRectToBounds(rect, ratio = null) {
+            if (!this.snapActive) return rect;
+            const bounds = this.bounds || { x: 0, y: 0, w: this.canvasW, h: this.canvasH };
+            let { x, y, w, h } = rect;
+            const dist = this.snapDistance;
+            const right = x + w;
+            const bottom = y + h;
+            const centerX = x + w / 2;
+            const centerY = y + h / 2;
+            const boundsRight = bounds.x + bounds.w;
+            const boundsBottom = bounds.y + bounds.h;
+            const boundsCenterX = bounds.x + bounds.w / 2;
+            const boundsCenterY = bounds.y + bounds.h / 2;
+
+            if (Math.abs(x - bounds.x) < dist) x = bounds.x;
+            if (Math.abs(y - bounds.y) < dist) y = bounds.y;
+            if (Math.abs(right - boundsRight) < dist) x = boundsRight - w;
+            if (Math.abs(bottom - boundsBottom) < dist) y = boundsBottom - h;
+            if (Math.abs(centerX - boundsCenterX) < dist) x = boundsCenterX - w / 2;
+            if (Math.abs(centerY - boundsCenterY) < dist) y = boundsCenterY - h / 2;
+
+            return this.clampRectToBounds({ x, y, w, h }, ratio);
+        }
+
+        fitCurrentRectToAspect() {
+            const ratio = this.aspectRatio;
+            if (!this.rect) return this.rect;
+            if (!ratio) {
+                this.rect = this.clampRectToBounds(this.rect);
+                return this.rect;
+            }
+
+            const cx = this.rect.x + this.rect.w / 2;
+            const cy = this.rect.y + this.rect.h / 2;
+            let w = this.rect.w;
+            let h = w / ratio;
+            if (h > this.rect.h) {
+                h = this.rect.h;
+                w = h * ratio;
+            }
+            const bounds = this.bounds || { x: 0, y: 0, w: this.canvasW, h: this.canvasH };
+            if (w > bounds.w) {
+                w = bounds.w;
+                h = w / ratio;
+            }
+            if (h > bounds.h) {
+                h = bounds.h;
+                w = h * ratio;
+            }
+
+            this.rect = this.clampRectToBounds({ x: cx - w / 2, y: cy - h / 2, w, h }, ratio);
+            return this.rect;
         }
         
         detectHandle(mouseX, mouseY) {
@@ -597,17 +728,7 @@ natural 170 g</textarea>
             let newX = this.rect.x + dx;
             let newY = this.rect.y + dy;
             
-            newX = Math.max(0, Math.min(newX, this.canvasW - this.rect.w));
-            newY = Math.max(0, Math.min(newY, this.canvasH - this.rect.h));
-            
-            if (this.snapActive) {
-                if (Math.abs(newX) < this.snapDistance) newX = 0;
-                if (Math.abs(newY) < this.snapDistance) newY = 0;
-                if (Math.abs(newX + this.rect.w - this.canvasW) < this.snapDistance) newX = this.canvasW - this.rect.w;
-                if (Math.abs(newY + this.rect.h - this.canvasH) < this.snapDistance) newY = this.canvasH - this.rect.h;
-            }
-            
-            this.rect = { ...this.rect, x: newX, y: newY };
+            this.rect = this.snapRectToBounds(this.clampRectToBounds({ ...this.rect, x: newX, y: newY }));
             return this.rect;
         }
         
@@ -621,7 +742,7 @@ natural 170 g</textarea>
             let newW = this.startRect.w;
             let newH = this.startRect.h;
             
-            const ratio = this.startRect.w / this.startRect.h;
+            const ratio = this.getEffectiveRatio(keepProportion);
             
             switch(handle) {
                 case 'nw':
@@ -629,7 +750,6 @@ natural 170 g</textarea>
                     newW = this.startRect.w - dx;
                     newY = this.startRect.y + dy;
                     newH = this.startRect.h - dy;
-                    if (keepProportion && newW > 0 && newH > 0) newH = newW / ratio;
                     break;
                 case 'n':
                     newY = this.startRect.y + dy;
@@ -639,7 +759,6 @@ natural 170 g</textarea>
                     newW = this.startRect.w + dx;
                     newY = this.startRect.y + dy;
                     newH = this.startRect.h - dy;
-                    if (keepProportion && newW > 0 && newH > 0) newH = newW / ratio;
                     break;
                 case 'w':
                     newX = this.startRect.x + dx;
@@ -652,7 +771,6 @@ natural 170 g</textarea>
                     newX = this.startRect.x + dx;
                     newW = this.startRect.w - dx;
                     newH = this.startRect.h + dy;
-                    if (keepProportion && newW > 0 && newH > 0) newW = newH * ratio;
                     break;
                 case 's':
                     newH = this.startRect.h + dy;
@@ -660,25 +778,39 @@ natural 170 g</textarea>
                 case 'se':
                     newW = this.startRect.w + dx;
                     newH = this.startRect.h + dy;
-                    if (keepProportion && newW > 0 && newH > 0) newH = newW / ratio;
                     break;
                 default:
                     return this.rect;
             }
             
-            newW = Math.max(30, Math.min(newW, this.canvasW - newX));
-            newH = Math.max(30, Math.min(newH, this.canvasH - newY));
-            newX = Math.max(0, Math.min(newX, this.canvasW - 30));
-            newY = Math.max(0, Math.min(newY, this.canvasH - 30));
-            
-            if (this.snapActive) {
-                if (Math.abs(newX) < this.snapDistance) newX = 0;
-                if (Math.abs(newY) < this.snapDistance) newY = 0;
-                if (Math.abs(newX + newW - this.canvasW) < this.snapDistance) newX = this.canvasW - newW;
-                if (Math.abs(newY + newH - this.canvasH) < this.snapDistance) newY = this.canvasH - newH;
+            if (ratio) {
+                const start = this.startRect;
+                if (handle === 'n' || handle === 's') {
+                    newH = Math.max(24, Math.abs(newH));
+                    newW = newH * ratio;
+                    newX = start.x + (start.w - newW) / 2;
+                    newY = handle === 'n' ? start.y + start.h - newH : start.y;
+                } else if (handle === 'e' || handle === 'w') {
+                    newW = Math.max(24, Math.abs(newW));
+                    newH = newW / ratio;
+                    newY = start.y + (start.h - newH) / 2;
+                    newX = handle === 'w' ? start.x + start.w - newW : start.x;
+                } else {
+                    const cornerW = Math.max(24, Math.abs(newW));
+                    const cornerH = Math.max(24, Math.abs(newH));
+                    if (cornerW / cornerH > ratio) {
+                        newW = cornerH * ratio;
+                        newH = cornerH;
+                    } else {
+                        newW = cornerW;
+                        newH = cornerW / ratio;
+                    }
+                    newY = handle.includes('n') ? start.y + start.h - newH : start.y;
+                    newX = handle.includes('w') ? start.x + start.w - newW : start.x;
+                }
             }
-            
-            this.rect = { x: newX, y: newY, w: newW, h: newH };
+
+            this.rect = this.snapRectToBounds(this.clampRectToBounds({ x: newX, y: newY, w: newW, h: newH }, ratio), ratio);
             return this.rect;
         }
         
@@ -704,9 +836,9 @@ natural 170 g</textarea>
 
         getActionButtonRects() {
             if (!this.active || !this.rect) return null;
-            const applyWidth = 186;
-            const resetWidth = 146;
-            const height = 42;
+            const applyWidth = 154;
+            const resetWidth = 164;
+            const height = 40;
             const gap = 10;
             const margin = 8;
             const totalWidth = applyWidth + gap + resetWidth;
@@ -764,16 +896,16 @@ natural 170 g</textarea>
             ctx.shadowColor = 'rgba(0, 0, 0, 0.32)';
             ctx.shadowBlur = 12;
             ctx.shadowOffsetY = 4;
-            this.drawRoundedRectPath(ctx, btn.x, btn.y, btn.w, btn.h, 12);
+            this.drawRoundedRectPath(ctx, btn.x, btn.y, btn.w, btn.h, 16);
             ctx.fillStyle = fillStyle;
             ctx.fill();
             ctx.shadowColor = 'transparent';
-            ctx.lineWidth = 1.5;
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.72)';
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.82)';
             ctx.stroke();
 
             ctx.fillStyle = textStyle;
-            ctx.font = '800 15px "Inter", "Segoe UI", sans-serif';
+            ctx.font = '850 14px "Inter", "Segoe UI", sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText(label, btn.x + btn.w / 2, btn.y + btn.h / 2 + 0.5);
@@ -783,8 +915,8 @@ natural 170 g</textarea>
         drawApplyButton(ctx) {
             const buttons = this.getActionButtonRects();
             if (!buttons) return;
-            this.drawActionButton(ctx, buttons.apply, 'Aplicar recorte', '#ff9800', '#111827');
-            this.drawActionButton(ctx, buttons.reset, 'Restablecer', '#172233', '#eef5ff');
+            this.drawActionButton(ctx, buttons.apply, 'Aplicar', '#0a84ff', '#ffffff');
+            this.drawActionButton(ctx, buttons.reset, 'Marco completo', '#ffffff', '#172033');
         }
         
         draw(ctx) {
@@ -801,18 +933,16 @@ natural 170 g</textarea>
             ctx.fillRect(x, y, w, h);
             ctx.globalCompositeOperation = 'source-over';
             
-            ctx.strokeStyle = '#ffffff';
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.96)';
             ctx.lineWidth = 2;
             ctx.strokeRect(x, y, w, h);
-            ctx.strokeStyle = '#78aaf5';
+            ctx.strokeStyle = 'rgba(10, 132, 255, 0.95)';
             ctx.lineWidth = 1.5;
-            ctx.setLineDash([6, 8]);
-            ctx.strokeRect(x, y, w, h);
-            ctx.setLineDash([]);
+            ctx.strokeRect(x + 1.5, y + 1.5, Math.max(0, w - 3), Math.max(0, h - 3));
             
             if (this.guides.thirds) {
                 ctx.beginPath();
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.56)';
                 ctx.lineWidth = 1;
                 const thirdX1 = x + w / 3;
                 const thirdX2 = x + (w * 2) / 3;
@@ -827,7 +957,7 @@ natural 170 g</textarea>
             
             if (this.guides.center) {
                 ctx.beginPath();
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+                ctx.strokeStyle = 'rgba(10, 132, 255, 0.42)';
                 ctx.lineWidth = 0.8;
                 ctx.setLineDash([4, 6]);
                 const centerX = x + w / 2;
@@ -844,15 +974,33 @@ natural 170 g</textarea>
                 { x: x + w / 2, y: y }, { x: x + w / 2, y: y + h }, { x: x, y: y + h / 2 }, { x: x + w, y: y + h / 2 }
             ];
             handles.forEach(handle => {
-                ctx.fillStyle = '#78aaf5';
-                ctx.beginPath();
-                ctx.rect(handle.x - handleSize / 2, handle.y - handleSize / 2, handleSize, handleSize);
-                ctx.fill();
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.25)';
+                ctx.shadowBlur = 6;
                 ctx.fillStyle = '#ffffff';
                 ctx.beginPath();
-                ctx.rect(handle.x - handleSize / 2 + 2, handle.y - handleSize / 2 + 2, handleSize - 4, handleSize - 4);
+                ctx.arc(handle.x, handle.y, handleSize / 2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+                ctx.strokeStyle = '#0a84ff';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                ctx.fillStyle = '#0a84ff';
+                ctx.beginPath();
+                ctx.arc(handle.x, handle.y, Math.max(2, handleSize / 5), 0, Math.PI * 2);
                 ctx.fill();
             });
+
+            const cornerLength = Math.min(44, Math.max(18, Math.min(w, h) * 0.18));
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 4;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(x, y + cornerLength); ctx.lineTo(x, y); ctx.lineTo(x + cornerLength, y);
+            ctx.moveTo(x + w - cornerLength, y); ctx.lineTo(x + w, y); ctx.lineTo(x + w, y + cornerLength);
+            ctx.moveTo(x, y + h - cornerLength); ctx.lineTo(x, y + h); ctx.lineTo(x + cornerLength, y + h);
+            ctx.moveTo(x + w - cornerLength, y + h); ctx.lineTo(x + w, y + h); ctx.lineTo(x + w, y + h - cornerLength);
+            ctx.stroke();
+            ctx.lineCap = 'butt';
             
             ctx.fillStyle = '#8eb9ff';
             ctx.beginPath();
@@ -863,15 +1011,20 @@ natural 170 g</textarea>
             ctx.arc(x + w / 2, y + h / 2, 5, 0, Math.PI * 2);
             ctx.fill();
             
-            ctx.font = '12px "Segoe UI", monospace';
-            ctx.fillStyle = 'rgba(0,0,0,0.7)';
-            ctx.fillRect(x + 5, y + 5, 140, 24);
+            const infoText = `${Math.round(w)} x ${Math.round(h)} px  ${this.aspectLabel || 'Libre'}`;
+            const infoX = Math.max(8, Math.min(x + 8, this.canvasW - 205));
+            const infoY = y + 8;
+            this.drawRoundedRectPath(ctx, infoX, infoY, 198, 30, 14);
+            ctx.fillStyle = 'rgba(17, 24, 39, 0.84)';
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
             ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 11px monospace';
-            ctx.fillText(`${Math.round(w)} x ${Math.round(h)} px`, x + 10, y + 22);
-            ctx.fillStyle = '#cccccc';
-            ctx.font = '10px monospace';
-            ctx.fillText(` (${(w / h).toFixed(2)})`, x + 95, y + 22);
+            ctx.font = '800 12px "Inter", "Segoe UI", sans-serif';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(infoText, infoX + 12, infoY + 15);
 
             this.drawApplyButton(ctx);
             
@@ -895,6 +1048,17 @@ natural 170 g</textarea>
     let cropMode = false;
     let cropActive = false;
     let lastCropRect = null;
+    let cropSessionOriginalState = null;
+    let cropAspectPreset = 'free';
+
+    const CROP_ASPECT_PRESETS = {
+      free: { label: 'Libre', ratio: null },
+      original: { label: 'Original', ratio: null },
+      '1:1': { label: '1:1', ratio: 1 },
+      '4:5': { label: '4:5', ratio: 4 / 5 },
+      '16:9': { label: '16:9', ratio: 16 / 9 },
+      a4: { label: 'A4', ratio: 210 / 297 }
+    };
 
     function getCropCursor(handle) {
       switch (handle) {
@@ -1144,12 +1308,19 @@ natural 170 g</textarea>
       };
     }
 
-    const LAYOUT_MOVE_ZONES = {
-      titulo: { x: 0, y: 10, w: CANVAS_W, h: 96 },
-      producto: { x: 0, y: 74, w: 416, h: 186 },
-      precioNormal: { x: 32, y: 278, w: 342, h: 108 },
-      precioOferta: { x: 420, y: 206, w: 458, h: 204 },
-      img: { x: 0, y: 420, w: CANVAS_W, h: 700 }
+    const LAYOUT_LIMIT_COMPATIBLE_FONDOS = new Set(['mercadopago', 'dni', 'carrefour']);
+    const DEFAULT_LAYOUT_MOVE_ZONES = {
+      titulo: { x: 0, y: 20, w: CANVAS_W, h: 84 },
+      producto: { x: 16, y: 84, w: 396, h: 190 },
+      precioNormal: { x: 18, y: 270, w: 350, h: 112 },
+      precioOferta: { x: 430, y: 206, w: 450, h: 204 },
+      img: { x: 16, y: 430, w: 868, h: 660 }
+    };
+
+    const LAYOUT_MOVE_ZONES_BY_FONDO = {
+      mercadopago: DEFAULT_LAYOUT_MOVE_ZONES,
+      dni: DEFAULT_LAYOUT_MOVE_ZONES,
+      carrefour: DEFAULT_LAYOUT_MOVE_ZONES
     };
 
     function clampValue(value, min, max) {
@@ -1158,7 +1329,9 @@ natural 170 g</textarea>
     }
 
     function getMovementZone(type) {
-      return LAYOUT_MOVE_ZONES[type] || null;
+      if (!LAYOUT_LIMIT_COMPATIBLE_FONDOS.has(fondoActual)) return null;
+      const zones = LAYOUT_MOVE_ZONES_BY_FONDO[fondoActual];
+      return zones ? zones[type] || null : null;
     }
 
     function constrainObjectToZone(type) {
@@ -1170,18 +1343,26 @@ natural 170 g</textarea>
 
       if (type === 'titulo') {
         target = tituloObj;
+        if (target.width > zone.w) target.width = zone.w;
         bounds = getTextBounds(tituloObj);
       } else if (type === 'producto') {
         target = productoObj;
+        if (target.width > zone.w) target.width = zone.w;
         bounds = getTextBounds(productoObj);
       } else if (type === 'precioNormal') {
         target = precioNormalObj;
+        if (target.width > zone.w) target.width = zone.w;
+        if (target.height > zone.h) target.height = zone.h;
         bounds = getPrecioBounds(precioNormalObj, true);
       } else if (type === 'precioOferta') {
         target = precioOfertaObj;
+        if (target.width > zone.w) target.width = zone.w;
+        if (target.height > zone.h) target.height = zone.h;
         bounds = getPrecioBounds(precioOfertaObj, false);
       } else if (type === 'img' && imagenObj) {
         target = imagenObj;
+        if (target.w > zone.w) target.w = zone.w;
+        if (target.h > zone.h) target.h = zone.h;
         bounds = { x: imagenObj.x, y: imagenObj.y, w: imagenObj.w, h: imagenObj.h };
       }
 
@@ -1594,7 +1775,6 @@ natural 170 g</textarea>
       // CROP OVERLAY
       if (cropMode && imagenObj) {
         cropTool.draw(mainCtx);
-        cropTool.drawMiniInfo(mainCtx);
       }
       
       if (selected && guides.length) {
@@ -2376,7 +2556,25 @@ natural 170 g</textarea>
     function syncDiscountOptionSelection() {
       document.querySelectorAll('[data-fondo-option]').forEach((button) => {
         button.setAttribute('aria-pressed', button.dataset.fondoOption === fondoActual ? 'true' : 'false');
+        button.classList.remove('is-selecting');
       });
+    }
+
+    function animateDiscountOptionSelection(tipo) {
+      document.querySelectorAll('[data-fondo-option]').forEach((button) => {
+        const selected = button.dataset.fondoOption === tipo;
+        button.setAttribute('aria-pressed', selected ? 'true' : 'false');
+        button.classList.toggle('is-selecting', selected);
+      });
+    }
+
+    function closeDiscountModalAfterSelection() {
+      window.setTimeout(() => {
+        cerrarModalFondo();
+        document.querySelectorAll('[data-fondo-option]').forEach((button) => {
+          button.classList.remove('is-selecting');
+        });
+      }, 360);
     }
 
     window.abrirModalFondo = function(options = {}) {
@@ -2464,6 +2662,7 @@ natural 170 g</textarea>
       const nombreArchivo = fondos[tipo];
       const esConsumo = tipo === 'consumo';
       if (!nombreArchivo && !esConsumo) return;
+      animateDiscountOptionSelection(tipo);
       const applyAllCheckbox = document.getElementById('modalApplyDiscountToAll');
       const aplicarATodas = !!(projectSetupComplete && applyAllCheckbox && applyAllCheckbox.checked);
       discountSelectionRequired = false;
@@ -2488,7 +2687,7 @@ natural 170 g</textarea>
         syncLayoutModePanels();
         updateView();
         projectSetupComplete = true;
-        cerrarModalFondo();
+        closeDiscountModalAfterSelection();
         captureStateChange(aplicarATodas ? 'Consumo inmediato aplicado en todas las paginas' : 'Consumo inmediato aplicado');
         return;
       }
@@ -2497,6 +2696,7 @@ natural 170 g</textarea>
         fondoPersonalizado = true;
         fondoActual = tipo;
         syncLayoutModePanels();
+        constrainPrimaryLayoutObjects();
         if (aplicarATodas) {
           saveCurrentPageState();
           pages = pages.map((page, index) => {
@@ -2512,6 +2712,7 @@ natural 170 g</textarea>
             fondoPersonalizado = currentPage.fondoPersonalizado;
             precioOfertaObj = cloneData(currentPage.precioOfertaObj);
           }
+          constrainPrimaryLayoutObjects();
           syncPrecioOfertaInputs();
           actualizarInfoDescuento(tipo, { allPages: true });
           syncUIFromObjects();
@@ -2520,12 +2721,12 @@ natural 170 g</textarea>
           aplicarDescuentoPorFondo(tipo);
         }
         projectSetupComplete = true;
-        cerrarModalFondo();
+        closeDiscountModalAfterSelection();
         captureStateChange(aplicarATodas ? 'Fondo actualizado en todas las paginas' : 'Fondo actualizado');
       };
       fondoImg.onerror = () => {
         setAdvancedStatus('No se pudo cargar el fondo seleccionado', true);
-        cerrarModalFondo();
+        closeDiscountModalAfterSelection();
       };
       fondoImg.src = nombreArchivo + '?' + Date.now();
     };
@@ -2781,6 +2982,7 @@ natural 170 g</textarea>
         imagenObj.h = Math.max(40, rect.h);
       }
 
+      constrainObjectToZone(type);
       updateView();
     }
 
@@ -2856,7 +3058,7 @@ natural 170 g</textarea>
           return;
         }
         if (cropTool.isPointInResetButton(canvasX, canvasY)) {
-          window.resetearImagen();
+          window.resetCropBox();
           return;
         }
 
@@ -2974,7 +3176,7 @@ natural 170 g</textarea>
       
       if (cropMode && cropTool.dragging) {
         viewCanvas.style.cursor = getCropCursor(cropTool.handle);
-        cropTool.updateDrag(canvasX, canvasY, shiftPressed);
+        cropTool.updateDrag(canvasX, canvasY, shiftPressed || !!e.shiftKey);
         clampCropRectToImage();
         updateView();
         return;
@@ -3017,6 +3219,7 @@ natural 170 g</textarea>
           imagenObj.y = objStartY + dy;
           applySnap(imagenObj);
         }
+        constrainObjectToZone(selected);
         updateView();
       }
     }
@@ -3211,7 +3414,25 @@ natural 170 g</textarea>
 
       if (e.code === "Escape" && cropMode) {
         e.preventDefault();
-        closeCropMode('Recorte cancelado');
+        window.cancelarCrop();
+        return;
+      }
+
+      if (e.code === "KeyR" && cropMode) {
+        e.preventDefault();
+        window.resetCropBox();
+        return;
+      }
+
+      if (cropMode && ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
+        e.preventDefault();
+        const step = e.shiftKey ? 10 : 2;
+        if (e.key === 'ArrowLeft') cropTool.move(-step, 0);
+        if (e.key === 'ArrowRight') cropTool.move(step, 0);
+        if (e.key === 'ArrowUp') cropTool.move(0, -step);
+        if (e.key === 'ArrowDown') cropTool.move(0, step);
+        clampCropRectToImage();
+        updateView();
         return;
       }
 
@@ -3643,7 +3864,7 @@ natural 170 g</textarea>
       const titleVisible = !!(titleToolsPanel && titleToolsPanel.classList.contains('show-panel'));
       const quickVisible = !!(quickPanel && quickPanel.classList.contains('show-panel'));
       const contextPanelLeft = leftOffset + leftPanelWidth + gap;
-      const contextPanelWidth = leftPanelWidth;
+      const contextPanelWidth = tight ? 168 : compact ? 176 : 188;
 
       if (titleToolsPanel) {
         titleToolsPanel.style.left = `${contextPanelLeft}px`;
@@ -3788,6 +4009,7 @@ natural 170 g</textarea>
       cerrarModalNuevoProyecto();
       cropMode = false;
       cropActive = false;
+      cropSessionOriginalState = null;
       cropTool.reset();
       lastCropRect = null;
       selected = null;
@@ -3942,6 +4164,7 @@ natural 170 g</textarea>
       img.onload = () => {
         imagenObj = { img: img, x: imageState.x, y: imageState.y, w: imageState.w, h: imageState.h, cropData: imageState.cropData ? cloneData(imageState.cropData) : null, srcData: imageState.srcData };
         cropActive = !!imageState.cropData;
+        cropSessionOriginalState = null;
         lastCropRect = imageState.cropData ? { x: imageState.x, y: imageState.y, w: imageState.w, h: imageState.h } : null;
         cropTool.rect = { x: imageState.x, y: imageState.y, w: imageState.w, h: imageState.h };
         done();
@@ -3949,6 +4172,7 @@ natural 170 g</textarea>
       img.onerror = () => {
         imagenObj = null;
         cropActive = false;
+        cropSessionOriginalState = null;
         lastCropRect = null;
         done();
       };
@@ -3976,10 +4200,120 @@ natural 170 g</textarea>
       return { x: imagenObj.x, y: imagenObj.y, w: imagenObj.w, h: imagenObj.h };
     }
 
+    function getCropImageSnapshot() {
+      if (!imagenObj) return null;
+      return {
+        x: imagenObj.x,
+        y: imagenObj.y,
+        w: imagenObj.w,
+        h: imagenObj.h,
+        cropData: imagenObj.cropData ? cloneData(imagenObj.cropData) : null
+      };
+    }
+
+    function restoreCropImageSnapshot(snapshot) {
+      if (!imagenObj || !snapshot) return;
+      imagenObj.x = snapshot.x;
+      imagenObj.y = snapshot.y;
+      imagenObj.w = snapshot.w;
+      imagenObj.h = snapshot.h;
+      imagenObj.cropData = snapshot.cropData ? cloneData(snapshot.cropData) : null;
+      cropActive = !!imagenObj.cropData;
+      cropTool.rect = { x: imagenObj.x, y: imagenObj.y, w: imagenObj.w, h: imagenObj.h };
+      lastCropRect = { ...cropTool.rect };
+    }
+
+    function getCropPresetValue(value) {
+      return CROP_ASPECT_PRESETS[value] ? value : 'free';
+    }
+
+    function resolveCropAspectPreset(value = cropAspectPreset) {
+      const presetKey = getCropPresetValue(value);
+      const preset = CROP_ASPECT_PRESETS[presetKey];
+      if (presetKey === 'original') {
+        const bounds = getImageDisplayBounds();
+        return {
+          label: preset.label,
+          ratio: bounds && bounds.h ? bounds.w / bounds.h : cropTool.originalRatio
+        };
+      }
+      return preset;
+    }
+
+    function syncCropControls() {
+      const controls = document.getElementById('cropControls');
+      const aspectSelect = document.getElementById('cropAspectSelect');
+      if (controls) controls.hidden = !cropMode;
+      if (aspectSelect) aspectSelect.value = getCropPresetValue(cropAspectPreset);
+    }
+
+    function applyCropAspectPreset(value = cropAspectPreset, fitRect = true) {
+      cropAspectPreset = getCropPresetValue(value);
+      const preset = resolveCropAspectPreset(cropAspectPreset);
+      cropTool.setAspectRatio(preset.ratio, preset.label);
+      if (fitRect) {
+        cropTool.fitCurrentRectToAspect();
+        clampCropRectToImage();
+      }
+      syncCropControls();
+      updateCropUI();
+      updateView();
+    }
+
+    window.setCropAspectRatio = function(value) {
+      if (!cropMode || !imagenObj) return;
+      applyCropAspectPreset(value, true);
+    };
+
+    window.resetCropBox = function() {
+      if (!cropMode || !imagenObj) return;
+      const bounds = getImageDisplayBounds();
+      if (!bounds) return;
+      cropTool.rect = { ...bounds };
+      cropTool.fitCurrentRectToAspect();
+      clampCropRectToImage();
+      updateCropUI('Marco de recorte ajustado a la imagen.');
+      updateView();
+    };
+
+    function enterCropMode() {
+      cropSessionOriginalState = getCropImageSnapshot();
+      cropMode = true;
+      cropTool.active = true;
+
+      const visibleRect = { x: imagenObj.x, y: imagenObj.y, w: imagenObj.w, h: imagenObj.h };
+      const fullBounds = getFullImageDisplayBoundsFromCurrentCrop();
+      if (fullBounds) {
+        imagenObj.x = fullBounds.x;
+        imagenObj.y = fullBounds.y;
+        imagenObj.w = fullBounds.w;
+        imagenObj.h = fullBounds.h;
+        imagenObj.cropData = null;
+        cropActive = false;
+      }
+
+      const bounds = getImageDisplayBounds();
+      cropTool.setBounds(bounds);
+      cropTool.originalRatio = bounds && bounds.h ? bounds.w / bounds.h : cropTool.originalRatio;
+      cropTool.rect = cropSessionOriginalState && cropSessionOriginalState.cropData ? visibleRect : { ...bounds };
+      clampCropRectToImage();
+      cropTool.startRect = { ...cropTool.rect };
+      applyCropAspectPreset(cropAspectPreset, false);
+      updateCropUI('Recorte activo: arrastra esquinas, bordes o centro. Enter aplica, Esc cancela.');
+      updateView();
+    }
+
+    window.cancelarCrop = function(statusMessage = 'Recorte cancelado') {
+      if (cropSessionOriginalState) restoreCropImageSnapshot(cropSessionOriginalState);
+      cropSessionOriginalState = null;
+      closeCropMode(statusMessage);
+    };
+
     function clampCropRectToImage() {
       const bounds = getImageDisplayBounds();
       if (!bounds || !cropTool.rect) return;
 
+      cropTool.setBounds(bounds);
       let x = Math.max(bounds.x, cropTool.rect.x);
       let y = Math.max(bounds.y, cropTool.rect.y);
       let maxW = (bounds.x + bounds.w) - x;
@@ -3991,7 +4325,7 @@ natural 170 g</textarea>
       if (x + w > bounds.x + bounds.w) x = bounds.x + bounds.w - w;
       if (y + h > bounds.y + bounds.h) y = bounds.y + bounds.h - h;
 
-      cropTool.rect = { x, y, w, h };
+      cropTool.rect = cropTool.clampRectToBounds({ x, y, w, h }, cropTool.aspectRatio);
     }
 
     function updateCropUI(message = '') {
@@ -4002,12 +4336,14 @@ natural 170 g</textarea>
         toggleBtn.classList.toggle('active', cropMode);
         toggleBtn.title = cropMode ? 'Aplicar recorte' : 'Entrar en recorte';
       }
+      syncCropControls();
       if (indicator) {
         indicator.style.display = cropMode ? 'block' : 'none';
         if (message && cropMode) {
           indicator.innerHTML = `<i class="fa-solid fa-crop-simple" aria-hidden="true"></i> ${message}`;
         } else if (cropMode) {
-          indicator.innerHTML = '<i class="fa-solid fa-crop-simple" aria-hidden="true"></i> RECORTE ACTIVO - Arrastra esquinas, bordes o centro. Pulsa RECORTE o ENTER para aplicar, ESC cancela';
+          const aspectText = cropTool.aspectLabel && cropTool.aspectLabel !== 'Libre' ? ` - ${cropTool.aspectLabel}` : '';
+          indicator.innerHTML = `<i class="fa-solid fa-crop-simple" aria-hidden="true"></i> Recorte activo${aspectText}. Enter aplica, Esc cancela.`;
         }
       }
     }
@@ -4074,14 +4410,7 @@ natural 170 g</textarea>
       mostrarHeaderTools(true);
 
       if (!cropMode) {
-        cropMode = true;
-        cropTool.active = true;
-        const startRect = { x: imagenObj.x, y: imagenObj.y, w: imagenObj.w, h: imagenObj.h };
-        cropTool.rect = startRect;
-        clampCropRectToImage();
-        cropTool.startRect = { ...cropTool.rect };
-        updateCropUI('RECORTE ACTIVO - Arrastra esquinas, bordes o centro. Pulsa RECORTE o ENTER para aplicar, ESC cancela');
-        updateView();
+        enterCropMode();
         return;
       }
 
@@ -4114,7 +4443,14 @@ natural 170 g</textarea>
         Math.abs(rect.h - imageBounds.h) < 0.5;
 
       if (sameBounds) {
-        closeCropMode('Sin cambios en el recorte');
+        const hadCrop = !!(cropSessionOriginalState && cropSessionOriginalState.cropData);
+        imagenObj.cropData = null;
+        cropActive = false;
+        cropTool.rect = { x: imagenObj.x, y: imagenObj.y, w: imagenObj.w, h: imagenObj.h };
+        lastCropRect = { ...cropTool.rect };
+        cropSessionOriginalState = null;
+        closeCropMode(hadCrop ? 'Recorte quitado. Imagen completa visible.' : 'Sin cambios en el recorte');
+        if (hadCrop) captureStateChange('Recorte quitado');
         return;
       }
 
@@ -4137,6 +4473,7 @@ natural 170 g</textarea>
       cropActive = true;
       cropTool.rect = { x: imagenObj.x, y: imagenObj.y, w: imagenObj.w, h: imagenObj.h };
       lastCropRect = { ...cropTool.rect };
+      cropSessionOriginalState = null;
       closeCropMode();
       captureStateChange('Recorte aplicado');
       setImageSearchStatus('Recorte aplicado correctamente.');
@@ -4158,6 +4495,7 @@ natural 170 g</textarea>
       imagenObj.cropData = null;
       cropActive = false;
       cropMode = false;
+      cropSessionOriginalState = null;
       cropTool.dragging = false;
       cropTool.handle = null;
       cropTool.active = false;
@@ -4177,6 +4515,7 @@ natural 170 g</textarea>
       imagenObj = null;
       cropActive = false;
       cropMode = false;
+      cropSessionOriginalState = null;
       cropTool.reset();
       lastCropRect = null;
       if (selected === 'img') {
@@ -4212,9 +4551,9 @@ natural 170 g</textarea>
         titulo: { shadow: false, outline: false },
         producto: { shadow: false, outline: false }
       });
-      constrainPrimaryLayoutObjects();
       fondoActual = pageState.fondoActual || null;
       fondoPersonalizado = !!pageState.fondoPersonalizado;
+      constrainPrimaryLayoutObjects();
       const finalize = () => {
         syncUIFromObjects();
         selected = null;
@@ -4502,6 +4841,7 @@ natural 170 g</textarea>
         imagenObj = { img: img, x: CANVAS_W / 2 - w / 2, y: 550, w: w, h: h, cropData: null, srcData: dataUrl };
         cropActive = false;
         cropMode = false;
+        cropSessionOriginalState = null;
         lastCropRect = null;
         cropTool.reset();
         cropTool.rect = { x: imagenObj.x, y: imagenObj.y, w: imagenObj.w, h: imagenObj.h };
@@ -4728,6 +5068,7 @@ natural 170 g</textarea>
       if (mod && e.key.toLowerCase() === 'y') { e.preventDefault(); window.rehacerCambio(); return; }
       if (mod && e.key.toLowerCase() === 's') { e.preventDefault(); window.guardarDisenoEnArchivo(); return; }
       if (isConsumoMode()) return;
+      if (cropMode) return;
       if (!writing && (e.key === 'Enter' || e.key === 'F2') && (selected === 'titulo' || selected === 'producto' || selected === 'precioNormal')) {
         e.preventDefault();
         beginInlineEditorForSelection({ selectAll: e.key === 'F2' });
