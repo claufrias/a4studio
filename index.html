@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" referrerpolicy="no-referrer">
-<link rel="stylesheet" href="a4studio.css">
+<link rel="stylesheet" href="a4studio.css?v=20260610-inline-text-editing-focus">
 </head>
 <body>
 
@@ -198,8 +198,8 @@ natural 170 g</textarea>
       <button class="header-combo-btn btn-with-icon" type="button" onclick="pegarImagen()"><i class="fa-regular fa-paste btn-icon" aria-hidden="true"></i><span>Pegar</span></button>
     </div>
     <div class="image-panel-dual-actions">
-      <button id="cropToggleBtn" onclick="toggleCropMode()" class="header-combo-btn btn-with-icon" type="button"><i class="fa-solid fa-crop-simple btn-icon" aria-hidden="true"></i><span>Recorte</span></button>
-      <button onclick="resetearImagen()" class="header-combo-btn btn-with-icon image-reset-btn" type="button"><i class="fa-solid fa-rotate-right btn-icon" aria-hidden="true"></i><span>Restablecer</span></button>
+      <button id="cropToggleBtn" onclick="toggleCropMode()" class="header-combo-btn btn-with-icon" type="button" disabled><i class="fa-solid fa-crop-simple btn-icon" aria-hidden="true"></i><span>Recorte</span></button>
+      <button id="imageResetBtn" onclick="resetearImagen()" class="header-combo-btn btn-with-icon image-reset-btn" type="button" disabled><i class="fa-solid fa-rotate-right btn-icon" aria-hidden="true"></i><span>Restablecer</span></button>
     </div>
     <div id="cropControls" class="crop-controls" hidden>
       <div class="crop-control-row">
@@ -219,7 +219,7 @@ natural 170 g</textarea>
       </div>
       <button class="header-combo-btn btn-with-icon" type="button" onclick="resetCropBox()"><i class="fa-solid fa-expand btn-icon" aria-hidden="true"></i><span>Marco completo</span></button>
     </div>
-    <button class="header-combo-btn btn-with-icon" type="button" onclick="eliminarImagen()"><i class="fa-regular fa-trash-can btn-icon" aria-hidden="true"></i><span>Eliminar imagen</span></button>
+    <button id="imageDeleteBtn" class="header-combo-btn btn-with-icon" type="button" onclick="eliminarImagen()" disabled><i class="fa-regular fa-trash-can btn-icon" aria-hidden="true"></i><span>Eliminar imagen</span></button>
     <div class="image-search-label image-search-subtitle">Google Imagenes</div>
     <input id="googleImageSearchInput" class="image-search-field" type="text" placeholder="Producto a buscar en Google Imágenes">
     <div class="image-search-actions">
@@ -288,7 +288,6 @@ natural 170 g</textarea>
         </div>
         <span class="discount-option-label">
           <span class="discount-option-name"><i class="fa-solid fa-tag" aria-hidden="true"></i> Cuenta DNI</span>
-          <span class="discount-option-type">Descuento fijo</span>
           <span class="discount-badge discount-badge-green">10% OFF</span>
         </span>
       </button>
@@ -298,7 +297,6 @@ natural 170 g</textarea>
         </div>
         <span class="discount-option-label">
           <span class="discount-option-name"><i class="fa-solid fa-wallet" aria-hidden="true"></i> Mercado Pago</span>
-          <span class="discount-option-type">Descuento fijo</span>
           <span class="discount-badge discount-badge-yellow">15% OFF</span>
         </span>
       </button>
@@ -308,7 +306,6 @@ natural 170 g</textarea>
         </div>
         <span class="discount-option-label">
           <span class="discount-option-name"><i class="fa-solid fa-credit-card" aria-hidden="true"></i> Cuenta Digital</span>
-          <span class="discount-option-type">Descuento fijo</span>
           <span class="discount-badge discount-badge-pink">15% OFF</span>
         </span>
       </button>
@@ -318,15 +315,13 @@ natural 170 g</textarea>
         </div>
         <span class="discount-option-label">
           <span class="discount-option-name"><i class="fa-solid fa-basket-shopping" aria-hidden="true"></i> Consumo inmediato</span>
-          <span class="discount-option-type">Descuento variable</span>
           <span class="discount-badge discount-badge-red">Variable</span>
         </span>
       </button>
     </div>
     <div class="discount-modal-hint">
       <span class="discount-modal-hint-icon"><i class="fa-solid fa-info" aria-hidden="true"></i></span>
-      <span>Los descuentos se aplicaran automaticamente en el diseno de tu cartel.</span>
-      <span class="discount-modal-hint-ticket" aria-hidden="true"><i class="fa-solid fa-ticket-simple"></i></span>
+      <span>Los descuentos se aplicarán automáticamente en el diseño de tu cartel.</span>
     </div>
     <div class="discount-required-note"><i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i> Para comenzar, selecciona una plantilla de descuento.</div>
     <div class="discount-modal-footer">Desarrollado por Claudio Frias, 2026.</div>
@@ -335,14 +330,21 @@ natural 170 g</textarea>
 
 <div id="modalNuevoProyecto" class="modal">
   <div class="modal-content new-project-modal">
+    <button class="new-project-close" type="button" onclick="cerrarModalNuevoProyecto()" aria-label="Cerrar nuevo proyecto">
+      <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+    </button>
+    <span class="new-project-sparkle new-project-sparkle-a" aria-hidden="true"></span>
+    <span class="new-project-sparkle new-project-sparkle-b" aria-hidden="true"></span>
+    <span class="new-project-sparkle new-project-sparkle-c" aria-hidden="true"></span>
     <div class="new-project-icon" aria-hidden="true"><i class="fa-solid fa-file-circle-plus"></i></div>
     <h3>Crear proyecto nuevo</h3>
     <p>Se limpiará el proyecto actual y se iniciará uno nuevo desde cero.</p>
     <div class="new-project-note"><i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i> Luego deberás elegir una plantilla de descuento para continuar.</div>
     <div class="modal-buttons">
-      <button class="modal-btn" type="button" onclick="confirmarNuevoProyecto()">Crear y elegir plantilla</button>
+      <button class="modal-btn new-project-primary" type="button" onclick="confirmarNuevoProyecto()"><i class="fa-solid fa-file-circle-plus" aria-hidden="true"></i>Crear y elegir plantilla</button>
       <button class="modal-btn modal-close" type="button" onclick="cerrarModalNuevoProyecto()">Cancelar</button>
     </div>
+    <div class="new-project-critical"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> Esta acci&oacute;n no se puede deshacer.</div>
   </div>
 </div>
 
@@ -1091,12 +1093,14 @@ natural 170 g</textarea>
     let objStartX = 0, objStartY = 0;
     let resizeStartRect = null;
     let resizeStartState = null;
+    let transformOrigin = null;
     let lastPointerType = 'mouse';
     let activeTouchId = null;
     let ignoreMouseEventsUntil = 0;
     
     let activeEditor = null;
     let activeEditorMeta = null;
+    let activeEditorChrome = null;
     let lastClickTime = 0;
     let lastClickObj = null;
     
@@ -1109,6 +1113,8 @@ natural 170 g</textarea>
     
     let snapThreshold = 12;
     let guides = [];
+    const SELECTION_COLOR = '#2b8cff';
+    const SELECTION_SHADOW = 'rgba(0, 0, 0, 0.28)';
     
     let isFirstLoad = true;
     
@@ -1382,16 +1388,143 @@ natural 170 g</textarea>
       constrainObjectToZone('img');
     }
     
-    function applySnap(obj) {
+    function shiftObjectByType(type, deltaX, deltaY) {
+      if (!deltaX && !deltaY) return;
+      const target = type === 'titulo'
+        ? tituloObj
+        : type === 'producto'
+          ? productoObj
+          : type === 'precioNormal'
+            ? precioNormalObj
+            : type === 'precioOferta'
+              ? precioOfertaObj
+              : type === 'img'
+                ? imagenObj
+                : null;
+      if (!target) return;
+      target.x += deltaX;
+      target.y += deltaY;
+    }
+
+    function keepSelectionCenterInsideCanvas(type) {
+      const bounds = getBoundsForType(type);
+      if (!bounds) return;
+      const centerX = bounds.x + bounds.w / 2;
+      const centerY = bounds.y + bounds.h / 2;
+      const nextCenterX = clampValue(centerX, 0, CANVAS_W);
+      const nextCenterY = clampValue(centerY, 0, CANVAS_H);
+      shiftObjectByType(type, nextCenterX - centerX, nextCenterY - centerY);
+    }
+
+    function applyCanvasCenterSnapToSelection(type) {
       guides = [];
-      const cx = CANVAS_W/2, cy = CANVAS_H/2;
-      let newX = obj.x, newY = obj.y;
-      if (Math.abs(newX - cx) < snapThreshold) { newX = cx; guides.push({type:"v", x:cx}); }
-      if (Math.abs(newY - cy) < snapThreshold) { newY = cy; guides.push({type:"h", y:cy}); }
-      obj.x = newX; obj.y = newY;
+      const bounds = getBoundsForType(type);
+      if (!bounds) return;
+
+      const centerX = bounds.x + bounds.w / 2;
+      const centerY = bounds.y + bounds.h / 2;
+      const canvasCenterX = CANVAS_W / 2;
+      const canvasCenterY = CANVAS_H / 2;
+      const threshold = snapThreshold;
+
+      let deltaX = 0;
+      let deltaY = 0;
+      if (Math.abs(centerX - canvasCenterX) <= threshold) {
+        deltaX = canvasCenterX - centerX;
+        guides.push({ type: 'v', x: canvasCenterX, kind: 'canvas-center' });
+      }
+      if (Math.abs(centerY - canvasCenterY) <= threshold) {
+        deltaY = canvasCenterY - centerY;
+        guides.push({ type: 'h', y: canvasCenterY, kind: 'canvas-center' });
+      }
+      shiftObjectByType(type, deltaX, deltaY);
+    }
+
+    function refreshCanvasCenterGuides(type) {
+      guides = [];
+      const bounds = getBoundsForType(type);
+      if (!bounds) return;
+      const centerX = bounds.x + bounds.w / 2;
+      const centerY = bounds.y + bounds.h / 2;
+      const canvasCenterX = CANVAS_W / 2;
+      const canvasCenterY = CANVAS_H / 2;
+      const tolerance = 0.5;
+      if (Math.abs(centerX - canvasCenterX) <= tolerance) {
+        guides.push({ type: 'v', x: canvasCenterX, kind: 'canvas-center' });
+      }
+      if (Math.abs(centerY - canvasCenterY) <= tolerance) {
+        guides.push({ type: 'h', y: canvasCenterY, kind: 'canvas-center' });
+      }
+    }
+
+    function applySnapToSelection(type) {
+      guides = [];
+      const bounds = getBoundsForType(type);
+      if (!bounds) return;
+
+      const zone = getMovementZone(type) || { x: 0, y: 0, w: CANVAS_W, h: CANVAS_H };
+      const sourceX = [
+        { value: bounds.x, guide: bounds.x },
+        { value: bounds.x + bounds.w / 2, guide: bounds.x + bounds.w / 2 },
+        { value: bounds.x + bounds.w, guide: bounds.x + bounds.w }
+      ];
+      const sourceY = [
+        { value: bounds.y, guide: bounds.y },
+        { value: bounds.y + bounds.h / 2, guide: bounds.y + bounds.h / 2 },
+        { value: bounds.y + bounds.h, guide: bounds.y + bounds.h }
+      ];
+      const targetX = [
+        { value: 0, guide: 0 },
+        { value: CANVAS_W / 2, guide: CANVAS_W / 2 },
+        { value: CANVAS_W, guide: CANVAS_W },
+        { value: zone.x, guide: zone.x },
+        { value: zone.x + zone.w / 2, guide: zone.x + zone.w / 2 },
+        { value: zone.x + zone.w, guide: zone.x + zone.w }
+      ];
+      const targetY = [
+        { value: 0, guide: 0 },
+        { value: CANVAS_H / 2, guide: CANVAS_H / 2 },
+        { value: CANVAS_H, guide: CANVAS_H },
+        { value: zone.y, guide: zone.y },
+        { value: zone.y + zone.h / 2, guide: zone.y + zone.h / 2 },
+        { value: zone.y + zone.h, guide: zone.y + zone.h }
+      ];
+
+      let bestX = null;
+      let bestY = null;
+      for (const source of sourceX) {
+        for (const target of targetX) {
+          const delta = target.value - source.value;
+          if (Math.abs(delta) <= snapThreshold && (!bestX || Math.abs(delta) < Math.abs(bestX.delta))) {
+            bestX = { delta, guide: target.guide };
+          }
+        }
+      }
+      for (const source of sourceY) {
+        for (const target of targetY) {
+          const delta = target.value - source.value;
+          if (Math.abs(delta) <= snapThreshold && (!bestY || Math.abs(delta) < Math.abs(bestY.delta))) {
+            bestY = { delta, guide: target.guide };
+          }
+        }
+      }
+
+      if (bestX) {
+        shiftObjectByType(type, bestX.delta, 0);
+        guides.push({ type: 'v', x: bestX.guide });
+      }
+      if (bestY) {
+        shiftObjectByType(type, 0, bestY.delta);
+        guides.push({ type: 'h', y: bestY.guide });
+      }
+    }
+
+    function applySnap(obj) {
+      if (selected) applySnapToSelection(selected);
     }
     
     function drawSelectionGuides(type) {
+      if (!dragging) return;
       const bounds = getBoundsForType(type);
       if (!bounds) return;
 
@@ -1402,10 +1535,10 @@ natural 170 g</textarea>
 
       mainCtx.save();
       mainCtx.lineWidth = 1;
-      mainCtx.setLineDash([6, 8]);
+      mainCtx.setLineDash([4, 7]);
 
       mainCtx.beginPath();
-      mainCtx.strokeStyle = 'rgba(88, 166, 255, 0.42)';
+      mainCtx.strokeStyle = 'rgba(43, 140, 255, 0.34)';
       mainCtx.moveTo(centerX, 0);
       mainCtx.lineTo(centerX, CANVAS_H);
       mainCtx.moveTo(0, centerY);
@@ -1414,7 +1547,7 @@ natural 170 g</textarea>
 
       if (isNearCanvasCenterX || isNearCanvasCenterY) {
         mainCtx.beginPath();
-        mainCtx.strokeStyle = 'rgba(255, 196, 87, 0.72)';
+        mainCtx.strokeStyle = 'rgba(255, 198, 71, 0.84)';
         if (isNearCanvasCenterX) {
           mainCtx.moveTo(CANVAS_W / 2, 0);
           mainCtx.lineTo(CANVAS_W / 2, CANVAS_H);
@@ -1427,7 +1560,7 @@ natural 170 g</textarea>
       }
 
       mainCtx.setLineDash([]);
-      mainCtx.fillStyle = 'rgba(88, 166, 255, 0.92)';
+      mainCtx.fillStyle = 'rgba(43, 140, 255, 0.95)';
       mainCtx.beginPath();
       mainCtx.arc(centerX, centerY, 3, 0, Math.PI * 2);
       mainCtx.fill();
@@ -1439,12 +1572,12 @@ natural 170 g</textarea>
     }
 
     function getResizeHandleVisualSize() {
-      const screenSize = lastPointerType === 'touch' ? 16 : 12;
+      const screenSize = lastPointerType === 'touch' ? 18 : 11;
       return screenSize / getCanvasInteractionScale();
     }
 
     function getResizeHitRadius() {
-      const minScreenRadius = lastPointerType === 'touch' ? 28 : 16;
+      const minScreenRadius = lastPointerType === 'touch' ? 34 : 18;
       return minScreenRadius / getCanvasInteractionScale();
     }
 
@@ -1458,29 +1591,71 @@ natural 170 g</textarea>
       return minScreenRadius / getCanvasInteractionScale();
     }
 
+    function getSelectionHitPadding() {
+      const screenPadding = lastPointerType === 'touch' ? 14 : 6;
+      return screenPadding / getCanvasInteractionScale();
+    }
+
+    function isPointInSelectionBounds(type, worldX, worldY) {
+      const bounds = getBoundsForType(type);
+      if (!bounds) return false;
+      const pad = Math.max(getSelectionHitPadding(), getResizeHitRadius() * 0.45);
+      return worldX >= bounds.x - pad
+        && worldX <= bounds.x + bounds.w + pad
+        && worldY >= bounds.y - pad
+        && worldY <= bounds.y + bounds.h + pad;
+    }
+
+    function getSelectionHandlePoints(x, y, w, h) {
+      return [
+        { key: 'nw', x, y, corner: true },
+        { key: 'n', x: x + w / 2, y },
+        { key: 'ne', x: x + w, y, corner: true },
+        { key: 'w', x, y: y + h / 2 },
+        { key: 'e', x: x + w, y: y + h / 2 },
+        { key: 'sw', x, y: y + h, corner: true },
+        { key: 's', x: x + w / 2, y: y + h },
+        { key: 'se', x: x + w, y: y + h, corner: true }
+      ];
+    }
+
+    function drawTransformBox(x, y, w, h) {
+      const lineWidth = 1 / getCanvasInteractionScale();
+      mainCtx.save();
+      mainCtx.lineWidth = lineWidth;
+      mainCtx.strokeStyle = SELECTION_SHADOW;
+      mainCtx.strokeRect(x + lineWidth, y + lineWidth, w, h);
+      mainCtx.strokeStyle = SELECTION_COLOR;
+      mainCtx.strokeRect(x, y, w, h);
+      mainCtx.restore();
+      drawResizeHandles(x, y, w, h);
+    }
+
     function drawResizeHandles(x, y, w, h) {
       const handleSize = getResizeHandleVisualSize();
-      const handles = [
-        { x: x, y: y },
-        { x: x + w/2, y: y },
-        { x: x + w, y: y },
-        { x: x, y: y + h/2 },
-        { x: x + w, y: y + h/2 },
-        { x: x, y: y + h },
-        { x: x + w/2, y: y + h },
-        { x: x + w, y: y + h }
-      ];
+      const handles = getSelectionHandlePoints(x, y, w, h);
+      const border = Math.max(1 / getCanvasInteractionScale(), handleSize * 0.12);
       
       handles.forEach(handle => {
+        const size = handle.corner ? handleSize * 1.08 : handleSize * 0.9;
+        const left = handle.x - size / 2;
+        const top = handle.y - size / 2;
+        mainCtx.save();
+        mainCtx.shadowColor = SELECTION_SHADOW;
+        mainCtx.shadowBlur = 4 / getCanvasInteractionScale();
+        mainCtx.shadowOffsetX = 0;
+        mainCtx.shadowOffsetY = 1 / getCanvasInteractionScale();
         mainCtx.fillStyle = "#ffffff";
+        mainCtx.beginPath();
+        mainCtx.rect(left, top, size, size);
+        mainCtx.fill();
         mainCtx.shadowBlur = 0;
+        mainCtx.lineWidth = border;
+        mainCtx.strokeStyle = SELECTION_COLOR;
         mainCtx.beginPath();
-        mainCtx.rect(handle.x - handleSize/2, handle.y - handleSize/2, handleSize, handleSize);
-        mainCtx.fill();
-        mainCtx.fillStyle = "#8eb9ff";
-        mainCtx.beginPath();
-        mainCtx.rect(handle.x - handleSize/2 + 1, handle.y - handleSize/2 + 1, handleSize - 2, handleSize - 2);
-        mainCtx.fill();
+        mainCtx.rect(left + border / 2, top + border / 2, size - border, size - border);
+        mainCtx.stroke();
+        mainCtx.restore();
       });
     }
     
@@ -1692,10 +1867,7 @@ natural 170 g</textarea>
         }
         
         if (selected === "img" && !cropMode) {
-          mainCtx.strokeStyle = "#8eb9ff";
-          mainCtx.lineWidth = 2;
-          mainCtx.strokeRect(imagenObj.x, imagenObj.y, imagenObj.w, imagenObj.h);
-          drawResizeHandles(imagenObj.x, imagenObj.y, imagenObj.w, imagenObj.h);
+          drawTransformBox(imagenObj.x, imagenObj.y, imagenObj.w, imagenObj.h);
         }
       }
       
@@ -1704,23 +1876,20 @@ natural 170 g</textarea>
       let tituloLineH = tituloObj.fontSize * 1.1;
       let tituloTop = tituloObj.y - (tituloObj.fontSize * 0.8);
       
-      tituloLines.forEach((l, i) => {
-        let xPos = tituloObj.x;
-        if (tituloObj.align === "center") {
-          let metrics = mainCtx.measureText(l);
-          xPos = tituloObj.x + (tituloObj.width - metrics.width) / 2;
-        }
-        aplicarEfectoTextoDraw('titulo', xPos, tituloObj.y + i * tituloLineH, l, tituloObj.fontSize, tituloObj.fontFamily, tituloObj.color, false);
-      });
+      if (!(activeEditorMeta && activeEditorMeta.objType === "titulo")) {
+        tituloLines.forEach((l, i) => {
+          let xPos = tituloObj.x;
+          if (tituloObj.align === "center") {
+            let metrics = mainCtx.measureText(l);
+            xPos = tituloObj.x + (tituloObj.width - metrics.width) / 2;
+          }
+          aplicarEfectoTextoDraw('titulo', xPos, tituloObj.y + i * tituloLineH, l, tituloObj.fontSize, tituloObj.fontFamily, tituloObj.color, false);
+        });
+      }
       
             if (selected === "titulo" && !(activeEditorMeta && activeEditorMeta.objType === "titulo")) {
         const bounds = getTextBounds(tituloObj);
-        mainCtx.strokeStyle = "#8eb9ff";
-        mainCtx.lineWidth = 2;
-        mainCtx.setLineDash([6, 8]);
-        mainCtx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
-        mainCtx.setLineDash([]);
-        drawResizeHandles(bounds.x, bounds.y, bounds.w, bounds.h);
+        drawTransformBox(bounds.x, bounds.y, bounds.w, bounds.h);
       }
       
       // PRODUCTO
@@ -1728,31 +1897,25 @@ natural 170 g</textarea>
       let productoLineH = productoObj.fontSize * 1.1;
       let productoTop = productoObj.y - (productoObj.fontSize * 0.8);
       
-      productoLines.forEach((l, i) => {
-        aplicarEfectoTextoDraw('producto', productoObj.x, productoObj.y + i * productoLineH, l, productoObj.fontSize, productoObj.fontFamily, productoObj.color, false);
-      });
+      if (!(activeEditorMeta && activeEditorMeta.objType === "producto")) {
+        productoLines.forEach((l, i) => {
+          aplicarEfectoTextoDraw('producto', productoObj.x, productoObj.y + i * productoLineH, l, productoObj.fontSize, productoObj.fontFamily, productoObj.color, false);
+        });
+      }
       
             if (selected === "producto" && !(activeEditorMeta && activeEditorMeta.objType === "producto")) {
         const bounds = getTextBounds(productoObj);
-        mainCtx.strokeStyle = "#8eb9ff";
-        mainCtx.lineWidth = 2;
-        mainCtx.setLineDash([6, 8]);
-        mainCtx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
-        mainCtx.setLineDash([]);
-        drawResizeHandles(bounds.x, bounds.y, bounds.w, bounds.h);
+        drawTransformBox(bounds.x, bounds.y, bounds.w, bounds.h);
       }
       
       // PRECIO NORMAL
-      drawPriceWithCents(precioNormalObj.x, precioNormalObj.y, precioNormalObj.entero, precioNormalObj.centavos, precioNormalObj.fontSize, precioNormalObj.color, false);
+      if (!(activeEditorMeta && activeEditorMeta.objType === "precioNormal")) {
+        drawPriceWithCents(precioNormalObj.x, precioNormalObj.y, precioNormalObj.entero, precioNormalObj.centavos, precioNormalObj.fontSize, precioNormalObj.color, false);
+      }
       
       if (selected === "precioNormal" && !(activeEditorMeta && activeEditorMeta.objType === "precioNormal")) {
         let bounds = getPrecioBounds(precioNormalObj, true);
-        mainCtx.strokeStyle = "#8eb9ff";
-        mainCtx.lineWidth = 2;
-        mainCtx.setLineDash([6, 8]);
-        mainCtx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
-        mainCtx.setLineDash([]);
-        drawResizeHandles(bounds.x, bounds.y, bounds.w, bounds.h);
+        drawTransformBox(bounds.x, bounds.y, bounds.w, bounds.h);
       }
       
       // PRECIO OFERTA
@@ -1760,12 +1923,7 @@ natural 170 g</textarea>
       
       if (selected === "precioOferta") {
         let bounds = getPrecioBounds(precioOfertaObj, false);
-        mainCtx.strokeStyle = "#8eb9ff";
-        mainCtx.lineWidth = 2;
-        mainCtx.setLineDash([6, 8]);
-        mainCtx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
-        mainCtx.setLineDash([]);
-        drawResizeHandles(bounds.x, bounds.y, bounds.w, bounds.h);
+        drawTransformBox(bounds.x, bounds.y, bounds.w, bounds.h);
       }
       
       if (selected && !(activeEditorMeta && activeEditorMeta.objType === selected)) {
@@ -1779,15 +1937,17 @@ natural 170 g</textarea>
       
       if (selected && guides.length) {
         mainCtx.save();
-        mainCtx.beginPath();
-        mainCtx.strokeStyle = "#8eb9ff";
-        mainCtx.lineWidth = 2;
-        mainCtx.setLineDash([6, 8]);
+        mainCtx.lineWidth = 1 / getCanvasInteractionScale();
+        mainCtx.setLineDash([4, 7]);
         for (let g of guides) {
+          mainCtx.beginPath();
+          mainCtx.strokeStyle = g.kind === 'canvas-center'
+            ? "rgba(255, 198, 71, 0.92)"
+            : "rgba(43, 140, 255, 0.8)";
           if (g.type === "v") { mainCtx.moveTo(g.x, 0); mainCtx.lineTo(g.x, CANVAS_H); }
           else if (g.type === "h") { mainCtx.moveTo(0, g.y); mainCtx.lineTo(CANVAS_W, g.y); }
+          mainCtx.stroke();
         }
-        mainCtx.stroke();
         mainCtx.setLineDash([]);
         mainCtx.restore();
       }
@@ -1845,7 +2005,7 @@ natural 170 g</textarea>
       if (!obj) return "";
       const entero = Number.isFinite(Number(obj.entero)) ? Math.max(0, Math.floor(Number(obj.entero))) : 0;
       const centavos = Number.isFinite(Number(obj.centavos)) ? Math.max(0, Math.min(99, Math.floor(Number(obj.centavos)))) : 0;
-      return centavos > 0 ? `${entero},${String(centavos).padStart(2, '0')}` : String(entero);
+      return centavos > 0 ? `$${entero},${String(centavos).padStart(2, '0')}` : `$${entero}`;
     }
 
     function parsePriceEditorValue(rawValue) {
@@ -1878,37 +2038,139 @@ natural 170 g</textarea>
       };
     }
 
+    function getTextEditBounds(obj) {
+      const lines = wrapTextMultiline(obj.text || ' ', obj.width, obj.fontFamily, obj.fontSize);
+      const lineH = obj.fontSize * 1.1;
+      return {
+        x: obj.x,
+        y: obj.y - (obj.fontSize * 0.86),
+        w: Math.max(80, obj.width),
+        h: Math.max(lineH, lines.length * lineH)
+      };
+    }
+
+    function getPriceEditBounds(obj) {
+      const bounds = getPrecioBounds(obj, true);
+      const padX = Math.max(18, obj.fontSize * 0.24);
+      const padTop = Math.max(12, obj.fontSize * 0.18);
+      const padBottom = Math.max(16, obj.fontSize * 0.26);
+      return {
+        x: bounds.x - padX,
+        y: bounds.y - padTop,
+        w: Math.max(150, bounds.w + padX * 2),
+        h: Math.max(54, bounds.h + padTop + padBottom)
+      };
+    }
+
+    function getExplicitLineCaretIndex(obj, canvasX, canvasY) {
+      const text = String(obj.text || '');
+      const lines = text.split('\n');
+      const lineH = obj.fontSize * 1.1;
+      const top = obj.y - (obj.fontSize * 0.86);
+      const lineIndex = clampValue(Math.floor((canvasY - top) / Math.max(lineH, 1)), 0, Math.max(lines.length - 1, 0));
+      const before = lines.slice(0, lineIndex).reduce((sum, line) => sum + line.length + 1, 0);
+      const line = lines[lineIndex] || '';
+
+      mainCtx.save();
+      mainCtx.font = `${obj.fontSize}px ${obj.fontFamily}`;
+      const lineWidth = mainCtx.measureText(line).width;
+      let lineX = obj.x;
+      if (obj.align === 'center') lineX = obj.x + (obj.width - lineWidth) / 2;
+      if (obj.align === 'right') lineX = obj.x + obj.width - lineWidth;
+
+      let bestIndex = 0;
+      let bestDistance = Infinity;
+      for (let i = 0; i <= line.length; i += 1) {
+        const candidateX = lineX + mainCtx.measureText(line.slice(0, i)).width;
+        const distance = Math.abs(canvasX - candidateX);
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          bestIndex = i;
+        }
+      }
+      mainCtx.restore();
+
+      return Math.max(0, Math.min(text.length, before + bestIndex));
+    }
+
+    function positionInlineEditorChrome(editor, chrome) {
+      if (!editor || !chrome) return;
+      const rect = editor.getBoundingClientRect();
+      const toolbarWidth = chrome.offsetWidth || 168;
+      const left = Math.max(12, Math.min(rect.left, window.innerWidth - toolbarWidth - 12));
+      const top = rect.top > 50 ? rect.top - 42 : rect.bottom + 8;
+      chrome.style.left = `${left}px`;
+      chrome.style.top = `${Math.max(12, top)}px`;
+    }
+
+    function removeActiveEditorChrome() {
+      if (activeEditorChrome && document.body.contains(activeEditorChrome)) {
+        document.body.removeChild(activeEditorChrome);
+      }
+      activeEditorChrome = null;
+    }
+
+    function createInlineEditorChrome(objType, editor) {
+      if (objType !== 'titulo' && objType !== 'producto') return null;
+      const chrome = document.createElement('div');
+      chrome.className = 'inline-editor-chrome';
+      chrome.innerHTML = `
+        <span class="inline-editor-chip">${objType === 'titulo' ? 'T&iacute;tulo' : 'Producto'}</span>
+      `;
+      document.body.appendChild(chrome);
+      requestAnimationFrame(() => positionInlineEditorChrome(editor, chrome));
+      return chrome;
+    }
+
     function applyInlineEditorLayout(editor, obj, objType, bounds) {
       const rect = viewCanvas.getBoundingClientRect();
-      const canvasX = (bounds.x * canvasScale * visualZoom) + canvasOffsetX + visualOffsetX * canvasScale;
-      const canvasY = (bounds.y * canvasScale * visualZoom) + canvasOffsetY + visualOffsetY * canvasScale;
+      const editBounds = (objType === "titulo" || objType === "producto")
+        ? getTextEditBounds(obj)
+        : (objType === "precioNormal" ? getPriceEditBounds(obj) : bounds);
+      const canvasX = (editBounds.x * canvasScale * visualZoom) + canvasOffsetX + visualOffsetX * canvasScale;
+      const canvasY = (editBounds.y * canvasScale * visualZoom) + canvasOffsetY + visualOffsetY * canvasScale;
       const screenX = rect.left + canvasX;
       const screenY = rect.top + canvasY;
-      const screenW = Math.max(96, bounds.w * canvasScale * visualZoom);
-      const screenH = Math.max(44, bounds.h * canvasScale * visualZoom);
+      const isTextBoxEditor = objType === "titulo" || objType === "producto";
+      const isPriceEditor = objType === "precioNormal";
+      const editorInset = isTextBoxEditor ? Math.max(6, Math.min(10, 8 * canvasScale * visualZoom)) : 0;
+      const pricePadX = isPriceEditor ? Math.max(16, Math.min(28, obj.fontSize * canvasScale * visualZoom * 0.32)) : 0;
+      const screenW = Math.max(isTextBoxEditor ? 144 : 150, editBounds.w * canvasScale * visualZoom + editorInset * 2);
+      const screenH = Math.max(isPriceEditor ? 54 : 44, editBounds.h * canvasScale * visualZoom + editorInset * 2);
       const fontPx = obj.fontSize * canvasScale * visualZoom;
       const lineHeight = objType === "precioNormal"
-        ? 1
+        ? 1.02
         : Math.max(1.08, Math.min(1.18, (obj.fontSize * 1.1) / Math.max(obj.fontSize, 1)));
       const isLightText = (obj.color || '').toLowerCase() === '#ffffff' || (obj.color || '').toLowerCase() === '#fff';
       const fontFamily = objType === "precioNormal" ? "Arial" : obj.fontFamily;
 
-      editor.className = "inline-editor" + (isLightText ? "" : " light-editor");
-      editor.style.left = screenX + "px";
-      editor.style.top = screenY + "px";
+      editor.className = [
+        "inline-editor",
+        isTextBoxEditor ? "inline-text-editor" : "inline-price-editor",
+        objType === "titulo" ? "inline-title-editor" : "",
+        isLightText ? "" : "light-editor"
+      ].filter(Boolean).join(" ");
+      editor.style.left = (screenX - editorInset) + "px";
+      editor.style.top = (screenY - editorInset) + "px";
       editor.style.width = screenW + "px";
       editor.style.minHeight = screenH + "px";
       editor.style.height = screenH + "px";
       editor.style.fontFamily = fontFamily;
       editor.style.fontSize = fontPx + "px";
-      editor.style.fontWeight = objType === "precioNormal" ? "500" : (obj.fontFamily === "Arial Black" ? "700" : "500");
+      editor.style.fontWeight = objType === "precioNormal" ? "700" : (obj.fontFamily === "Arial Black" ? "700" : "500");
       editor.style.lineHeight = lineHeight.toFixed(2);
       editor.style.letterSpacing = objType === "titulo" ? "-0.02em" : "0";
       editor.style.textAlign = objType === "producto" || objType === "precioNormal" ? "left" : "center";
-      editor.style.color = obj.color;
-      editor.style.textShadow = isLightText ? "0 1px 2px rgba(0,0,0,0.22)" : "none";
-      editor.style.caretColor = isLightText ? "#ffffff" : "#111111";
+      editor.style.color = objType === "precioNormal" ? "#101827" : obj.color;
+      editor.style.textShadow = objType === "precioNormal" ? "none" : (isLightText ? "0 1px 2px rgba(0,0,0,0.22)" : "none");
+      editor.style.caretColor = objType === "precioNormal" ? "#0a84ff" : (isLightText ? "#ffffff" : "#111111");
       editor.style.whiteSpace = objType === "precioNormal" ? "nowrap" : "pre-wrap";
+      editor.style.setProperty('--inline-editor-pad', `${editorInset}px`);
+      if (objType === "precioNormal") {
+        editor.style.paddingLeft = `${pricePadX}px`;
+        editor.style.paddingRight = `${pricePadX}px`;
+      }
+      positionInlineEditorChrome(editor, activeEditorChrome);
 
       return { screenH };
     }
@@ -1924,6 +2186,7 @@ natural 170 g</textarea>
       }
       activeEditor.style.height = "auto";
       activeEditor.style.height = `${Math.max(metrics.screenH, activeEditor.scrollHeight + 4)}px`;
+      positionInlineEditorChrome(activeEditor, activeEditorChrome);
     }
 
     function beginInlineEditorForSelection(options = {}) {
@@ -1940,7 +2203,11 @@ natural 170 g</textarea>
       const isPriceEditor = objType === "precioNormal";
       const originalText = isPriceEditor ? formatPriceForEditor(obj) : obj.text;
       const originalPrice = isPriceEditor ? { entero: obj.entero, centavos: obj.centavos } : null;
+      const clickCaretIndex = !isPriceEditor && Number.isFinite(options.canvasX) && Number.isFinite(options.canvasY)
+        ? getExplicitLineCaretIndex(obj, options.canvasX, options.canvasY)
+        : null;
 
+      refreshModalOpenState();
       beginInteractionHistory();
       
       const editor = document.createElement(isPriceEditor ? "input" : "textarea");
@@ -1960,6 +2227,7 @@ natural 170 g</textarea>
       );
       editor.dataset.cancelEdit = "0";
       editor.dataset.selectMode = options.selectAll ? "all" : "end";
+      editor.dataset.caretIndex = Number.isFinite(clickCaretIndex) ? String(clickCaretIndex) : "";
       const initialMetrics = applyInlineEditorLayout(editor, obj, objType, bounds);
       editor.style.height = initialMetrics.screenH + "px";
       let latestValidPrice = originalPrice ? { ...originalPrice } : null;
@@ -1994,25 +2262,13 @@ natural 170 g</textarea>
         }
         editor.style.height = "auto";
         editor.style.height = `${Math.max(parseFloat(editor.style.minHeight) || 44, editor.scrollHeight + 4)}px`;
+        positionInlineEditorChrome(editor, activeEditorChrome);
       };
 
-      editor.addEventListener("focus", function() {
-        if (editor.dataset.selectMode === "all") {
-          editor.setSelectionRange(0, editor.value.length);
-        } else {
-          editor.setSelectionRange(editor.value.length, editor.value.length);
-        }
-        syncEditorSize();
-      });
-
-      editor.addEventListener("input", function() {
-        applyEditorText(editor.value);
-        constrainObjectToZone(objType);
-        syncEditorSize();
-        updateView();
-      });
-
-      editor.addEventListener("blur", function() {
+      let editorFinished = false;
+      const finishInlineEditor = () => {
+        if (editorFinished) return;
+        editorFinished = true;
         const cancelled = editor.dataset.cancelEdit === "1";
         if (isPriceEditor) {
           if (cancelled && originalPrice) {
@@ -2045,6 +2301,7 @@ natural 170 g</textarea>
         if (document.body.contains(editor)) {
           document.body.removeChild(editor);
         }
+        removeActiveEditorChrome();
         activeEditor = null;
         activeEditorMeta = null;
         const changed = isPriceEditor
@@ -2055,27 +2312,55 @@ natural 170 g</textarea>
         } else {
           commitInteractionHistory(isPriceEditor ? 'Precio editado' : 'Texto editado');
         }
+      };
+
+      editor.addEventListener("focus", function() {
+        if (editor.dataset.selectMode === "all") {
+          editor.setSelectionRange(0, editor.value.length);
+        } else if (editor.dataset.caretIndex !== "") {
+          const caret = clampValue(parseInt(editor.dataset.caretIndex, 10) || 0, 0, editor.value.length);
+          editor.setSelectionRange(caret, caret);
+          editor.dataset.caretIndex = "";
+        } else {
+          editor.setSelectionRange(editor.value.length, editor.value.length);
+        }
+        syncEditorSize();
       });
+
+      editor.addEventListener("input", function() {
+        applyEditorText(editor.value);
+        constrainObjectToZone(objType);
+        syncEditorSize();
+        updateView();
+      });
+
+      editor.addEventListener("blur", finishInlineEditor);
+      editor.addEventListener("inline-editor-finish", finishInlineEditor);
       
       editor.addEventListener("keydown", function(e) {
         if (e.key === "Escape") {
           e.preventDefault();
           editor.dataset.cancelEdit = "1";
-          editor.blur();
+          finishInlineEditor();
         } else if (isPriceEditor && e.key === "Enter") {
           e.preventDefault();
-          editor.blur();
+          finishInlineEditor();
         } else if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
           e.preventDefault();
-          editor.blur();
+          finishInlineEditor();
         }
       });
       
       document.body.appendChild(editor);
       activeEditor = editor;
       activeEditorMeta = { objType };
+      removeActiveEditorChrome();
+      activeEditorChrome = createInlineEditorChrome(objType, editor);
       syncEditorSize();
       editor.focus();
+      requestAnimationFrame(() => {
+        if (document.body.contains(editor)) editor.focus({ preventScroll: true });
+      });
     }
 
     function ensureSelectHasNumericOption(selectId, value) {
@@ -2161,6 +2446,8 @@ natural 170 g</textarea>
         dragging = false;
         resizing = false;
         resizeHandle = null;
+        transformOrigin = null;
+        guides = [];
         activeEditorMeta = null;
         if (activeEditor) activeEditor.blur();
         mostrarHeaderTools(false);
@@ -2767,31 +3054,40 @@ natural 170 g</textarea>
       return null;
     }
 
+    function isPointInBounds(worldX, worldY, bounds, padding = 0) {
+      if (!bounds) return false;
+      return worldX >= bounds.x - padding
+        && worldX <= bounds.x + bounds.w + padding
+        && worldY >= bounds.y - padding
+        && worldY <= bounds.y + bounds.h + padding;
+    }
+
     function detectObject(worldX, worldY) {
       if (isConsumoMode()) return null;
+      const hitPadding = getSelectionHitPadding();
       if (imagenObj && !cropMode) {
-        if (worldX >= imagenObj.x && worldX <= imagenObj.x + imagenObj.w && worldY >= imagenObj.y && worldY <= imagenObj.y + imagenObj.h) {
+        if (isPointInBounds(worldX, worldY, { x: imagenObj.x, y: imagenObj.y, w: imagenObj.w, h: imagenObj.h }, hitPadding)) {
           return "img";
         }
       }
 
       const precioOfertaBounds = getPrecioBounds(precioOfertaObj, false);
-      if (worldX >= precioOfertaBounds.x && worldX <= precioOfertaBounds.x + precioOfertaBounds.w && worldY >= precioOfertaBounds.y && worldY <= precioOfertaBounds.y + precioOfertaBounds.h) {
+      if (isPointInBounds(worldX, worldY, precioOfertaBounds, hitPadding)) {
         return "precioOferta";
       }
 
       const precioNormalBounds = getPrecioBounds(precioNormalObj, true);
-      if (worldX >= precioNormalBounds.x && worldX <= precioNormalBounds.x + precioNormalBounds.w && worldY >= precioNormalBounds.y && worldY <= precioNormalBounds.y + precioNormalBounds.h) {
+      if (isPointInBounds(worldX, worldY, precioNormalBounds, hitPadding)) {
         return "precioNormal";
       }
 
       const productoBounds = getTextBounds(productoObj);
-      if (worldX >= productoBounds.x && worldX <= productoBounds.x + productoBounds.w && worldY >= productoBounds.y && worldY <= productoBounds.y + productoBounds.h) {
+      if (isPointInBounds(worldX, worldY, productoBounds, hitPadding)) {
         return "producto";
       }
 
       const tituloBounds = getTextBounds(tituloObj);
-      if (worldX >= tituloBounds.x && worldX <= tituloBounds.x + tituloBounds.w && worldY >= tituloBounds.y && worldY <= tituloBounds.y + tituloBounds.h) {
+      if (isPointInBounds(worldX, worldY, tituloBounds, hitPadding)) {
         return "titulo";
       }
 
@@ -2803,16 +3099,7 @@ natural 170 g</textarea>
       if (!bounds) return null;
 
       const handleSize = getResizeHitRadius();
-      const handles = [
-        { key: 'nw', x: bounds.x, y: bounds.y },
-        { key: 'n', x: bounds.x + bounds.w / 2, y: bounds.y },
-        { key: 'ne', x: bounds.x + bounds.w, y: bounds.y },
-        { key: 'w', x: bounds.x, y: bounds.y + bounds.h / 2 },
-        { key: 'e', x: bounds.x + bounds.w, y: bounds.y + bounds.h / 2 },
-        { key: 'sw', x: bounds.x, y: bounds.y + bounds.h },
-        { key: 's', x: bounds.x + bounds.w / 2, y: bounds.y + bounds.h },
-        { key: 'se', x: bounds.x + bounds.w, y: bounds.y + bounds.h }
-      ];
+      const handles = getSelectionHandlePoints(bounds.x, bounds.y, bounds.w, bounds.h);
 
       for (const handle of handles) {
         if (Math.abs(worldX - handle.x) <= handleSize && Math.abs(worldY - handle.y) <= handleSize) {
@@ -2837,18 +3124,44 @@ natural 170 g</textarea>
       return { x: left, y: top, w: right - left, h: bottom - top };
     }
 
-    function buildResizedRect(handle, startRect, dx, dy) {
+    function buildResizedRect(handle, startRect, dx, dy, options = {}) {
       let left = startRect.x;
       let top = startRect.y;
       let right = startRect.x + startRect.w;
       let bottom = startRect.y + startRect.h;
+      const fromCenter = !!options.fromCenter;
 
-      if (handle.includes("w")) left += dx;
-      if (handle.includes("e")) right += dx;
-      if (handle.includes("n")) top += dy;
-      if (handle.includes("s")) bottom += dy;
+      if (handle.includes("w")) {
+        left += dx;
+        if (fromCenter) right -= dx;
+      }
+      if (handle.includes("e")) {
+        right += dx;
+        if (fromCenter) left -= dx;
+      }
+      if (handle.includes("n")) {
+        top += dy;
+        if (fromCenter) bottom -= dy;
+      }
+      if (handle.includes("s")) {
+        bottom += dy;
+        if (fromCenter) top -= dy;
+      }
 
       const minSize = 24;
+      if (fromCenter) {
+        const centerX = startRect.x + startRect.w / 2;
+        const centerY = startRect.y + startRect.h / 2;
+        const halfW = Math.max(minSize / 2, Math.abs(right - left) / 2);
+        const halfH = Math.max(minSize / 2, Math.abs(bottom - top) / 2);
+        return {
+          x: centerX - halfW,
+          y: centerY - halfH,
+          w: halfW * 2,
+          h: halfH * 2
+        };
+      }
+
       if (right - left < minSize) {
         if (handle.includes("w")) left = right - minSize;
         else right = left + minSize;
@@ -2861,19 +3174,24 @@ natural 170 g</textarea>
       return normalizeRectFromEdges(left, top, right, bottom, minSize);
     }
 
-    function buildProportionalCornerRect(handle, startRect, dx, dy, minSize = 24) {
+    function buildProportionalCornerRect(handle, startRect, dx, dy, minSize = 24, options = {}) {
       if (!isCornerResizeHandle(handle) || !startRect.w || !startRect.h) {
-        return buildResizedRect(handle, startRect, dx, dy);
+        return buildResizedRect(handle, startRect, dx, dy, options);
       }
 
       const left = startRect.x;
       const top = startRect.y;
       const right = startRect.x + startRect.w;
       const bottom = startRect.y + startRect.h;
-      const anchorX = handle.includes('w') ? right : left;
-      const anchorY = handle.includes('n') ? bottom : top;
-      const startVectorX = handle.includes('w') ? -startRect.w : startRect.w;
-      const startVectorY = handle.includes('n') ? -startRect.h : startRect.h;
+      const fromCenter = !!options.fromCenter;
+      const anchorX = fromCenter ? startRect.x + startRect.w / 2 : (handle.includes('w') ? right : left);
+      const anchorY = fromCenter ? startRect.y + startRect.h / 2 : (handle.includes('n') ? bottom : top);
+      const startVectorX = handle.includes('w')
+        ? (fromCenter ? -startRect.w / 2 : -startRect.w)
+        : (fromCenter ? startRect.w / 2 : startRect.w);
+      const startVectorY = handle.includes('n')
+        ? (fromCenter ? -startRect.h / 2 : -startRect.h)
+        : (fromCenter ? startRect.h / 2 : startRect.h);
       const currentVectorX = startVectorX + dx;
       const currentVectorY = startVectorY + dy;
       const scaleX = currentVectorX / startVectorX;
@@ -2883,6 +3201,12 @@ natural 170 g</textarea>
       const scale = Math.max(minScale, dominantScale);
       const movingX = anchorX + (startVectorX * scale);
       const movingY = anchorY + (startVectorY * scale);
+
+      if (fromCenter) {
+        const oppositeX = anchorX - (startVectorX * scale);
+        const oppositeY = anchorY - (startVectorY * scale);
+        return normalizeRectFromEdges(oppositeX, oppositeY, movingX, movingY, minSize);
+      }
 
       return normalizeRectFromEdges(anchorX, anchorY, movingX, movingY, minSize);
     }
@@ -2906,15 +3230,19 @@ natural 170 g</textarea>
       }
     }
 
-    function resizeObject(type, handle, dx, dy, startRect) {
+    function resizeObject(type, handle, dx, dy, startRect, options = {}) {
       if (!resizeStartState) return;
 
-      const useProportionalCorner = isCornerResizeHandle(handle);
+      const useProportionalCorner = isCornerResizeHandle(handle) && !options.freeform;
       const rect = useProportionalCorner
-        ? buildProportionalCornerRect(handle, startRect, dx, dy, type === 'img' ? 40 : 24)
-        : buildResizedRect(handle, startRect, dx, dy);
+        ? buildProportionalCornerRect(handle, startRect, dx, dy, type === 'img' ? 40 : 24, options)
+        : buildResizedRect(handle, startRect, dx, dy, options);
       const horizontalActive = handle.includes("w") || handle.includes("e");
       const verticalActive = handle.includes("n") || handle.includes("s");
+      const uniformScale = Math.max(
+        type === 'img' ? 40 / Math.max(startRect.w, startRect.h, 1) : 0.2,
+        Math.max(rect.w / Math.max(startRect.w, 1), rect.h / Math.max(startRect.h, 1))
+      );
 
       const alignTextBounds = (target) => {
         const bounds = getTextBounds(target);
@@ -2954,10 +3282,11 @@ natural 170 g</textarea>
         const base = resizeStartState;
         const widthScale = rect.w / Math.max(startRect.w, 1);
         const heightScale = rect.h / Math.max(startRect.h, 1);
+        const fontScale = useProportionalCorner ? uniformScale : heightScale;
 
         target.x = base.x;
-        target.width = horizontalActive ? Math.max(80, Math.round(base.width * widthScale)) : base.width;
-        target.fontSize = verticalActive ? Math.max(12, Math.round(base.fontSize * heightScale)) : base.fontSize;
+        target.width = horizontalActive ? Math.max(80, Math.round(base.width * (useProportionalCorner ? uniformScale : widthScale))) : base.width;
+        target.fontSize = verticalActive ? Math.max(12, Math.round(base.fontSize * fontScale)) : base.fontSize;
         target.y = base.y;
 
         alignTextBounds(target);
@@ -2967,12 +3296,13 @@ natural 170 g</textarea>
         const isNormal = type === "precioNormal";
         const widthScale = rect.w / Math.max(startRect.w, 1);
         const heightScale = rect.h / Math.max(startRect.h, 1);
+        const fontScale = useProportionalCorner ? uniformScale : heightScale;
 
         target.x = base.x;
         target.y = base.y;
-        target.width = horizontalActive ? Math.max(120, Math.round(base.width * widthScale)) : base.width;
-        target.height = verticalActive ? Math.max(40, Math.round(base.height * heightScale)) : base.height;
-        target.fontSize = verticalActive ? Math.max(18, Math.round(base.fontSize * heightScale)) : base.fontSize;
+        target.width = horizontalActive ? Math.max(120, Math.round(base.width * (useProportionalCorner ? uniformScale : widthScale))) : base.width;
+        target.height = verticalActive ? Math.max(40, Math.round(base.height * (useProportionalCorner ? uniformScale : heightScale))) : base.height;
+        target.fontSize = verticalActive ? Math.max(18, Math.round(base.fontSize * fontScale)) : base.fontSize;
 
         alignPriceBounds(target, isNormal);
       } else if (type === "img" && imagenObj) {
@@ -2992,6 +3322,8 @@ natural 170 g</textarea>
         dragging = false;
         resizing = false;
         resizeHandle = null;
+        transformOrigin = null;
+        guides = [];
         mostrarHeaderTools(false);
         updateView();
       }
@@ -3079,6 +3411,7 @@ natural 170 g</textarea>
           viewCanvas.style.cursor = getResizeCursor(handle);
           dragStartWorldX = canvasX;
           dragStartWorldY = canvasY;
+          transformOrigin = { fromCenter: !!e.altKey };
           
           if (selected === "titulo") {
             resizeStartRect = getTextBounds(tituloObj);
@@ -3101,6 +3434,9 @@ natural 170 g</textarea>
       }
       
       let obj = detectObject(canvasX, canvasY);
+      if (!obj && selected && !cropMode && isPointInSelectionBounds(selected, canvasX, canvasY)) {
+        obj = selected;
+      }
       
       const now = Date.now();
       if (obj && (obj === "titulo" || obj === "producto" || obj === "precioNormal") && now - lastClickTime < 300 && lastClickObj === obj) {
@@ -3115,7 +3451,7 @@ natural 170 g</textarea>
             ? productoObj
             : precioNormalObj;
         selected = obj;
-        showInlineEditor(textObj, obj, bounds);
+        showInlineEditor(textObj, obj, bounds, { canvasX, canvasY });
         lastClickTime = 0;
         updateView();
         return;
@@ -3193,7 +3529,10 @@ natural 170 g</textarea>
       }
       
       if (resizing && selected && resizeStartRect) {
-        resizeObject(selected, resizeHandle, dx, dy, resizeStartRect);
+        resizeObject(selected, resizeHandle, dx, dy, resizeStartRect, {
+          fromCenter: !!(e.altKey || transformOrigin?.fromCenter),
+          freeform: isCornerResizeHandle(resizeHandle) && !!e.shiftKey
+        });
         return;
       }
       
@@ -3201,25 +3540,24 @@ natural 170 g</textarea>
         if (selected === "titulo") {
           tituloObj.x = objStartX + dx;
           tituloObj.y = objStartY + dy;
-          applySnap(tituloObj);
         } else if (selected === "producto") {
           productoObj.x = objStartX + dx;
           productoObj.y = objStartY + dy;
-          applySnap(productoObj);
         } else if (selected === "precioNormal") {
           precioNormalObj.x = objStartX + dx;
           precioNormalObj.y = objStartY + dy;
-          applySnap(precioNormalObj);
         } else if (selected === "precioOferta") {
           precioOfertaObj.x = objStartX + dx;
           precioOfertaObj.y = objStartY + dy;
-          applySnap(precioOfertaObj);
         } else if (selected === "img" && imagenObj) {
           imagenObj.x = objStartX + dx;
           imagenObj.y = objStartY + dy;
-          applySnap(imagenObj);
         }
+        keepSelectionCenterInsideCanvas(selected);
         constrainObjectToZone(selected);
+        applyCanvasCenterSnapToSelection(selected);
+        constrainObjectToZone(selected);
+        refreshCanvasCenterGuides(selected);
         updateView();
       }
     }
@@ -3237,6 +3575,8 @@ natural 170 g</textarea>
       resizeHandle = null;
       resizeStartRect = null;
       resizeStartState = null;
+      transformOrigin = null;
+      guides = [];
       if (hadTransform) {
         commitInteractionHistory('Transformacion aplicada');
       }
@@ -3302,6 +3642,8 @@ natural 170 g</textarea>
       resizeHandle = null;
       resizeStartRect = null;
       resizeStartState = null;
+      transformOrigin = null;
+      guides = [];
       ignoreMouseEventsUntil = Date.now() + 700;
     }
 
@@ -3330,8 +3672,23 @@ natural 170 g</textarea>
     }
 
     function onCanvasDoubleClick(e) {
-      if (!cropMode || !imagenObj || !cropTool.rect) return;
       const { canvasX, canvasY } = screenToCanvasCoords(e.clientX, e.clientY);
+      if (!cropMode) {
+        const obj = detectObject(canvasX, canvasY);
+        if (obj === "titulo" || obj === "producto" || obj === "precioNormal") {
+          e.preventDefault();
+          selected = obj;
+          mostrarHeaderTools(true);
+          const config = getEditableObjectConfig(obj);
+          if (config) {
+            showInlineEditor(config.obj, obj, config.bounds, { canvasX, canvasY });
+            updateView();
+          }
+        }
+        return;
+      }
+
+      if (!imagenObj || !cropTool.rect) return;
       if (isPointInsideRect(canvasX, canvasY, cropTool.rect)) return;
       e.preventDefault();
       window.aplicarCropFinal();
@@ -4247,6 +4604,28 @@ natural 170 g</textarea>
       if (aspectSelect) aspectSelect.value = getCropPresetValue(cropAspectPreset);
     }
 
+    function syncImageActionButtons() {
+      const hasImage = !!(imagenObj && imagenObj.img);
+      const actions = [
+        document.getElementById('cropToggleBtn'),
+        document.getElementById('imageResetBtn'),
+        document.getElementById('imageDeleteBtn')
+      ];
+
+      actions.forEach((button) => {
+        if (!button) return;
+        button.disabled = !hasImage;
+        button.setAttribute('aria-disabled', String(!hasImage));
+      });
+
+      if (!hasImage && cropMode) {
+        cropMode = false;
+        cropActive = false;
+        cropSessionOriginalState = null;
+        cropTool.reset();
+      }
+    }
+
     function applyCropAspectPreset(value = cropAspectPreset, fitRect = true) {
       cropAspectPreset = getCropPresetValue(value);
       const preset = resolveCropAspectPreset(cropAspectPreset);
@@ -4331,6 +4710,7 @@ natural 170 g</textarea>
     function updateCropUI(message = '') {
       const toggleBtn = document.getElementById('cropToggleBtn');
       const indicator = document.getElementById('cropIndicator');
+      syncImageActionButtons();
 
       if (toggleBtn) {
         toggleBtn.classList.toggle('active', cropMode);
@@ -4560,6 +4940,7 @@ natural 170 g</textarea>
         mostrarHeaderTools(false);
         isRestoringState = false;
         const currentSnapshot = JSON.stringify(serializeState());
+        updateCropUI();
         updateView();
         layoutFloatingPanels();
                 if (options.recordHistory) {
@@ -4616,7 +4997,7 @@ natural 170 g</textarea>
       catch (error) {
         historySuspended = false;
         historyTransitionInProgress = false;
-        setAdvancedStatus('No se pudo restaurar el diseno', true);
+        setAdvancedStatus('No se pudo restaurar el diseño', true);
         if (typeof options.onComplete === 'function') options.onComplete();
       }
     }
@@ -4818,7 +5199,7 @@ natural 170 g</textarea>
         precioNormalObj.color = precioOfertaObj.color;
         selected = 'precioNormal';
       } else {
-        setAdvancedStatus('La imagen solo admite una instancia en este diseno', true);
+        setAdvancedStatus('La imagen solo admite una instancia en este diseño', true);
         return;
       }
       syncUIFromObjects();
@@ -5058,6 +5439,14 @@ natural 170 g</textarea>
     }
     window.toggleHeaderMenu = toggleHeaderMenu;
 
+    function getDirectTextEditValueFromKey(e) {
+      if (!selected || (selected !== 'titulo' && selected !== 'producto')) return null;
+      if (e.ctrlKey || e.metaKey || e.altKey) return null;
+      if (e.key === 'Backspace' || e.key === 'Delete') return '';
+      if (e.key && e.key.length === 1) return e.key;
+      return null;
+    }
+
     window.addEventListener('keydown', (e) => {
       if (e.defaultPrevented) return;
       const tag = document.activeElement ? document.activeElement.tagName : '';
@@ -5069,6 +5458,12 @@ natural 170 g</textarea>
       if (mod && e.key.toLowerCase() === 's') { e.preventDefault(); window.guardarDisenoEnArchivo(); return; }
       if (isConsumoMode()) return;
       if (cropMode) return;
+      const directEditValue = !writing ? getDirectTextEditValueFromKey(e) : null;
+      if (directEditValue !== null) {
+        e.preventDefault();
+        beginInlineEditorForSelection({ initialValue: directEditValue });
+        return;
+      }
       if (!writing && (e.key === 'Enter' || e.key === 'F2') && (selected === 'titulo' || selected === 'producto' || selected === 'precioNormal')) {
         e.preventDefault();
         beginInlineEditorForSelection({ selectAll: e.key === 'F2' });
@@ -5084,6 +5479,7 @@ natural 170 g</textarea>
       else if (e.key === 'ArrowDown') obj.y += step;
       else return;
       e.preventDefault();
+      keepSelectionCenterInsideCanvas(selected);
       constrainObjectToZone(selected);
       updateView();
       captureStateChange('Objeto movido con teclado');
@@ -5101,6 +5497,7 @@ natural 170 g</textarea>
     pages = [buildPageStateFromCurrent({ id: createPageId(), name: 'Pagina 1' })];
     currentPageIndex = 0;
     syncUIFromObjects();
+    updateCropUI();
     layoutFloatingPanels();
     replaceHistoryWithSnapshot(JSON.stringify(serializeState()));
 
