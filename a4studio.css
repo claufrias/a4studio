@@ -3632,3 +3632,378 @@ body.tight-floating-panels:not(.mobile-ui) #imageSearchPanel .crop-controls .hea
     right: 14%;
   }
 }
+
+/* Native-feeling mobile shell. Desktop styles remain untouched. */
+@media (max-width: 900px) {
+  body.mobile-ui {
+    min-width: 0;
+    min-height: 100dvh;
+    overflow: hidden;
+    color: #0f172a;
+    background:
+      radial-gradient(circle at 50% -20%, rgba(59, 130, 246, 0.16), transparent 42%),
+      linear-gradient(180deg, #f8fbff 0%, #eef3f9 44%, #e6edf6 100%);
+    font-family: var(--ui-font-stack);
+  }
+
+  body.mobile-ui::before {
+    opacity: 0.22;
+    background-image:
+      linear-gradient(rgba(30, 41, 59, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(30, 41, 59, 0.05) 1px, transparent 1px);
+    background-size: 24px 24px;
+    mask-image: none;
+  }
+
+  body.mobile-ui #mobileTopBar {
+    min-height: 60px;
+    padding: calc(8px + var(--mobile-safe-top)) 14px 8px;
+    color: #0f172a;
+    background: rgba(255, 255, 255, 0.9);
+    border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+    backdrop-filter: blur(18px) saturate(140%);
+  }
+
+  body.mobile-ui .mobile-top-title {
+    font-size: 1rem;
+    letter-spacing: 0.12em;
+  }
+
+  body.mobile-ui .mobile-top-subtitle {
+    color: #64748b;
+    font-size: 0.58rem;
+  }
+
+  body.mobile-ui .mobile-icon-btn {
+    width: 38px;
+    min-width: 38px;
+    height: 38px;
+    color: #2563eb;
+    background: rgba(248, 250, 252, 0.94);
+    border-color: rgba(37, 99, 235, 0.12);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.08);
+  }
+
+  body.mobile-ui #mobileBottomDock {
+    left: 10px;
+    right: 10px;
+    bottom: calc(8px + var(--mobile-safe-bottom));
+    gap: 6px;
+    padding: 6px;
+    color: #475569;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 24px;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16);
+    backdrop-filter: blur(18px) saturate(140%);
+  }
+
+  body.mobile-ui .mobile-dock-btn {
+    min-height: 56px;
+    padding: 7px 4px;
+    color: #64748b;
+    background: transparent;
+    border: 0;
+    border-radius: 18px;
+    box-shadow: none;
+    font-size: 0.64rem;
+  }
+
+  body.mobile-ui .mobile-dock-btn .icon {
+    width: 24px;
+    height: 24px;
+    display: grid;
+    place-items: center;
+    color: inherit;
+    font-size: 1rem;
+  }
+
+  body.mobile-ui .mobile-dock-btn.active {
+    color: #ffffff;
+    background: linear-gradient(180deg, #2f7cf6, #1d65ee);
+    box-shadow: 0 10px 24px rgba(37, 99, 235, 0.28);
+  }
+
+  body.mobile-ui .mobile-dock-btn.active .icon {
+    color: #ffffff;
+  }
+
+  body.mobile-ui #canvas-container {
+    width: 100vw;
+    height: 100dvh;
+    padding: calc(70px + var(--mobile-safe-top)) 8px calc(88px + var(--mobile-safe-bottom));
+    display: grid;
+    place-items: center;
+    background: transparent;
+  }
+
+  body.mobile-ui #canvas-container::before {
+    inset: calc(60px + var(--mobile-safe-top)) 0 calc(74px + var(--mobile-safe-bottom));
+    opacity: 0.55;
+  }
+
+  body.mobile-ui #viewCanvas {
+    width: auto !important;
+    max-width: min(100%, calc((100dvh - 168px - var(--mobile-safe-top) - var(--mobile-safe-bottom)) * 0.75));
+    max-height: calc(100dvh - 168px - var(--mobile-safe-top) - var(--mobile-safe-bottom));
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow:
+      0 18px 48px rgba(15, 23, 42, 0.18),
+      0 0 0 1px rgba(15, 23, 42, 0.07);
+  }
+
+  body.mobile-ui #mobileUiScrim {
+    background: rgba(15, 23, 42, 0.32);
+    backdrop-filter: blur(2px);
+  }
+
+  body.mobile-ui #panel,
+  body.mobile-ui #header,
+  body.mobile-ui #pagesPanel,
+  body.mobile-ui #imageSearchPanel,
+  body.mobile-ui #quickToolsPanel,
+  body.mobile-ui #titleToolsPanel {
+    left: 0 !important;
+    right: 0 !important;
+    bottom: calc(78px + var(--mobile-safe-bottom)) !important;
+    width: 100vw !important;
+    min-width: 0 !important;
+    max-width: 100vw !important;
+    max-height: min(72dvh, 640px) !important;
+    padding: 18px 14px calc(18px + var(--mobile-safe-bottom)) !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    color: #0f172a;
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-bottom: 0;
+    border-radius: 28px 28px 0 0 !important;
+    box-shadow: 0 -18px 44px rgba(15, 23, 42, 0.18);
+    backdrop-filter: blur(18px) saturate(140%);
+  }
+
+  body.mobile-ui #panel::after,
+  body.mobile-ui #header::after,
+  body.mobile-ui #pagesPanel::after,
+  body.mobile-ui #imageSearchPanel::after,
+  body.mobile-ui #quickToolsPanel::after,
+  body.mobile-ui #titleToolsPanel::after {
+    content: "";
+    position: sticky;
+    top: 0;
+    display: block;
+    width: 44px;
+    height: 5px;
+    margin: -6px auto 12px;
+    border-radius: 999px;
+    background: rgba(100, 116, 139, 0.28);
+  }
+
+  body.mobile-ui.mobile-panel-open #panel,
+  body.mobile-ui.mobile-actions-open #header,
+  body.mobile-ui.mobile-pages-open #pagesPanel,
+  body.mobile-ui.mobile-image-open #imageSearchPanel,
+  body.mobile-ui #quickToolsPanel.show-panel,
+  body.mobile-ui #titleToolsPanel.show-panel {
+    display: block !important;
+  }
+
+  body.mobile-ui #quickToolsPanel:not(.show-panel),
+  body.mobile-ui #titleToolsPanel:not(.show-panel) {
+    display: none !important;
+  }
+
+  body.mobile-ui #panel .sidebar-brand {
+    position: static;
+    min-height: 0;
+    margin-bottom: 2px;
+    padding: 14px 16px;
+    color: #0f172a;
+    background: linear-gradient(135deg, #ffffff, #eef6ff);
+    border-color: rgba(37, 99, 235, 0.12);
+    box-shadow: none;
+  }
+
+  body.mobile-ui #panel .sidebar-brand-title,
+  body.mobile-ui #panel .card-title {
+    color: #0f172a;
+  }
+
+  body.mobile-ui #panel .sidebar-brand-subtitle,
+  body.mobile-ui label,
+  body.mobile-ui .descuento-info,
+  body.mobile-ui .consumo-active-indicator,
+  body.mobile-ui .image-search-status,
+  body.mobile-ui .crop-status,
+  body.mobile-ui .status-pill {
+    color: #64748b;
+  }
+
+  body.mobile-ui .card {
+    padding: 13px;
+    border-color: rgba(15, 23, 42, 0.08);
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+    transform: none;
+  }
+
+  body.mobile-ui .card:hover,
+  body.mobile-ui .card:focus-within {
+    transform: none;
+  }
+
+  body.mobile-ui textarea,
+  body.mobile-ui input,
+  body.mobile-ui select {
+    min-height: 44px;
+    color: #0f172a;
+    background: #f8fafc;
+    border-color: rgba(15, 23, 42, 0.12);
+    border-radius: 14px;
+    font-size: 16px;
+  }
+
+  body.mobile-ui textarea {
+    min-height: 74px;
+  }
+
+  body.mobile-ui button,
+  body.mobile-ui .modal-btn,
+  body.mobile-ui .header-combo-btn,
+  body.mobile-ui .header-tool-btn,
+  body.mobile-ui .header-icon-btn,
+  body.mobile-ui .btn-outline,
+  body.mobile-ui .btn-secondary,
+  body.mobile-ui .btn-paste {
+    min-height: 44px;
+    color: #0f172a;
+    background: #ffffff;
+    border-color: rgba(15, 23, 42, 0.1);
+    border-radius: 14px;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+  }
+
+  body.mobile-ui .header-action-bar,
+  body.mobile-ui .compact-action-buttons,
+  body.mobile-ui .image-panel-dual-actions,
+  body.mobile-ui .page-actions-row,
+  body.mobile-ui .consumo-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  body.mobile-ui #header .header-combo-btn,
+  body.mobile-ui #imageSearchPanel .header-combo-btn,
+  body.mobile-ui .page-mini-btn {
+    min-height: 50px;
+    flex-direction: row;
+  }
+
+  body.mobile-ui .page-nav-row {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr) 48px;
+    gap: 10px;
+  }
+
+  body.mobile-ui .page-counter-shell,
+  body.mobile-ui .descuento-info,
+  body.mobile-ui .consumo-active-indicator,
+  body.mobile-ui .image-search-status,
+  body.mobile-ui .crop-status,
+  body.mobile-ui .status-pill {
+    border-color: rgba(15, 23, 42, 0.08);
+    background: #f1f5f9;
+  }
+
+  body.mobile-ui .pages-list {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  body.mobile-ui .page-chip,
+  body.mobile-ui .consumo-slot-btn {
+    min-height: 42px;
+  }
+
+  body.mobile-ui .page-chip.active,
+  body.mobile-ui .consumo-slot-btn.active,
+  body.mobile-ui .consumo-slot-btn[aria-pressed="true"] {
+    color: #ffffff;
+    background: linear-gradient(180deg, #2f7cf6, #1d65ee);
+    border-color: #1d65ee;
+  }
+
+  body.mobile-ui .tips-button {
+    min-height: 48px;
+    color: #0f172a;
+    background: #ffffff;
+    border-color: rgba(245, 158, 11, 0.26);
+  }
+
+  body.mobile-ui #modalFondo.modal {
+    padding: calc(10px + var(--mobile-safe-top)) 10px calc(10px + var(--mobile-safe-bottom));
+  }
+
+  body.mobile-ui #modalFondo .discount-modal-content {
+    width: min(100%, 430px);
+    max-height: calc(100dvh - 20px - var(--mobile-safe-top) - var(--mobile-safe-bottom));
+    padding: 18px 14px 16px;
+    border-radius: 28px;
+  }
+
+  body.mobile-ui #modalFondo .discount-options-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  body.mobile-ui #modalFondo .discount-option {
+    min-height: 82px;
+    grid-template-columns: 62px minmax(0, 1fr);
+    padding: 12px 42px 12px 12px;
+    border-radius: 18px;
+  }
+
+  body.mobile-ui #modalFondo .discount-preview {
+    width: 58px;
+    height: 58px;
+    min-width: 58px;
+    padding: 8px;
+  }
+}
+
+@media (max-width: 420px) {
+  body.mobile-ui #mobileBottomDock {
+    left: 8px;
+    right: 8px;
+    gap: 4px;
+    border-radius: 22px;
+  }
+
+  body.mobile-ui .mobile-dock-btn {
+    min-height: 54px;
+    padding-inline: 2px;
+    font-size: 0.58rem;
+  }
+
+  body.mobile-ui #viewCanvas {
+    max-width: min(100%, calc((100dvh - 162px - var(--mobile-safe-top) - var(--mobile-safe-bottom)) * 0.75));
+    max-height: calc(100dvh - 162px - var(--mobile-safe-top) - var(--mobile-safe-bottom));
+  }
+
+  body.mobile-ui #panel,
+  body.mobile-ui #header,
+  body.mobile-ui #pagesPanel,
+  body.mobile-ui #imageSearchPanel,
+  body.mobile-ui #quickToolsPanel,
+  body.mobile-ui #titleToolsPanel {
+    padding-inline: 10px !important;
+  }
+
+  body.mobile-ui .pages-list {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
