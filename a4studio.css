@@ -631,6 +631,33 @@ button:disabled {
   grid-template-columns: 1fr 1fr;
 }
 
+.validity-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.validity-row label {
+  margin-top: 0;
+}
+#consumoEanGroup {
+  display: none;
+}
+.consumo-inline-fields {
+  margin-top: 8px;
+}
+.consumo-inline-fields:empty {
+  display: none;
+}
+.consumo-inline-fields label {
+  margin-top: 0;
+}
+input.input-invalid {
+  border-color: #ef4444 !important;
+  background: #fff1f2 !important;
+  color: #7f1d1d !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.16) !important;
+}
+
 .modal {
   display: none;
   position: fixed;

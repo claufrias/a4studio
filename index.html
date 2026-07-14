@@ -104,7 +104,7 @@ natural 170 g</textarea>
     <label>Precio Normal:</label>
     <div class="precio-row">
       <div class="precio-input-group">
-        <input id="precioNormalEntero" type="number" value="2990" step="1000" placeholder="Ej: 2990">
+        <input id="precioNormalEntero" type="number" value="2990" step="1000" min="0" placeholder="Ej: 2990">
         <input id="precioNormalCentavos" type="number" value="00" step="1" min="0" max="99" placeholder="00">
       </div>
       <input type="color" id="precioNormalColor" value="#FFFFFF">
@@ -112,13 +112,42 @@ natural 170 g</textarea>
     <label class="field-spacer">Precio Oferta (calculado automáticamente):</label>
     <div class="precio-row">
       <div class="precio-input-group">
-        <input id="precioOfertaEntero" type="number" value="2541" step="1000" placeholder="Ej: 2541">
+        <input id="precioOfertaEntero" type="number" value="2541" step="1000" min="0" placeholder="Ej: 2541">
         <input id="precioOfertaCentavos" type="number" value="50" step="1" min="0" max="99" placeholder="00">
       </div>
       <input type="color" id="precioOfertaColor" value="#000000">
     </div>
     <div id="descuentoInfo" class="descuento-info"><i class="fa-solid fa-tag" aria-hidden="true"></i> Selecciona un fondo para ver el descuento</div>
     
+  </div>
+
+  <div class="card" id="vigenciaCard">
+    <div class="card-title"><i class="fa-regular fa-calendar-days" aria-hidden="true"></i> VIGENCIA</div>
+    <div id="vigenciaFieldsGroup">
+      <label>Vigencia del descuento:</label>
+      <div class="validity-row">
+        <div>
+          <label for="vigenciaDesde">Desde:</label>
+          <input id="vigenciaDesde" type="date">
+        </div>
+        <div>
+          <label for="vigenciaHasta">Hasta:</label>
+          <input id="vigenciaHasta" type="date">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="eanCard">
+    <div class="card-title"><i class="fa-solid fa-barcode" aria-hidden="true"></i> EAN</div>
+    <div id="standardEanGroup">
+      <label>EAN del producto:</label>
+      <input id="productoEan" type="text" inputmode="numeric" maxlength="13" placeholder="Ej: 7792799000899">
+    </div>
+    <div id="consumoEanGroup">
+      <label>EAN del espacio actual:</label>
+      <input id="consumoEan" type="text" inputmode="numeric" maxlength="13" placeholder="Ej: 7792799000899">
+    </div>
   </div>
 
   <div class="card" id="consumoPanel">
@@ -133,6 +162,8 @@ natural 170 g</textarea>
     <div id="consumoActiveIndicator" class="consumo-active-indicator">Editando espacio 1</div>
     <label>Nombre del producto:</label>
     <textarea id="consumoNombre" rows="2" placeholder="Nombre del producto"></textarea>
+    <div id="consumoInlineEanSlot" class="consumo-inline-fields"></div>
+    <div id="consumoInlineVigenciaSlot" class="consumo-inline-fields"></div>
     <label>Precio normal:</label>
     <input id="consumoPrecioNormal" type="number" min="0" step="1" placeholder="Ej: 3500">
     <label>Monto de descuento:</label>
@@ -505,6 +536,12 @@ natural 170 g</textarea>
       color: "#000000"
     };
 
+    let productoEan = '';
+    let vigenciaObj = {
+      desde: '',
+      hasta: ''
+    };
+
     const CONSUMO_MAX_ITEMS = 4;
     let consumoActiveIndex = 0;
     let consumoItems = createDefaultConsumoItems();
@@ -534,11 +571,43 @@ natural 170 g</textarea>
       carrefour: 'fondobanco.jpg'
     };
 
-    function createConsumoItem(nombre = '', precioNormal = 0, descuentoMonto = 0) {
+    function sanitizeEanValue(value) {
+      return String(value || '').replace(/\D/g, '').slice(0, 13);
+    }
+
+    function isValidEanLength(value) {
+      const digits = sanitizeEanValue(value);
+      return digits.length === 8 || digits.length === 13;
+    }
+
+    function updateEanInputValidation(input) {
+      if (!input) return;
+      const digits = sanitizeEanValue(input.value);
+      if (input.value !== digits) input.value = digits;
+      const invalid = digits.length > 0 && !isValidEanLength(digits);
+      input.classList.toggle('input-invalid', invalid);
+      input.setAttribute('aria-invalid', invalid ? 'true' : 'false');
+      input.title = invalid ? 'El EAN debe tener 8 o 13 numeros.' : '';
+    }
+
+    function updateAllEanInputValidation() {
+      updateEanInputValidation(document.getElementById('productoEan'));
+      updateEanInputValidation(document.getElementById('consumoEan'));
+    }
+
+    function normalizeVigenciaObj(value) {
+      return {
+        desde: value && value.desde ? String(value.desde) : '',
+        hasta: value && value.hasta ? String(value.hasta) : ''
+      };
+    }
+
+    function createConsumoItem(nombre = '', precioNormal = 0, descuentoMonto = 0, ean = '') {
       return {
         nombre,
         precioNormal: Math.max(0, Math.round(Number(precioNormal) || 0)),
-        descuentoMonto: Math.max(0, Math.round(Number(descuentoMonto) || 0))
+        descuentoMonto: Math.max(0, Math.round(Number(descuentoMonto) || 0)),
+        ean: sanitizeEanValue(ean)
       };
     }
 
@@ -550,7 +619,8 @@ natural 170 g</textarea>
       const normalized = Array.isArray(items) ? items.slice(0, CONSUMO_MAX_ITEMS).map((item) => createConsumoItem(
         item && item.nombre ? String(item.nombre) : '',
         item && item.precioNormal,
-        item && item.descuentoMonto
+        item && item.descuentoMonto,
+        item && item.ean
       )) : [];
       while (normalized.length < CONSUMO_MAX_ITEMS) normalized.push(createConsumoItem());
       return normalized;
@@ -562,6 +632,25 @@ natural 170 g</textarea>
       const precioFinal = Math.max(0, precioNormal - descuentoMonto);
       const porcentaje = precioNormal > 0 ? Math.round((descuentoMonto / precioNormal) * 100) : 0;
       return { precioNormal, descuentoMonto, precioFinal, porcentaje };
+    }
+
+    function normalizePriceAmount(value) {
+      return Math.max(0, Math.floor(Number(value) || 0));
+    }
+
+    function normalizePriceCents(value) {
+      return Math.max(0, Math.min(99, Math.floor(Number(value) || 0)));
+    }
+
+    function normalizePriceObject(obj, fallback) {
+      const source = obj || {};
+      const base = fallback || {};
+      return {
+        ...base,
+        ...source,
+        entero: normalizePriceAmount(source.entero ?? base.entero),
+        centavos: normalizePriceCents(source.centavos ?? base.centavos)
+      };
     }
 
     function formatPesos(value) {
@@ -1761,6 +1850,84 @@ natural 170 g</textarea>
       lines.slice(0, maxLines).forEach((line, index) => ctx.fillText(line, x, y + index * lineHeight));
     }
 
+    function normalizeEanForBarcode(value) {
+      const digits = sanitizeEanValue(value);
+      return isValidEanLength(digits) ? digits : '';
+    }
+
+    function formatValidityDate(value) {
+      if (!value) return '';
+      const isoMatch = String(value).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if (isoMatch) return `${Number(isoMatch[3])}/${Number(isoMatch[2])}`;
+      return String(value);
+    }
+
+    function getValidityText(vigencia = vigenciaObj) {
+      const normalized = normalizeVigenciaObj(vigencia);
+      const desde = formatValidityDate(normalized.desde);
+      const hasta = formatValidityDate(normalized.hasta);
+      if (desde && hasta) return `Valido del ${desde} al ${hasta}`;
+      if (desde) return `Valido desde el ${desde}`;
+      if (hasta) return `Valido hasta el ${hasta}`;
+      return '';
+    }
+
+    function drawEanBarcode(ctx, value, x, y, width, height) {
+      const ean = normalizeEanForBarcode(value);
+      if (!ean) return false;
+      const leftOdd = ['0001101', '0011001', '0010011', '0111101', '0100011', '0110001', '0101111', '0111011', '0110111', '0001011'];
+      const leftEven = ['0100111', '0110011', '0011011', '0100001', '0011101', '0111001', '0000101', '0010001', '0001001', '0010111'];
+      const right = ['1110010', '1100110', '1101100', '1000010', '1011100', '1001110', '1010000', '1000100', '1001000', '1110100'];
+      let bits = '101';
+      if (ean.length === 8) {
+        for (let i = 0; i <= 3; i += 1) bits += leftOdd[Number(ean[i])];
+        bits += '01010';
+        for (let i = 4; i <= 7; i += 1) bits += right[Number(ean[i])];
+      } else {
+        const parity = ['LLLLLL', 'LLGLGG', 'LLGGLG', 'LLGGGL', 'LGLLGG', 'LGGLLG', 'LGGGLL', 'LGLGLG', 'LGLGGL', 'LGGLGL'][Number(ean[0])];
+        for (let i = 1; i <= 6; i += 1) {
+          const digit = Number(ean[i]);
+          bits += parity[i - 1] === 'L' ? leftOdd[digit] : leftEven[digit];
+        }
+        bits += '01010';
+        for (let i = 7; i <= 12; i += 1) bits += right[Number(ean[i])];
+      }
+      bits += '101';
+
+      const paddingX = 5;
+      const paddingY = 3;
+      const labelH = 15;
+      const moduleW = width / bits.length;
+
+      ctx.save();
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(x - paddingX, y - paddingY, width + paddingX * 2, height + labelH + paddingY * 2);
+      ctx.fillStyle = '#000000';
+      bits.split('').forEach((bit, index) => {
+        if (bit === '1') ctx.fillRect(x + index * moduleW, y, Math.ceil(moduleW), height);
+      });
+      ctx.font = '500 12px Arial, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      ctx.fillText(ean, x + width / 2, y + height + 1);
+      ctx.restore();
+      return true;
+    }
+
+    function drawValidityAndEan(ctx, ean, vigencia, layout) {
+      const validityText = getValidityText(vigencia);
+      ctx.save();
+      if (validityText) {
+        ctx.fillStyle = '#000000';
+        ctx.font = `${layout.dateWeight || 400} ${layout.dateSize || 22}px Arial, sans-serif`;
+        ctx.textAlign = layout.dateAlign || 'left';
+        ctx.textBaseline = 'alphabetic';
+        ctx.fillText(validityText, layout.dateX, layout.dateY);
+      }
+      drawEanBarcode(ctx, ean, layout.barcodeX, layout.barcodeY, layout.barcodeW, layout.barcodeH);
+      ctx.restore();
+    }
+
     function drawConsumoInmediatoLayout() {
       mainCtx.save();
       if (consumoFondoImg.complete && consumoFondoImg.naturalWidth) {
@@ -1781,7 +1948,7 @@ natural 170 g</textarea>
         const contentX = marginX + logoW + 28;
         const contentW = CANVAS_W - contentX - 38;
         const calc = getConsumoItemCalculations(item);
-        const hasData = (item.nombre && item.nombre.trim()) || calc.precioNormal > 0 || calc.descuentoMonto > 0;
+        const hasData = (item.nombre && item.nombre.trim()) || calc.precioNormal > 0 || calc.descuentoMonto > 0 || !!sanitizeEanValue(item.ean);
         if (!hasData) return;
 
         mainCtx.fillStyle = '#111111';
@@ -1831,7 +1998,17 @@ natural 170 g</textarea>
         mainCtx.textBaseline = 'alphabetic';
         mainCtx.fillStyle = '#000000';
         mainCtx.font = '500 88px Inter, Arial, sans-serif';
-        mainCtx.fillText(`$${formatPesos(calc.precioFinal)}`, contentX + 150, y + 205);
+        mainCtx.fillText(`$${formatPesos(calc.precioFinal)}`, contentX + 150, y + 198);
+
+        drawValidityAndEan(mainCtx, item.ean, vigenciaObj, {
+          dateX: contentX,
+          dateY: y + rowH - 27,
+          dateSize: 19,
+          barcodeX: CANVAS_W - 126,
+          barcodeY: y + rowH - 45,
+          barcodeW: 94,
+          barcodeH: 20
+        });
       });
       mainCtx.restore();
     }
@@ -1925,6 +2102,11 @@ natural 170 g</textarea>
         let bounds = getPrecioBounds(precioOfertaObj, false);
         drawTransformBox(bounds.x, bounds.y, bounds.w, bounds.h);
       }
+
+      const standardFooterLayout = fondoActual === 'carrefour'
+        ? { dateX: 14, dateY: 1157, dateSize: 21, barcodeX: 680, barcodeY: 1129, barcodeW: 170, barcodeH: 48 }
+        : { dateX: 350, dateY: 1157, dateSize: 21, barcodeX: 710, barcodeY: 1129, barcodeW: 165, barcodeH: 48 };
+      drawValidityAndEan(mainCtx, productoEan, vigenciaObj, standardFooterLayout);
       
       if (selected && !(activeEditorMeta && activeEditorMeta.objType === selected)) {
         drawSelectionGuides(selected);
@@ -2405,9 +2587,12 @@ natural 170 g</textarea>
       const nombreInput = document.getElementById('consumoNombre');
       const precioInput = document.getElementById('consumoPrecioNormal');
       const descuentoInput = document.getElementById('consumoDescuentoMonto');
+      const eanInput = document.getElementById('consumoEan');
       if (nombreInput) nombreInput.value = active.nombre;
       if (precioInput) precioInput.value = active.precioNormal || '';
       if (descuentoInput) descuentoInput.value = active.descuentoMonto || '';
+      if (eanInput) eanInput.value = active.ean || '';
+      updateEanInputValidation(eanInput);
       document.querySelectorAll('#consumoSlotButtons .consumo-slot-btn').forEach((btn, index) => {
         const activeSlot = index === consumoActiveIndex;
         btn.classList.toggle('active', activeSlot);
@@ -2439,6 +2624,29 @@ natural 170 g</textarea>
         const el = document.getElementById(id);
         if (el) el.style.display = consumoMode ? 'none' : '';
       });
+      const vigenciaCard = document.getElementById('vigenciaCard');
+      const eanCard = document.getElementById('eanCard');
+      const vigenciaFieldsGroup = document.getElementById('vigenciaFieldsGroup');
+      const standardEanGroup = document.getElementById('standardEanGroup');
+      const consumoEanGroup = document.getElementById('consumoEanGroup');
+      const inlineEanSlot = document.getElementById('consumoInlineEanSlot');
+      const inlineVigenciaSlot = document.getElementById('consumoInlineVigenciaSlot');
+      if (consumoMode) {
+        if (vigenciaCard) vigenciaCard.style.display = 'none';
+        if (eanCard) eanCard.style.display = 'none';
+        if (consumoEanGroup && inlineEanSlot && consumoEanGroup.parentNode !== inlineEanSlot) inlineEanSlot.appendChild(consumoEanGroup);
+        if (vigenciaFieldsGroup && inlineVigenciaSlot && vigenciaFieldsGroup.parentNode !== inlineVigenciaSlot) inlineVigenciaSlot.appendChild(vigenciaFieldsGroup);
+        if (standardEanGroup) standardEanGroup.style.display = 'none';
+        if (consumoEanGroup) consumoEanGroup.style.display = 'block';
+      } else {
+        if (vigenciaCard) vigenciaCard.style.display = '';
+        if (eanCard) eanCard.style.display = '';
+        if (vigenciaFieldsGroup && vigenciaCard && vigenciaFieldsGroup.parentNode !== vigenciaCard) vigenciaCard.appendChild(vigenciaFieldsGroup);
+        if (standardEanGroup && eanCard && standardEanGroup.parentNode !== eanCard) eanCard.appendChild(standardEanGroup);
+        if (consumoEanGroup && eanCard && consumoEanGroup.parentNode !== eanCard) eanCard.appendChild(consumoEanGroup);
+        if (standardEanGroup) standardEanGroup.style.display = 'block';
+        if (consumoEanGroup) consumoEanGroup.style.display = 'none';
+      }
       const consumoPanel = document.getElementById('consumoPanel');
       if (consumoPanel) consumoPanel.style.display = consumoMode ? 'block' : 'none';
       if (consumoMode) {
@@ -2460,9 +2668,21 @@ natural 170 g</textarea>
     function updateConsumoFromUI() {
       if (!isConsumoMode()) return;
       const item = consumoItems[consumoActiveIndex] || createConsumoItem();
+      const consumoPrecioInput = document.getElementById('consumoPrecioNormal');
+      const consumoDescuentoInput = document.getElementById('consumoDescuentoMonto');
+      const consumoPrecioRaw = consumoPrecioInput?.value || '';
+      const consumoDescuentoRaw = consumoDescuentoInput?.value || '';
       item.nombre = (document.getElementById('consumoNombre')?.value || '').trim();
-      item.precioNormal = Math.max(0, Math.round(Number(document.getElementById('consumoPrecioNormal')?.value) || 0));
-      item.descuentoMonto = Math.max(0, Math.round(Number(document.getElementById('consumoDescuentoMonto')?.value) || 0));
+      item.precioNormal = Math.max(0, Math.round(Number(consumoPrecioRaw) || 0));
+      item.descuentoMonto = Math.max(0, Math.round(Number(consumoDescuentoRaw) || 0));
+      if (consumoPrecioInput) consumoPrecioInput.value = consumoPrecioRaw.trim() ? String(item.precioNormal) : '';
+      if (consumoDescuentoInput) consumoDescuentoInput.value = consumoDescuentoRaw.trim() ? String(item.descuentoMonto) : '';
+      item.ean = sanitizeEanValue(document.getElementById('consumoEan')?.value || '');
+      updateEanInputValidation(document.getElementById('consumoEan'));
+      vigenciaObj = normalizeVigenciaObj({
+        desde: document.getElementById('vigenciaDesde')?.value || '',
+        hasta: document.getElementById('vigenciaHasta')?.value || ''
+      });
       consumoItems[consumoActiveIndex] = item;
       updateConsumoResultado();
       updateView();
@@ -2527,23 +2747,27 @@ natural 170 g</textarea>
       productoObj.fontFamily = document.getElementById("productoFont").value;
       productoObj.fontSize = readNumericSelectValue("productoSize", productoObj.fontSize);
       productoObj.color = document.getElementById("productoColor").value;
+      productoEan = sanitizeEanValue(document.getElementById("productoEan")?.value || '');
+      updateEanInputValidation(document.getElementById("productoEan"));
+      vigenciaObj = normalizeVigenciaObj({
+        desde: document.getElementById('vigenciaDesde')?.value || '',
+        hasta: document.getElementById('vigenciaHasta')?.value || ''
+      });
       
-      let normalEntero = parseFloat(document.getElementById("precioNormalEntero").value) || 0;
-      let normalCentavos = parseInt(document.getElementById("precioNormalCentavos").value) || 0;
-      if (normalCentavos > 99) normalCentavos = 99;
-      if (normalCentavos < 0) normalCentavos = 0;
+      let normalEntero = normalizePriceAmount(document.getElementById("precioNormalEntero").value);
+      let normalCentavos = normalizePriceCents(document.getElementById("precioNormalCentavos").value);
       precioNormalObj.entero = normalEntero;
       precioNormalObj.centavos = normalCentavos;
       precioNormalObj.color = document.getElementById("precioNormalColor").value;
+      document.getElementById("precioNormalEntero").value = precioNormalObj.entero;
+      document.getElementById("precioNormalCentavos").value = String(precioNormalObj.centavos).padStart(2, '0');
       
       const descuentoActivo = fondoActual ? calcularDescuentoPorFondo(fondoActual) : 0;
       if (descuentoActivo > 0) {
         aplicarDescuentoPorFondo(fondoActual);
       } else {
-        let ofertaEntero = parseFloat(document.getElementById("precioOfertaEntero").value) || 0;
-        let ofertaCentavos = parseInt(document.getElementById("precioOfertaCentavos").value) || 0;
-        if (ofertaCentavos > 99) ofertaCentavos = 99;
-        if (ofertaCentavos < 0) ofertaCentavos = 0;
+        let ofertaEntero = normalizePriceAmount(document.getElementById("precioOfertaEntero").value);
+        let ofertaCentavos = normalizePriceCents(document.getElementById("precioOfertaCentavos").value);
         precioOfertaObj.entero = ofertaEntero;
         precioOfertaObj.centavos = ofertaCentavos;
       }
@@ -3744,9 +3968,13 @@ natural 170 g</textarea>
     document.getElementById("precioOfertaEntero").addEventListener("input", updateFromUI);
     document.getElementById("precioOfertaCentavos").addEventListener("input", updateFromUI);
     document.getElementById("precioOfertaColor").addEventListener("input", updateFromUI);
+    document.getElementById("productoEan").addEventListener("input", updateFromUI);
+    document.getElementById("vigenciaDesde").addEventListener("input", updateFromUI);
+    document.getElementById("vigenciaHasta").addEventListener("input", updateFromUI);
     document.getElementById("consumoNombre").addEventListener("input", updateConsumoFromUI);
     document.getElementById("consumoPrecioNormal").addEventListener("input", updateConsumoFromUI);
     document.getElementById("consumoDescuentoMonto").addEventListener("input", updateConsumoFromUI);
+    document.getElementById("consumoEan").addEventListener("input", updateConsumoFromUI);
     
     window.addEventListener('resize', handleResize);
     viewCanvas.addEventListener("mousedown", onMouseDown);
@@ -3981,6 +4209,11 @@ natural 170 g</textarea>
           titulo: { shadow: false, outline: false },
           producto: { shadow: false, outline: false }
         },
+        productoEan: '',
+        vigenciaObj: firstPage && firstPage.vigenciaObj ? normalizeVigenciaObj(firstPage.vigenciaObj) : {
+          desde: '',
+          hasta: ''
+        },
         fondoActual: inheritedFondo,
         fondoPersonalizado: inheritedFondo === 'consumo' ? false : inheritedPersonalizado,
         consumoItems: createDefaultConsumoItems(),
@@ -4003,9 +4236,11 @@ natural 170 g</textarea>
         name: pageState && pageState.name ? pageState.name : base.name,
         tituloObj: cloneData(pageState && pageState.tituloObj ? pageState.tituloObj : base.tituloObj),
         productoObj: cloneData(pageState && pageState.productoObj ? pageState.productoObj : base.productoObj),
-        precioNormalObj: cloneData(pageState && pageState.precioNormalObj ? pageState.precioNormalObj : base.precioNormalObj),
-        precioOfertaObj: cloneData(pageState && pageState.precioOfertaObj ? pageState.precioOfertaObj : base.precioOfertaObj),
+        precioNormalObj: normalizePriceObject(pageState && pageState.precioNormalObj ? pageState.precioNormalObj : base.precioNormalObj, base.precioNormalObj),
+        precioOfertaObj: normalizePriceObject(pageState && pageState.precioOfertaObj ? pageState.precioOfertaObj : base.precioOfertaObj, base.precioOfertaObj),
         currentTextEffect: normalizeTextEffectState(pageState && pageState.currentTextEffect ? pageState.currentTextEffect : base.currentTextEffect),
+        productoEan: sanitizeEanValue(pageState && pageState.productoEan ? pageState.productoEan : ''),
+        vigenciaObj: normalizeVigenciaObj(pageState && pageState.vigenciaObj ? pageState.vigenciaObj : base.vigenciaObj),
         fondoActual: pageState && pageState.fondoActual ? pageState.fondoActual : null,
         fondoPersonalizado: pageState && pageState.fondoActual === 'consumo' ? false : !!(pageState && pageState.fondoPersonalizado),
         consumoItems: normalizeConsumoItems(pageState && pageState.consumoItems ? pageState.consumoItems : base.consumoItems),
@@ -4020,9 +4255,11 @@ natural 170 g</textarea>
         name: meta.name || `Pagina ${currentPageIndex + 1}`,
         tituloObj: cloneData(tituloObj),
         productoObj: cloneData(productoObj),
-        precioNormalObj: cloneData(precioNormalObj),
-        precioOfertaObj: cloneData(precioOfertaObj),
+        precioNormalObj: normalizePriceObject(precioNormalObj),
+        precioOfertaObj: normalizePriceObject(precioOfertaObj),
         currentTextEffect: normalizeTextEffectState(currentTextEffect),
+        productoEan: sanitizeEanValue(productoEan),
+        vigenciaObj: normalizeVigenciaObj(vigenciaObj),
         fondoActual,
         fondoPersonalizado,
         consumoItems: normalizeConsumoItems(consumoItems),
@@ -4314,6 +4551,13 @@ natural 170 g</textarea>
       document.getElementById('precioOfertaEntero').value = precioOfertaObj.entero;
       document.getElementById('precioOfertaCentavos').value = String(precioOfertaObj.centavos).padStart(2, '0');
       document.getElementById('precioOfertaColor').value = precioOfertaObj.color;
+      const productoEanInput = document.getElementById('productoEan');
+      if (productoEanInput) productoEanInput.value = productoEan || '';
+      const vigenciaDesdeInput = document.getElementById('vigenciaDesde');
+      const vigenciaHastaInput = document.getElementById('vigenciaHasta');
+      if (vigenciaDesdeInput) vigenciaDesdeInput.value = vigenciaObj.desde || '';
+      if (vigenciaHastaInput) vigenciaHastaInput.value = vigenciaObj.hasta || '';
+      updateAllEanInputValidation();
       syncLayoutModePanels();
       renderPagesPanel();
     }
@@ -4333,6 +4577,8 @@ natural 170 g</textarea>
         precioOfertaObj: cloneData(currentPage.precioOfertaObj),
         consumoItems: normalizeConsumoItems(currentPage.consumoItems),
         consumoActiveIndex: currentPage.consumoActiveIndex || 0,
+        productoEan: sanitizeEanValue(currentPage.productoEan),
+        vigenciaObj: normalizeVigenciaObj(currentPage.vigenciaObj),
         currentTextEffect: cloneData(currentPage.currentTextEffect),
         fondoActual: currentPage.fondoActual,
         fondoPersonalizado: currentPage.fondoPersonalizado,
@@ -4923,8 +5169,10 @@ natural 170 g</textarea>
       tituloObj = cloneData(pageState.tituloObj);
       productoObj = cloneData(pageState.productoObj);
       normalizeProductObjectWidth(productoObj);
-      precioNormalObj = cloneData(pageState.precioNormalObj);
-      precioOfertaObj = cloneData(pageState.precioOfertaObj);
+      precioNormalObj = normalizePriceObject(pageState.precioNormalObj);
+      precioOfertaObj = normalizePriceObject(pageState.precioOfertaObj);
+      productoEan = sanitizeEanValue(pageState.productoEan);
+      vigenciaObj = normalizeVigenciaObj(pageState.vigenciaObj);
       consumoItems = normalizeConsumoItems(pageState.consumoItems);
       consumoActiveIndex = Math.min(Math.max(Number(pageState.consumoActiveIndex) || 0, 0), CONSUMO_MAX_ITEMS - 1);
       currentTextEffect = normalizeTextEffectState(pageState.currentTextEffect || {
