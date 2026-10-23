@@ -44,6 +44,11 @@ body.modal-open .product-suggestions {
   font-variant-numeric: tabular-nums;
 }
 
+/* Panel de conexión oculto temporalmente. */
+#carrefourCard {
+  display: none !important;
+}
+
 .carrefour-help,
 .carrefour-status,
 .carrefour-setup {
