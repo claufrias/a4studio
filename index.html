@@ -10,9 +10,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" referrerpolicy="no-referrer">
-<link rel="stylesheet" href="a4studio.css?v=20261023-product-catalog">
+<link rel="stylesheet" href="a4studio.css?v=20261023-carrefour360">
 </head>
-<body>
+<body data-a4-studio="true">
 
 <div id="mobileTopBar">
   <div class="mobile-top-side">
@@ -99,6 +99,28 @@ natural 170 g</textarea>
     </div>
   </div>
 
+  <div class="card" id="carrefourCard">
+    <div class="card-title"><i class="fa-solid fa-link" aria-hidden="true"></i> CARREFOUR360</div>
+    <p class="carrefour-help">Consultá la descripción y el PVP de tu sesión de Pricing.</p>
+    <div class="tool-group carrefour-actions">
+      <button id="carrefourConnect" type="button">Conectar</button>
+      <a class="btn-outline" href="https://carrefour360.carrefour.com.ar/pricing" target="_blank" rel="noopener noreferrer">Abrir Pricing</a>
+    </div>
+    <label class="carrefour-auto"><input id="carrefourAuto" type="checkbox" checked disabled> Completar al ingresar un EAN</label>
+    <button id="carrefourRefresh" class="btn-outline carrefour-refresh" type="button" disabled>Actualizar producto actual</button>
+    <div id="carrefourStatus" class="carrefour-status" role="status" aria-live="polite">Sin conectar. Podés seguir usando el catálogo local.</div>
+    <details id="carrefourSetup" class="carrefour-setup">
+      <summary>Configurar conexión</summary>
+      <p>Para usar tu sesión, instalá el complemento local de Chrome:</p>
+      <ol>
+        <li><a href="downloads/carrefour360.zip" download>Descargá el complemento</a> y extraé el ZIP en una carpeta.</li>
+        <li>En Chrome, abrí Extensiones → Gestionar extensiones. Activá Modo desarrollador y usá Cargar descomprimida para elegir esa carpeta.</li>
+        <li>Recargá este editor, abrí Pricing con tu sesión iniciada y pulsá Conectar.</li>
+      </ol>
+      <p>Usa la tienda seleccionada en Carrefour360. El complemento consulta los productos; no cambia los precios de Carrefour.</p>
+    </details>
+  </div>
+
   <div class="card" id="preciosCard">
     <div class="card-title"><i class="fa-solid fa-sack-dollar" aria-hidden="true"></i> PRECIOS</div>
     <label>Precio Normal:</label>
@@ -142,11 +164,11 @@ natural 170 g</textarea>
     <div class="card-title"><i class="fa-solid fa-barcode" aria-hidden="true"></i> EAN</div>
     <div id="standardEanGroup">
       <label for="productoEan">EAN del producto:</label>
-      <input id="productoEan" type="text" inputmode="numeric" maxlength="13" placeholder="Ej: 7792799000899">
+      <input id="productoEan" type="text" inputmode="numeric" maxlength="14" placeholder="Ej: 7792799000899">
     </div>
     <div id="consumoEanGroup">
       <label for="consumoEan">EAN del espacio actual:</label>
-      <input id="consumoEan" type="text" inputmode="numeric" maxlength="13" placeholder="Ej: 7792799000899">
+      <input id="consumoEan" type="text" inputmode="numeric" maxlength="14" placeholder="Ej: 7792799000899">
     </div>
   </div>
 
@@ -165,9 +187,9 @@ natural 170 g</textarea>
     <div id="consumoInlineEanSlot" class="consumo-inline-fields"></div>
     <div id="consumoInlineVigenciaSlot" class="consumo-inline-fields"></div>
     <label>Precio normal:</label>
-    <input id="consumoPrecioNormal" type="number" min="0" step="1" placeholder="Ej: 3500">
+    <input id="consumoPrecioNormal" type="number" min="0" step="0.01" placeholder="Ej: 3500">
     <label>Monto de descuento:</label>
-    <input id="consumoDescuentoMonto" type="number" min="0" step="1" placeholder="Ej: 1500">
+    <input id="consumoDescuentoMonto" type="number" min="0" step="0.01" placeholder="Ej: 1500">
     <div id="consumoResultado" class="descuento-info">Precio final: $0 · 0% descuento</div>
     <div class="tool-group consumo-actions">
       <button type="button" onclick="duplicarConsumoActivoEnVacios()">Duplicar en vacíos</button>
@@ -381,9 +403,16 @@ natural 170 g</textarea>
 
 <script src="productos.js?v=20261023"></script>
 <script src="product-search.js?v=20261023"></script>
+<script src="carrefour360.js?v=20261023"></script>
 <script>
   (function(){
     const productSearch = window.A4ProductSearch;
+    const carrefourClient = window.A4Carrefour360.createClient();
+    let carrefourConnected = false;
+    let carrefourConnecting = false;
+    let carrefourLookupPending = false;
+    let carrefourLookupTimer = null;
+    let carrefourLookupGeneration = 0;
     // ========== CONSTANTES PRIMERO ==========
     const CANVAS_W = 900;
     const CANVAS_H = 1200;
@@ -575,7 +604,7 @@ natural 170 g</textarea>
     };
 
     function sanitizeEanValue(value) {
-      return String(value || '').replace(/\D/g, '').slice(0, 13);
+      return String(value || '').replace(/\D/g, '').slice(0, 14);
     }
 
     function isValidEanLength(value) {
@@ -587,10 +616,10 @@ natural 170 g</textarea>
       if (!input) return;
       const digits = sanitizeEanValue(input.value);
       if (input.value !== digits) input.value = digits;
-      const invalid = digits.length > 0 && !isValidEanLength(digits) && !productSearch.catalog.findByEan(digits);
+      const invalid = digits.length > 0 && !isValidEanLength(digits) && digits.length !== 14 && !productSearch.catalog.findByEan(digits);
       input.classList.toggle('input-invalid', invalid);
       input.setAttribute('aria-invalid', invalid ? 'true' : 'false');
-      input.title = invalid ? 'El EAN debe tener 8 o 13 numeros.' : '';
+      input.title = invalid ? 'El código debe tener 8, 13 o 14 números, o existir en el catálogo.' : '';
     }
 
     function updateAllEanInputValidation() {
@@ -605,11 +634,16 @@ natural 170 g</textarea>
       };
     }
 
+    function normalizeConsumoAmount(value) {
+      const cents = Math.round(Number(value) * 100);
+      return Number.isFinite(cents) ? Math.max(0, cents) / 100 : 0;
+    }
+
     function createConsumoItem(nombre = '', precioNormal = 0, descuentoMonto = 0, ean = '') {
       return {
         nombre,
-        precioNormal: Math.max(0, Math.round(Number(precioNormal) || 0)),
-        descuentoMonto: Math.max(0, Math.round(Number(descuentoMonto) || 0)),
+        precioNormal: normalizeConsumoAmount(precioNormal),
+        descuentoMonto: normalizeConsumoAmount(descuentoMonto),
         ean: sanitizeEanValue(ean)
       };
     }
@@ -630,10 +664,12 @@ natural 170 g</textarea>
     }
 
     function getConsumoItemCalculations(item) {
-      const precioNormal = Math.max(0, Math.round(Number(item && item.precioNormal) || 0));
-      const descuentoMonto = Math.min(precioNormal, Math.max(0, Math.round(Number(item && item.descuentoMonto) || 0)));
-      const precioFinal = Math.max(0, precioNormal - descuentoMonto);
-      const porcentaje = precioNormal > 0 ? Math.round((descuentoMonto / precioNormal) * 100) : 0;
+      const precioNormalCents = Math.round(normalizeConsumoAmount(item && item.precioNormal) * 100);
+      const descuentoCents = Math.min(precioNormalCents, Math.round(normalizeConsumoAmount(item && item.descuentoMonto) * 100));
+      const precioNormal = precioNormalCents / 100;
+      const descuentoMonto = descuentoCents / 100;
+      const precioFinal = (precioNormalCents - descuentoCents) / 100;
+      const porcentaje = precioNormalCents > 0 ? Math.round((descuentoCents / precioNormalCents) * 100) : 0;
       return { precioNormal, descuentoMonto, precioFinal, porcentaje };
     }
 
@@ -658,6 +694,12 @@ natural 170 g</textarea>
 
     function formatPesos(value) {
       return Math.round(Number(value) || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
+    function formatConsumoPesos(value) {
+      const [entero, centavos] = normalizeConsumoAmount(value).toFixed(2).split('.');
+      const formatted = entero.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+      return centavos === '00' ? formatted : `${formatted},${centavos}`;
     }
 
     function isConsumoMode() {
@@ -1407,6 +1449,7 @@ natural 170 g</textarea>
     }
 
     const LAYOUT_LIMIT_COMPATIBLE_FONDOS = new Set(['mercadopago', 'dni', 'carrefour']);
+    const PROMOTION_TERMS_FONDOS = new Set(['mercadopago', 'dni']);
     const DEFAULT_LAYOUT_MOVE_ZONES = {
       titulo: { x: 0, y: 20, w: CANVAS_W, h: 84 },
       producto: { x: 16, y: 84, w: 396, h: 190 },
@@ -1415,9 +1458,14 @@ natural 170 g</textarea>
       img: { x: 16, y: 430, w: 868, h: 660 }
     };
 
+    const PROMOTION_LAYOUT_MOVE_ZONES = {
+      ...DEFAULT_LAYOUT_MOVE_ZONES,
+      img: { ...DEFAULT_LAYOUT_MOVE_ZONES.img, h: 610 }
+    };
+
     const LAYOUT_MOVE_ZONES_BY_FONDO = {
-      mercadopago: DEFAULT_LAYOUT_MOVE_ZONES,
-      dni: DEFAULT_LAYOUT_MOVE_ZONES,
+      mercadopago: PROMOTION_LAYOUT_MOVE_ZONES,
+      dni: PROMOTION_LAYOUT_MOVE_ZONES,
       carrefour: DEFAULT_LAYOUT_MOVE_ZONES
     };
 
@@ -1459,6 +1507,11 @@ natural 170 g</textarea>
         bounds = getPrecioBounds(precioOfertaObj, false);
       } else if (type === 'img' && imagenObj) {
         target = imagenObj;
+        if (PROMOTION_TERMS_FONDOS.has(fondoActual)) {
+          const scale = Math.min(1, zone.w / target.w, zone.h / target.h);
+          target.w *= scale;
+          target.h *= scale;
+        }
         if (target.w > zone.w) target.w = zone.w;
         if (target.h > zone.h) target.h = zone.h;
         bounds = { x: imagenObj.x, y: imagenObj.y, w: imagenObj.w, h: imagenObj.h };
@@ -1931,6 +1984,23 @@ natural 170 g</textarea>
       ctx.restore();
     }
 
+    function drawPromotionTerms() {
+      if (!PROMOTION_TERMS_FONDOS.has(fondoActual)) return;
+      mainCtx.save();
+      mainCtx.fillStyle = '#000000';
+      mainCtx.textAlign = 'center';
+      mainCtx.textBaseline = 'top';
+      mainCtx.font = '700 11px Arial, sans-serif';
+      const exclusions = 'NO INCLUYE CARNICERÍA, FRUTAS, VERDURAS, HUEVOS DE GALLINA, ELECTROS, BAZAR, FERRETERÍA, AUTOMOTOR, JUGUETERÍA LIBRERÍA, COCINA, JARDINERÍA, TEXTIL, OFERTÓN POR BULTO, PACK FAMILIAR NI “PRECIO SÚPER BAJO”,';
+      drawWrappedConsumoText(mainCtx, exclusions, CANVAS_W / 2, 1102, CANVAS_W - 32, 13, Infinity);
+      mainCtx.textBaseline = 'alphabetic';
+      mainCtx.font = '700 17px Arial, sans-serif';
+      mainCtx.fillText('Mínimo de compra', 535, 1148);
+      mainCtx.font = '700 20px Arial, sans-serif';
+      mainCtx.fillText('$15.000', 535, 1172);
+      mainCtx.restore();
+    }
+
     function drawConsumoInmediatoLayout() {
       mainCtx.save();
       if (consumoFondoImg.complete && consumoFondoImg.naturalWidth) {
@@ -1975,17 +2045,24 @@ natural 170 g</textarea>
         mainCtx.font = '700 12px Inter, Arial, sans-serif';
         mainCtx.fillText('PRECIO NORMAL', contentX, normalLabelY);
 
-        const normalPriceText = `$${formatPesos(calc.precioNormal)}`;
+        const normalPriceText = `$${formatConsumoPesos(calc.precioNormal)}`;
+        const normalPriceMaxWidth = 138;
         mainCtx.textBaseline = 'alphabetic';
         mainCtx.fillStyle = '#7f7f7f';
-        mainCtx.font = '700 33px Inter, Arial, sans-serif';
-        mainCtx.fillText(normalPriceText, contentX, normalPriceBaseline);
-        const normalPriceWidth = mainCtx.measureText(normalPriceText).width;
+        let normalPriceFontSize = 33;
+        mainCtx.font = `700 ${normalPriceFontSize}px Inter, Arial, sans-serif`;
+        while (mainCtx.measureText(normalPriceText).width > normalPriceMaxWidth && normalPriceFontSize > 16) {
+          normalPriceFontSize -= 1;
+          mainCtx.font = `700 ${normalPriceFontSize}px Inter, Arial, sans-serif`;
+        }
+        mainCtx.fillText(normalPriceText, contentX, normalPriceBaseline, normalPriceMaxWidth);
+        const normalPriceWidth = Math.min(mainCtx.measureText(normalPriceText).width, normalPriceMaxWidth);
+        const normalPriceStrikeY = normalPriceBaseline - normalPriceFontSize * 0.4;
         mainCtx.strokeStyle = '#7f7f7f';
         mainCtx.lineWidth = 4;
         mainCtx.beginPath();
-        mainCtx.moveTo(contentX, normalPriceBaseline - 13);
-        mainCtx.lineTo(contentX + normalPriceWidth, normalPriceBaseline - 13);
+        mainCtx.moveTo(contentX, normalPriceStrikeY);
+        mainCtx.lineTo(contentX + normalPriceWidth, normalPriceStrikeY);
         mainCtx.stroke();
 
         const badgeX = contentX;
@@ -2009,8 +2086,15 @@ natural 170 g</textarea>
         mainCtx.textAlign = 'left';
         mainCtx.textBaseline = 'alphabetic';
         mainCtx.fillStyle = '#000000';
-        mainCtx.font = '500 88px Inter, Arial, sans-serif';
-        mainCtx.fillText(`$${formatPesos(calc.precioFinal)}`, contentX + 150, y + 198);
+        const finalPriceText = `$${formatConsumoPesos(calc.precioFinal)}`;
+        const finalPriceMaxWidth = Math.max(1, contentW - 150);
+        let finalPriceFontSize = 88;
+        mainCtx.font = `500 ${finalPriceFontSize}px Inter, Arial, sans-serif`;
+        while (mainCtx.measureText(finalPriceText).width > finalPriceMaxWidth && finalPriceFontSize > 32) {
+          finalPriceFontSize -= 1;
+          mainCtx.font = `500 ${finalPriceFontSize}px Inter, Arial, sans-serif`;
+        }
+        mainCtx.fillText(finalPriceText, contentX + 150, y + 198, finalPriceMaxWidth);
 
         drawValidityAndEan(mainCtx, item.ean, vigenciaObj, {
           dateX: contentX,
@@ -2115,9 +2199,12 @@ natural 170 g</textarea>
         drawTransformBox(bounds.x, bounds.y, bounds.w, bounds.h);
       }
 
-      const standardFooterLayout = fondoActual === 'carrefour'
-        ? { dateX: 14, dateY: 1157, dateSize: 21, barcodeX: 680, barcodeY: 1129, barcodeW: 170, barcodeH: 48 }
-        : { dateX: 350, dateY: 1157, dateSize: 21, barcodeX: 710, barcodeY: 1129, barcodeW: 165, barcodeH: 48 };
+      drawPromotionTerms();
+      const standardFooterLayout = PROMOTION_TERMS_FONDOS.has(fondoActual)
+        ? { dateX: 18, dateY: 1080, dateSize: 16, barcodeX: 710, barcodeY: 1050, barcodeW: 165, barcodeH: 28 }
+        : fondoActual === 'carrefour'
+          ? { dateX: 14, dateY: 1157, dateSize: 21, barcodeX: 680, barcodeY: 1129, barcodeW: 170, barcodeH: 48 }
+          : { dateX: 350, dateY: 1157, dateSize: 21, barcodeX: 710, barcodeY: 1129, barcodeW: 165, barcodeH: 48 };
       drawValidityAndEan(mainCtx, productoEan, vigenciaObj, standardFooterLayout);
       
       if (selected && !(activeEditorMeta && activeEditorMeta.objType === selected)) {
@@ -2391,6 +2478,7 @@ natural 170 g</textarea>
     }
 
     function showInlineEditor(obj, objType, bounds, options = {}) {
+      if (objType === 'producto') cancelCarrefourLookup();
       if (activeEditor) {
         activeEditor.blur();
       }
@@ -2514,6 +2602,7 @@ natural 170 g</textarea>
         } else {
           commitInteractionHistory(isPriceEditor ? 'Precio editado' : 'Texto editado');
         }
+        if (!cancelled && objType === 'producto') scheduleCarrefourLookup();
       };
 
       editor.addEventListener("focus", function() {
@@ -2610,6 +2699,7 @@ natural 170 g</textarea>
 
 
     function syncConsumoPanelFromState() {
+      cancelCarrefourLookup(true);
       productSearch.closeAll();
       const panel = document.getElementById('consumoPanel');
       if (!panel) return;
@@ -2647,7 +2737,7 @@ natural 170 g</textarea>
       if (!result) return;
       const item = consumoItems[consumoActiveIndex] || createConsumoItem();
       const calc = getConsumoItemCalculations(item);
-      result.innerHTML = `Precio final: $${formatPesos(calc.precioFinal)} · ${calc.porcentaje}% descuento`;
+      result.innerHTML = `Precio final: $${formatConsumoPesos(calc.precioFinal)} · ${calc.porcentaje}% descuento`;
     }
 
     function syncLayoutModePanels() {
@@ -2705,10 +2795,10 @@ natural 170 g</textarea>
       const consumoPrecioRaw = consumoPrecioInput?.value || '';
       const consumoDescuentoRaw = consumoDescuentoInput?.value || '';
       item.nombre = (document.getElementById('consumoNombre')?.value || '').trim();
-      item.precioNormal = Math.max(0, Math.round(Number(consumoPrecioRaw) || 0));
-      item.descuentoMonto = Math.max(0, Math.round(Number(consumoDescuentoRaw) || 0));
-      if (consumoPrecioInput) consumoPrecioInput.value = consumoPrecioRaw.trim() ? String(item.precioNormal) : '';
-      if (consumoDescuentoInput) consumoDescuentoInput.value = consumoDescuentoRaw.trim() ? String(item.descuentoMonto) : '';
+      item.precioNormal = normalizeConsumoAmount(consumoPrecioRaw);
+      item.descuentoMonto = normalizeConsumoAmount(consumoDescuentoRaw);
+      if (consumoPrecioInput && consumoPrecioRaw.trim() && Number(consumoPrecioRaw) !== item.precioNormal) consumoPrecioInput.value = String(item.precioNormal);
+      if (consumoDescuentoInput && consumoDescuentoRaw.trim() && Number(consumoDescuentoRaw) !== item.descuentoMonto) consumoDescuentoInput.value = String(item.descuentoMonto);
       item.ean = sanitizeEanValue(document.getElementById('consumoEan')?.value || '');
       updateEanInputValidation(document.getElementById('consumoEan'));
       vigenciaObj = normalizeVigenciaObj({
@@ -4004,6 +4094,7 @@ natural 170 g</textarea>
     document.getElementById("productoEan").addEventListener("input", () => {
       completeProductNameFromEan('productoEan', 'producto');
       updateFromUI();
+      scheduleCarrefourLookup();
     });
     document.getElementById("vigenciaDesde").addEventListener("input", updateFromUI);
     document.getElementById("vigenciaHasta").addEventListener("input", updateFromUI);
@@ -4013,6 +4104,7 @@ natural 170 g</textarea>
     document.getElementById("consumoEan").addEventListener("input", () => {
       completeProductNameFromEan('consumoEan', 'consumoNombre');
       updateConsumoFromUI();
+      scheduleCarrefourLookup();
     });
 
     function completeProductNameFromEan(eanId, nameId) {
@@ -4024,10 +4116,158 @@ natural 170 g</textarea>
     productSearch.bindNameInput(document.getElementById('producto'), (product) => {
       document.getElementById('productoEan').value = product.ean;
       updateFromUI();
+      scheduleCarrefourLookup();
     });
     productSearch.bindNameInput(document.getElementById('consumoNombre'), (product) => {
       document.getElementById('consumoEan').value = product.ean;
       updateConsumoFromUI();
+      scheduleCarrefourLookup();
+    });
+
+    function setCarrefourStatus(message, state = 'idle') {
+      const status = document.getElementById('carrefourStatus');
+      status.textContent = message;
+      status.dataset.state = state;
+    }
+
+    function syncCarrefourControls() {
+      const connect = document.getElementById('carrefourConnect');
+      connect.disabled = carrefourConnecting;
+      connect.textContent = carrefourConnecting ? 'Conectando…' : carrefourConnected ? 'Desconectar' : 'Conectar';
+      document.getElementById('carrefourRefresh').disabled = !carrefourConnected || carrefourLookupPending;
+      document.getElementById('carrefourAuto').disabled = !carrefourConnected;
+    }
+
+    function cancelCarrefourLookup(resetStatus = false) {
+      const wasPending = carrefourLookupPending || carrefourLookupTimer !== null;
+      clearTimeout(carrefourLookupTimer);
+      carrefourLookupTimer = null;
+      carrefourLookupGeneration += 1;
+      // A connect request must finish before ordinary UI synchronization can cancel lookups.
+      if (!carrefourConnecting) carrefourClient.cancelPending();
+      carrefourLookupPending = false;
+      syncCarrefourControls();
+      if ((resetStatus || wasPending) && carrefourConnected) setCarrefourStatus('Conectado con Pricing. Usa la tienda seleccionada en Carrefour360.', 'connected');
+    }
+
+    function getCarrefourTarget() {
+      const consumo = isConsumoMode();
+      return {
+        pageId: pages[currentPageIndex]?.id,
+        consumo,
+        slot: consumo ? consumoActiveIndex : null,
+        ean: sanitizeEanValue(document.getElementById(consumo ? 'consumoEan' : 'productoEan').value),
+        nombre: document.getElementById(consumo ? 'consumoNombre' : 'producto').value,
+        entero: document.getElementById(consumo ? 'consumoPrecioNormal' : 'precioNormalEntero').value,
+        centavos: consumo ? '' : document.getElementById('precioNormalCentavos').value
+      };
+    }
+
+    function sameCarrefourTarget(target) {
+      const current = getCarrefourTarget();
+      return target.pageId === current.pageId && target.consumo === current.consumo
+        && target.slot === current.slot && target.ean === current.ean;
+    }
+
+    function scheduleCarrefourLookup() {
+      if (!carrefourConnected) return;
+      cancelCarrefourLookup();
+      if (!document.getElementById('carrefourAuto').checked) return;
+      const target = getCarrefourTarget();
+      if (!isValidEanLength(target.ean) && target.ean.length !== 14 && !productSearch.catalog.findByEan(target.ean)) return;
+      carrefourLookupTimer = setTimeout(() => refreshCarrefourProduct(), 450);
+    }
+
+    function fitCarrefourProductName() {
+      const zone = getMovementZone('producto');
+      if (!zone) return;
+      const text = document.getElementById('producto').value;
+      const font = document.getElementById('productoFont').value;
+      let size = readNumericSelectValue('productoSize', productoObj.fontSize);
+      while (size > 16 && wrapTextMultiline(text, Math.min(productoObj.width, zone.w), font, size).length * size * 1.1 > zone.h) size -= 1;
+      ensureSelectHasNumericOption('productoSize', size);
+    }
+
+    async function refreshCarrefourProduct() {
+      cancelCarrefourLookup();
+      if (!carrefourConnected) return;
+      const target = getCarrefourTarget();
+      if (!/^\d{4,14}$/.test(target.ean)) {
+        setCarrefourStatus('Ingresá un EAN para consultar el producto.', 'error');
+        return;
+      }
+      const generation = carrefourLookupGeneration;
+      carrefourLookupPending = true;
+      syncCarrefourControls();
+      setCarrefourStatus('Consultando descripción y PVP en Pricing…', 'pending');
+      try {
+        const product = await carrefourClient.lookup(target.ean);
+        if (generation !== carrefourLookupGeneration || !carrefourConnected || !sameCarrefourTarget(target)) return;
+        if (isRestoringState || historyTransitionInProgress || activeEditor) {
+          setCarrefourStatus('Terminá de editar el cartel y volvé a actualizar el producto.', 'idle');
+          return;
+        }
+        const current = getCarrefourTarget();
+        if (current.entero !== target.entero || current.centavos !== target.centavos) {
+          setCarrefourStatus('Consulta recibida. Se conservó el precio que editaste mientras se consultaba.', 'idle');
+          return;
+        }
+        flushPendingHistory();
+        if (current.nombre === target.nombre) {
+          document.getElementById(target.consumo ? 'consumoNombre' : 'producto').value = product.descripcion;
+          if (!target.consumo) fitCarrefourProductName();
+        }
+        if (target.consumo) {
+          document.getElementById('consumoPrecioNormal').value = String(product.precioNormalCentavos / 100);
+          updateConsumoFromUI();
+        } else {
+          document.getElementById('precioNormalEntero').value = String(Math.floor(product.precioNormalCentavos / 100));
+          document.getElementById('precioNormalCentavos').value = String(product.precioNormalCentavos % 100).padStart(2, '0');
+          updateFromUI();
+        }
+        const pesos = formatNumberWithDots(Math.floor(product.precioNormalCentavos / 100));
+        const cents = String(product.precioNormalCentavos % 100).padStart(2, '0');
+        const time = new Date(product.consultadoEn).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', hour12: false });
+        setCarrefourStatus(`PVP $${pesos},${cents} · Carrefour360 · ${time}. Se usa la tienda de tu sesión.`, 'connected');
+      } catch (error) {
+        if (generation !== carrefourLookupGeneration || error.code === 'CANCELLED') return;
+        if (['LOGIN_REQUIRED', 'PRICING_NOT_OPEN', 'NOT_CONNECTED', 'CONNECTION_LOST', 'PRICING_NOT_READY', 'EXTENSION_UNAVAILABLE', 'CONNECTION_ERROR'].includes(error.code)) carrefourConnected = false;
+        setCarrefourStatus(error.message || 'No se pudo consultar Pricing. Conservamos los datos del cartel.', 'error');
+      } finally {
+        if (generation === carrefourLookupGeneration) {
+          carrefourLookupPending = false;
+          syncCarrefourControls();
+        }
+      }
+    }
+
+    document.getElementById('carrefourConnect').addEventListener('click', async () => {
+      if (carrefourConnected) {
+        carrefourConnected = false;
+        cancelCarrefourLookup();
+        setCarrefourStatus('Desconectado. El catálogo local sigue disponible.');
+        return;
+      }
+      carrefourConnecting = true;
+      syncCarrefourControls();
+      setCarrefourStatus('Comprobando tu sesión de Pricing…', 'pending');
+      try {
+        await carrefourClient.connect();
+        carrefourConnected = true;
+        setCarrefourStatus('Conectado con Pricing. Usa la tienda seleccionada en Carrefour360.', 'connected');
+      } catch (error) {
+        setCarrefourStatus(error.message || 'No se pudo conectar con Pricing.', 'error');
+        if (error.code === 'EXTENSION_NOT_AVAILABLE') document.getElementById('carrefourSetup').open = true;
+      } finally {
+        carrefourConnecting = false;
+        syncCarrefourControls();
+      }
+      if (carrefourConnected) scheduleCarrefourLookup();
+    });
+    document.getElementById('carrefourRefresh').addEventListener('click', () => refreshCarrefourProduct());
+    document.getElementById('carrefourAuto').addEventListener('change', () => {
+      if (document.getElementById('carrefourAuto').checked) scheduleCarrefourLookup();
+      else cancelCarrefourLookup();
     });
     
     window.addEventListener('resize', handleResize);
@@ -4585,6 +4825,7 @@ natural 170 g</textarea>
     }
 
     function syncUIFromObjects() {
+      cancelCarrefourLookup(true);
       productSearch.closeAll();
       document.getElementById('titulo').value = tituloObj.text;
       document.getElementById('tituloFont').value = tituloObj.fontFamily;
@@ -4821,10 +5062,11 @@ natural 170 g</textarea>
       const img = new Image();
       img.onload = () => {
         imagenObj = { img: img, x: imageState.x, y: imageState.y, w: imageState.w, h: imageState.h, cropData: imageState.cropData ? cloneData(imageState.cropData) : null, srcData: imageState.srcData };
+        if (PROMOTION_TERMS_FONDOS.has(fondoActual)) constrainObjectToZone('img');
         cropActive = !!imageState.cropData;
         cropSessionOriginalState = null;
-        lastCropRect = imageState.cropData ? { x: imageState.x, y: imageState.y, w: imageState.w, h: imageState.h } : null;
-        cropTool.rect = { x: imageState.x, y: imageState.y, w: imageState.w, h: imageState.h };
+        cropTool.rect = getImageDisplayBounds();
+        lastCropRect = imageState.cropData ? { ...cropTool.rect } : null;
         done();
       };
       img.onerror = () => {
@@ -5220,6 +5462,7 @@ natural 170 g</textarea>
 
     function loadPageIntoEditor(pageState, message, options = {}) {
       if (!pageState) return;
+      cancelCarrefourLookup(true);
       isRestoringState = true;
       tituloObj = cloneData(pageState.tituloObj);
       productoObj = cloneData(pageState.productoObj);

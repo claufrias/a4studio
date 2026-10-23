@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "A4 Studio · Carrefour360",
+  "version": "1.0.0",
+  "description": "Consulta productos y PVP desde la sesión abierta de Carrefour360 para A4 Studio.",
+  "background": {
+    "service_worker": "service-worker.js"
+  },
+  "host_permissions": [
+    "https://carrefour360.carrefour.com.ar/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://claufrias.github.io/a4studio/*",
+        "http://localhost/a4studio/*",
+        "http://127.0.0.1/a4studio/*"
+      ],
+      "js": ["a4-bridge.js"],
+      "run_at": "document_start",
+      "all_frames": false
+    },
+    {
+      "matches": ["https://carrefour360.carrefour.com.ar/pricing*"],
+      "js": ["pricing-content.js"],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ]
+}

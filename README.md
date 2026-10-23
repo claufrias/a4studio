@@ -10,7 +10,36 @@ directa del producto y en cada espacio de Consumo inmediato.
 
 Los códigos se guardan como texto y las descripciones conservan las abreviaturas
 del informe original. El catálogo contiene únicamente códigos y descripciones;
-los precios se ingresan en el editor.
+los precios se ingresan en el editor o se consultan en Carrefour360.
+
+La conexión con Carrefour360 usa el complemento de Chrome incluido en
+`extensions/carrefour360/`. Consulta la descripción completa y el PVP desde
+una pestaña Pricing con la sesión iniciada y la tienda seleccionada allí.
+El PVP se aplica como precio normal y luego se calcula el descuento del cartel;
+en Consumo inmediato se conserva el descuento manual y se admiten centavos.
+
+Para activarla, descargá `downloads/carrefour360.zip`, extraelo y cargá esa
+carpeta desde Chrome → Extensiones → Gestionar extensiones → Modo desarrollador
+→ Cargar descomprimida. Recargá Pricing y A4 Studio y usá **Conectar** en el
+editor. La extensión se limita a `https://claufrias.github.io/a4studio/`, a la
+página Pricing y a la ruta `/a4studio/` de localhost para desarrollo. No recibe
+contraseñas ni cookies y no modifica precios en Carrefour360.
+
+Si hay varias pestañas Pricing, dejá abierta la que quieras consultar antes
+de conectar. Ante una sesión vencida, una respuesta inválida o una consulta
+fallida se conservan los datos del cartel. Cambiar de página, espacio o EAN
+cancela la aplicación de respuestas pendientes; también se respeta el precio
+editado manualmente durante la consulta.
+
+El complemento necesita estar instalado y esta versión del editor debe estar
+publicada para usar la conexión en GitHub Pages. Las pruebas automáticas no
+sustituyen la comprobación final con el complemento cargado en Chrome.
+
+Para regenerar el ZIP después de modificar el complemento:
+
+```sh
+python scripts/package-carrefour360.py
+```
 
 Para regenerar `productos.js` desde otro informe con el mismo formato:
 
@@ -21,5 +50,5 @@ node scripts/import-products.cjs "ruta/al/informe.txt"
 Para verificar el catálogo y las búsquedas:
 
 ```sh
-node --test tests/product-catalog.test.cjs
+node --test tests/*.test.cjs
 ```

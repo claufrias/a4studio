@@ -44,6 +44,62 @@ body.modal-open .product-suggestions {
   font-variant-numeric: tabular-nums;
 }
 
+.carrefour-help,
+.carrefour-status,
+.carrefour-setup {
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+.carrefour-help {
+  margin: 0 0 9px;
+  color: var(--muted);
+}
+.carrefour-actions > * {
+  flex: 1;
+  text-decoration: none;
+}
+.carrefour-auto {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 10px 0;
+}
+.carrefour-auto input[type="checkbox"] {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  min-height: 0;
+  margin: 0;
+}
+.carrefour-refresh {
+  width: 100%;
+}
+.carrefour-status {
+  margin-top: 9px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.carrefour-status[data-state="connected"] {
+  color: #17613f;
+}
+.carrefour-status[data-state="error"] {
+  color: #a23b21;
+}
+.carrefour-setup {
+  margin-top: 10px;
+}
+.carrefour-setup summary {
+  cursor: pointer;
+  color: var(--text);
+}
+.carrefour-setup ol {
+  margin: 8px 0;
+  padding-left: 19px;
+}
+.carrefour-setup li + li {
+  margin-top: 6px;
+}
+
 :root {
   --ui-font-stack: "Inter", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   --ui-font-stack-ios:

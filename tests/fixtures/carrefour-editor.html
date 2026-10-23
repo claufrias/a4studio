@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="es">
+<head><meta charset="utf-8"><title>Prueba local de conexión · A4 Studio</title></head>
+<body style="margin:0;height:100vh;overflow:hidden">
+  <div style="position:fixed;right:12px;bottom:8px;z-index:99999;background:#172437;color:white;padding:5px 9px;border-radius:5px;font:12px Arial;pointer-events:none">Prueba local · respuestas controladas</div>
+  <iframe title="Editor A4 Studio de prueba" src="../../index.html" style="display:block;width:100vw;height:100vh;border:0"></iframe>
+  <script>
+    document.querySelector('iframe').addEventListener('load', (event) => {
+      const script = event.target.contentDocument.createElement('script');
+      script.src = 'tests/fixtures/mock-carrefour-bridge.js';
+      event.target.contentDocument.head.appendChild(script);
+    });
+  </script>
+</body>
+</html>
