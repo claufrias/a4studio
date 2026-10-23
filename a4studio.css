@@ -1,3 +1,49 @@
+.product-suggestions {
+  position: fixed;
+  z-index: 12002;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  padding: 5px;
+  color: var(--text);
+  background: #fff;
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  font: 13px/1.35 var(--ui-font-stack);
+}
+.product-suggestions[hidden],
+body.modal-open .product-suggestions {
+  display: none;
+}
+.product-suggestions-status {
+  padding: 7px 8px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.product-suggestion {
+  padding: 9px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+.product-suggestion:hover,
+.product-suggestion[aria-selected="true"] {
+  color: var(--text);
+  background: var(--card-2);
+  outline: 1px solid var(--accent);
+  outline-offset: -1px;
+}
+.product-suggestion span,
+.product-suggestion small {
+  display: block;
+}
+.product-suggestion small {
+  margin-top: 3px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
 :root {
   --ui-font-stack: "Inter", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   --ui-font-stack-ios:

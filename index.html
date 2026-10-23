@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" referrerpolicy="no-referrer">
-<link rel="stylesheet" href="a4studio.css?v=20260610-inline-text-editing-focus">
+<link rel="stylesheet" href="a4studio.css?v=20261023-product-catalog">
 </head>
 <body>
 
@@ -78,7 +78,7 @@
 
   <div class="card" id="productoCard">
     <div class="card-title"><i class="fa-solid fa-tag" aria-hidden="true"></i> NOMBRE DEL PRODUCTO</div>
-    <textarea id="producto" rows="2" placeholder="Escribe aquí...">Lomitos de atún
+    <textarea id="producto" rows="2" aria-label="Nombre del producto" placeholder="Escribí para buscar productos...">Lomitos de atún
 Carrefour al
 natural 170 g</textarea>
     <div class="tool-group">
@@ -141,11 +141,11 @@ natural 170 g</textarea>
   <div class="card" id="eanCard">
     <div class="card-title"><i class="fa-solid fa-barcode" aria-hidden="true"></i> EAN</div>
     <div id="standardEanGroup">
-      <label>EAN del producto:</label>
+      <label for="productoEan">EAN del producto:</label>
       <input id="productoEan" type="text" inputmode="numeric" maxlength="13" placeholder="Ej: 7792799000899">
     </div>
     <div id="consumoEanGroup">
-      <label>EAN del espacio actual:</label>
+      <label for="consumoEan">EAN del espacio actual:</label>
       <input id="consumoEan" type="text" inputmode="numeric" maxlength="13" placeholder="Ej: 7792799000899">
     </div>
   </div>
@@ -160,8 +160,8 @@ natural 170 g</textarea>
       <button class="consumo-slot-btn" type="button" onclick="seleccionarConsumoSlot(3)" aria-pressed="false">4</button>
     </div>
     <div id="consumoActiveIndicator" class="consumo-active-indicator">Editando espacio 1</div>
-    <label>Nombre del producto:</label>
-    <textarea id="consumoNombre" rows="2" placeholder="Nombre del producto"></textarea>
+    <label for="consumoNombre">Nombre del producto:</label>
+    <textarea id="consumoNombre" rows="2" placeholder="Escribí para buscar productos..."></textarea>
     <div id="consumoInlineEanSlot" class="consumo-inline-fields"></div>
     <div id="consumoInlineVigenciaSlot" class="consumo-inline-fields"></div>
     <label>Precio normal:</label>
@@ -379,8 +379,11 @@ natural 170 g</textarea>
   </div>
 </div>
 
+<script src="productos.js?v=20261023"></script>
+<script src="product-search.js?v=20261023"></script>
 <script>
   (function(){
+    const productSearch = window.A4ProductSearch;
     // ========== CONSTANTES PRIMERO ==========
     const CANVAS_W = 900;
     const CANVAS_H = 1200;
@@ -584,7 +587,7 @@ natural 170 g</textarea>
       if (!input) return;
       const digits = sanitizeEanValue(input.value);
       if (input.value !== digits) input.value = digits;
-      const invalid = digits.length > 0 && !isValidEanLength(digits);
+      const invalid = digits.length > 0 && !isValidEanLength(digits) && !productSearch.catalog.findByEan(digits);
       input.classList.toggle('input-invalid', invalid);
       input.setAttribute('aria-invalid', invalid ? 'true' : 'false');
       input.title = invalid ? 'El EAN debe tener 8 o 13 numeros.' : '';
@@ -2384,6 +2387,7 @@ natural 170 g</textarea>
       }
       const isPriceEditor = objType === "precioNormal";
       const originalText = isPriceEditor ? formatPriceForEditor(obj) : obj.text;
+      const originalEan = productoEan;
       const originalPrice = isPriceEditor ? { entero: obj.entero, centavos: obj.centavos } : null;
       const clickCaretIndex = !isPriceEditor && Number.isFinite(options.canvasX) && Number.isFinite(options.canvasY)
         ? getExplicitLineCaretIndex(obj, options.canvasX, options.canvasY)
@@ -2447,11 +2451,18 @@ natural 170 g</textarea>
         positionInlineEditorChrome(editor, activeEditorChrome);
       };
 
+      let inlineProductSearch = null;
       let editorFinished = false;
       const finishInlineEditor = () => {
         if (editorFinished) return;
         editorFinished = true;
         const cancelled = editor.dataset.cancelEdit === "1";
+        if (inlineProductSearch) inlineProductSearch.destroy();
+        if (cancelled && objType === 'producto') {
+          productoEan = originalEan;
+          document.getElementById('productoEan').value = originalEan;
+          updateEanInputValidation(document.getElementById('productoEan'));
+        }
         if (isPriceEditor) {
           if (cancelled && originalPrice) {
             precioNormalObj.entero = originalPrice.entero;
@@ -2488,7 +2499,7 @@ natural 170 g</textarea>
         activeEditorMeta = null;
         const changed = isPriceEditor
           ? !originalPrice || !latestValidPrice || originalPrice.entero !== latestValidPrice.entero || originalPrice.centavos !== latestValidPrice.centavos
-          : editor.value !== originalText;
+          : editor.value !== originalText || (objType === 'producto' && productoEan !== originalEan);
         if (cancelled || !changed) {
           discardInteractionHistory();
         } else {
@@ -2534,6 +2545,17 @@ natural 170 g</textarea>
       });
       
       document.body.appendChild(editor);
+      if (objType === 'producto') {
+        inlineProductSearch = productSearch.bindNameInput(editor, (product) => {
+          productoEan = product.ean;
+          document.getElementById('productoEan').value = product.ean;
+          updateEanInputValidation(document.getElementById('productoEan'));
+          applyEditorText(product.descripcion);
+          constrainObjectToZone(objType);
+          syncEditorSize();
+          updateView();
+        });
+      }
       activeEditor = editor;
       activeEditorMeta = { objType };
       removeActiveEditorChrome();
@@ -2579,6 +2601,7 @@ natural 170 g</textarea>
 
 
     function syncConsumoPanelFromState() {
+      productSearch.closeAll();
       const panel = document.getElementById('consumoPanel');
       if (!panel) return;
       consumoItems = normalizeConsumoItems(consumoItems);
@@ -3033,6 +3056,7 @@ natural 170 g</textarea>
         return modal.style.display !== 'none' && window.getComputedStyle(modal).display !== 'none';
       });
       document.body.classList.toggle('modal-open', hasOpenModal);
+      if (hasOpenModal) productSearch.closeAll();
     }
 
     function bindModalStateObserver() {
@@ -3968,13 +3992,34 @@ natural 170 g</textarea>
     document.getElementById("precioOfertaEntero").addEventListener("input", updateFromUI);
     document.getElementById("precioOfertaCentavos").addEventListener("input", updateFromUI);
     document.getElementById("precioOfertaColor").addEventListener("input", updateFromUI);
-    document.getElementById("productoEan").addEventListener("input", updateFromUI);
+    document.getElementById("productoEan").addEventListener("input", () => {
+      completeProductNameFromEan('productoEan', 'producto');
+      updateFromUI();
+    });
     document.getElementById("vigenciaDesde").addEventListener("input", updateFromUI);
     document.getElementById("vigenciaHasta").addEventListener("input", updateFromUI);
     document.getElementById("consumoNombre").addEventListener("input", updateConsumoFromUI);
     document.getElementById("consumoPrecioNormal").addEventListener("input", updateConsumoFromUI);
     document.getElementById("consumoDescuentoMonto").addEventListener("input", updateConsumoFromUI);
-    document.getElementById("consumoEan").addEventListener("input", updateConsumoFromUI);
+    document.getElementById("consumoEan").addEventListener("input", () => {
+      completeProductNameFromEan('consumoEan', 'consumoNombre');
+      updateConsumoFromUI();
+    });
+
+    function completeProductNameFromEan(eanId, nameId) {
+      productSearch.closeAll();
+      const product = productSearch.catalog.findByEan(document.getElementById(eanId).value);
+      if (product) document.getElementById(nameId).value = product.descripcion;
+    }
+
+    productSearch.bindNameInput(document.getElementById('producto'), (product) => {
+      document.getElementById('productoEan').value = product.ean;
+      updateFromUI();
+    });
+    productSearch.bindNameInput(document.getElementById('consumoNombre'), (product) => {
+      document.getElementById('consumoEan').value = product.ean;
+      updateConsumoFromUI();
+    });
     
     window.addEventListener('resize', handleResize);
     viewCanvas.addEventListener("mousedown", onMouseDown);
@@ -4531,6 +4576,7 @@ natural 170 g</textarea>
     }
 
     function syncUIFromObjects() {
+      productSearch.closeAll();
       document.getElementById('titulo').value = tituloObj.text;
       document.getElementById('tituloFont').value = tituloObj.fontFamily;
       ensureSelectHasNumericOption('tituloSize', tituloObj.fontSize);
@@ -5335,6 +5381,7 @@ natural 170 g</textarea>
     }
 
     window.deshacerCambio = function() {
+      if (activeEditor) activeEditor.blur();
       flushPendingHistory();
       if (historyTransitionInProgress) return;
       if (historyIndex <= 0) { setAdvancedStatus('No hay mas cambios para deshacer', true); return; }
@@ -5345,6 +5392,7 @@ natural 170 g</textarea>
     };
 
     window.rehacerCambio = function() {
+      if (activeEditor) activeEditor.blur();
       flushPendingHistory('', { resetRedo: false });
       if (historyTransitionInProgress) return;
       if (historyIndex >= undoStack.length - 1) { setAdvancedStatus('No hay cambios para rehacer', true); return; }
