@@ -1951,8 +1951,17 @@ natural 170 g</textarea>
         const contentX = marginX + logoW + 28;
         const contentW = CANVAS_W - contentX - 38;
         const calc = getConsumoItemCalculations(item);
-        const hasData = (item.nombre && item.nombre.trim()) || calc.precioNormal > 0 || calc.descuentoMonto > 0 || !!sanitizeEanValue(item.ean);
-        if (!hasData) return;
+        const hasData = (item.nombre && item.nombre.trim()) || calc.precioNormal > 0 || Number(item.descuentoMonto) > 0 || !!sanitizeEanValue(item.ean);
+        if (!hasData) {
+          // Blanquear toda la franja, incluidos el logo, los márgenes y el separador.
+          const blankTop = index === 0 ? 0 : Math.round(y - rowGap / 2);
+          const blankBottom = index === CONSUMO_MAX_ITEMS - 1
+            ? CANVAS_H
+            : Math.round(y + rowH + rowGap / 2);
+          mainCtx.fillStyle = '#ffffff';
+          mainCtx.fillRect(0, blankTop, CANVAS_W, blankBottom - blankTop);
+          return;
+        }
 
         mainCtx.fillStyle = '#111111';
         mainCtx.textAlign = 'left';
