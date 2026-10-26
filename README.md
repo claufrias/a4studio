@@ -39,8 +39,14 @@ volver a consultar el mismo código. **Desconectar** detiene las consultas y
 permite seguir trabajando con el catálogo local.
 
 Al entrar, A4 Studio comprueba si el conector responde, sin abrir Pricing ni
-consultar productos. Si no responde, muestra un aviso con el enlace de instalación,
-**Ya la instalé · Reintentar** y **Seguir sin extensión**. El aviso espera a que
+consultar productos. Si no responde, muestra cómo instalar la herramienta con
+**Instalar en Chrome**, **Ya la instalé** y **Ahora no, seguir con mis carteles**.
+Los mensajes de error aparecen solo después de intentar comprobar la instalación.
+Al detectarla, el aviso cambia a **¡La herramienta está instalada!** y explica
+cómo abrir Carrefour360, entrar a Pricing y dejar esa pestaña abierta. El botón
+**Abrir Carrefour360** abre Pricing y cierra el aviso para poder volver al editor
+y tocar **Conectar**. Detectarla por sí sola no abre ninguna pestaña.
+El aviso espera a que
 se cierre el selector inicial de plantilla. Cerrarlo lo descarta durante esa
 sesión de la pestaña; se puede volver a abrir desde **Instalar o comprobar extensión**.
 La instalación está pensada para Chrome o Edge en computadora.

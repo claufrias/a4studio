@@ -11,6 +11,10 @@
     const message = document.getElementById('carrefourInstallMessage');
     const panelButton = document.getElementById('carrefourInstallOpen');
     const hint = document.getElementById('carrefourInstallHint');
+    const title = document.getElementById('carrefourInstallTitle');
+    const description = document.getElementById('carrefourInstallDescription');
+    const installSteps = document.getElementById('carrefourInstallSteps');
+    const ready = document.getElementById('carrefourInstallReady');
     // Presence checks must not be cancelled by the editor's product requests.
     const client = options.client || window.A4Carrefour360.createClient();
     let dismissed = false;
@@ -37,6 +41,17 @@
       rememberDismissal();
     }
 
+    function showStep(installed) {
+      title.textContent = installed ? '¡La herramienta está instalada!'
+        : 'Completá el nombre y el precio sin copiarlos a mano';
+      description.textContent = installed
+        ? 'Ahora abrí Carrefour360, iniciá sesión y entrá a Pricing. Dejá esa pestaña abierta.'
+        : 'A4 Studio puede buscar los datos del producto en Carrefour360 usando su código de barras.';
+      installSteps.hidden = installed;
+      ready.hidden = !installed;
+      if (dialog.open) title.focus?.();
+    }
+
     function flush() {
       if (destroyed || !wanted || printing || document.visibilityState === 'hidden') return;
       const anotherModal = Array.from(document.querySelectorAll('.modal, dialog[open]')).some((modal) => {
@@ -54,24 +69,32 @@
       awaitingInstallation = false;
       retry.disabled = true;
       retry.textContent = 'Comprobando…';
-      message.textContent = 'Comprobando si el conector está disponible…';
-      if (manual) { wanted = true; flush(); }
+      message.textContent = manual ? 'Comprobando si ya está instalada…' : '';
+      if (manual) { showStep(false); wanted = true; flush(); }
       try {
         await client.detect();
         if (destroyed) return;
-        hint.textContent = 'Extensión detectada. Abrí Pricing con tu sesión y pulsá Conectar.';
-        panelButton.textContent = 'Comprobar extensión';
-        hide();
+        hint.textContent = 'La herramienta está instalada. Abrí Carrefour360 y seguí los pasos para conectar.';
+        panelButton.textContent = 'Ver cómo conectar Carrefour360';
+        // A late response must not reopen a guide the user already closed.
+        if (manual ? wanted : !dismissed) {
+          showStep(true);
+          message.textContent = '';
+          wanted = true;
+          flush();
+        }
       } catch (error) {
         if (destroyed || error?.code === 'CANCELLED') return;
-        message.textContent = 'No recibimos respuesta del conector. Si ya lo instalaste, comprobá que esté actualizado y habilitado para esta página. Recargá A4 Studio y volvé a intentar.';
-        hint.textContent = 'Podés instalar o comprobar el conector cuando quieras.';
+        message.textContent = manual
+          ? 'Todavía no encontramos la herramienta. Si acabás de instalarla, guardá tus carteles, recargá esta página y tocá «Ya la instalé».'
+          : '';
+        hint.textContent = 'Podés seguir creando carteles sin instalar la herramienta.';
         // Closing the dialog while a retry is pending must not reopen it.
         if (manual ? wanted : !dismissed) { wanted = true; flush(); }
       } finally {
         checking = false;
         retry.disabled = false;
-        retry.textContent = 'Ya la instalé · Reintentar';
+        retry.textContent = 'Ya la instalé';
       }
     }
 
@@ -89,12 +112,18 @@
     listen(retry, 'click', () => check(true));
     listen(document.getElementById('carrefourInstallLater'), 'click', dismiss);
     listen(document.getElementById('carrefourInstallClose'), 'click', dismiss);
+    function returnToEditor() {
+      dismiss();
+      document.getElementById('carrefourConnect')?.focus();
+    }
+    listen(document.getElementById('carrefourInstallDone'), 'click', returnToEditor);
+    listen(document.getElementById('carrefourInstallPricing'), 'click', returnToEditor);
     listen(dialog, 'cancel', (event) => { event.preventDefault(); dismiss(); });
     // Keep the editor's global keyboard shortcuts out of this dialog.
     listen(dialog, 'keydown', (event) => event.stopPropagation());
     listen(document.getElementById('carrefourInstallLink'), 'click', () => {
       awaitingInstallation = true;
-      message.textContent = 'Completá la instalación en Chrome Web Store y volvé a esta página. Si todavía no se detecta, recargá A4 Studio después de guardar tu trabajo.';
+      message.textContent = 'Cuando termines de agregarla a Chrome, volvé acá y tocá «Ya la instalé».';
     });
     listen(window, 'focus', returnedToEditor);
     listen(document, 'visibilitychange', returnedToEditor);

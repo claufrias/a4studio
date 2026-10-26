@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" referrerpolicy="no-referrer">
-<link rel="stylesheet" href="a4studio.css?v=20261026-carrefour-install">
+<link rel="stylesheet" href="a4studio.css?v=20261026-carrefour-guide">
 </head>
 <body data-a4-studio="true">
 
@@ -409,24 +409,34 @@ natural 170 g</textarea>
   <button id="carrefourInstallClose" class="carrefour-install-close" type="button" aria-label="Cerrar aviso de instalación">×</button>
   <div class="carrefour-install-icon" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.1 0l3-3a5 5 0 0 0-7.1-7.1l-1.7 1.7M14 11a5 5 0 0 0-7.1 0l-3 3a5 5 0 0 0 7.1 7.1l1.7-1.7"/></svg></div>
   <p class="carrefour-install-eyebrow">A4 STUDIO + CARREFOUR360</p>
-  <h2 id="carrefourInstallTitle">Completá tus carteles con Carrefour360</h2>
-  <p id="carrefourInstallDescription">Traé la descripción y el precio de tus productos al ingresar su código EAN, usando tu sesión de Carrefour360 y la tienda que elegiste.</p>
-  <ol class="carrefour-install-steps">
-    <li>Instalá el conector desde Chrome Web Store.</li>
-    <li>Volvé a A4 Studio y comprobá la extensión.</li>
-    <li>Abrí Pricing con tu sesión y pulsá Conectar.</li>
-  </ol>
-  <p class="carrefour-install-note">Para Chrome o Edge en computadora. Podés seguir usando el catálogo local sin instalarlo.</p>
-  <p id="carrefourInstallMessage" class="carrefour-install-message" role="status" aria-live="polite"></p>
-  <div class="carrefour-install-actions">
-    <a id="carrefourInstallLink" href="https://chromewebstore.google.com/detail/pdephgakanbombajkihikkcjidcmeggf" target="_blank" rel="noopener noreferrer">Instalar extensión</a>
-    <button id="carrefourInstallRetry" type="button" class="btn-outline">Ya la instalé · Reintentar</button>
-    <button id="carrefourInstallLater" type="button" class="btn-outline">Seguir sin extensión</button>
+  <h2 id="carrefourInstallTitle" tabindex="-1" autofocus>Completá el nombre y el precio sin copiarlos a mano</h2>
+  <p id="carrefourInstallDescription">A4 Studio puede buscar los datos del producto en Carrefour360 usando su código de barras.</p>
+  <div id="carrefourInstallSteps">
+    <p>Para hacerlo, necesitás instalar una pequeña herramienta en Chrome. Se instala una sola vez.</p>
+    <ol class="carrefour-install-steps">
+      <li>Tocá <strong>Instalar en Chrome</strong>.</li>
+      <li>En la página que se abre, tocá <strong>Agregar a Chrome</strong> y después <strong>Agregar extensión</strong>.</li>
+      <li>Volvé a esta página para continuar.</li>
+    </ol>
+    <p class="carrefour-install-note">Para Chrome o Edge en computadora.</p>
+    <p id="carrefourInstallMessage" class="carrefour-install-message" role="status" aria-live="polite"></p>
+    <div class="carrefour-install-actions">
+      <a id="carrefourInstallLink" href="https://chromewebstore.google.com/detail/pdephgakanbombajkihikkcjidcmeggf" target="_blank" rel="noopener noreferrer">Instalar en Chrome</a>
+      <button id="carrefourInstallRetry" type="button" class="btn-outline">Ya la instalé</button>
+      <button id="carrefourInstallLater" type="button" class="btn-outline">Ahora no, seguir con mis carteles</button>
+    </div>
+  </div>
+  <div id="carrefourInstallReady" hidden>
+    <p>Volvé a A4 Studio y tocá <strong>Conectar</strong>.</p>
+    <div class="carrefour-install-actions">
+      <a id="carrefourInstallPricing" href="https://carrefour360.carrefour.com.ar/pricing" target="_blank" rel="noopener noreferrer">Abrir Carrefour360</a>
+      <button id="carrefourInstallDone" type="button" class="btn-outline">Volver al editor</button>
+    </div>
   </div>
 </dialog>
 
 <script src="carrefour360.js?v=20261026-presence"></script>
-<script src="carrefour-onboarding.js?v=20261026"></script>
+<script src="carrefour-onboarding.js?v=20261026-guide"></script>
 <script>
   (function(){
     const productSearch = window.A4ProductSearch;

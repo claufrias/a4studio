@@ -31,10 +31,12 @@ class Target {
 }
 
 function fixture(t, { initialModal = false, storage = new Map(), denyStorage = false } = {}) {
-  const ids = ['Modal', 'Retry', 'Message', 'Open', 'Hint', 'Later', 'Close', 'Link'];
+  const ids = ['Modal', 'Retry', 'Message', 'Open', 'Hint', 'Later', 'Close', 'Link',
+    'Title', 'Description', 'Steps', 'Ready', 'Done', 'Pricing'];
   const elements = Object.fromEntries(ids.map((id) => [id, Object.assign(new Target(), {
-    textContent: '', disabled: false
+    textContent: '', disabled: false, hidden: false
   })]));
+  elements.Ready.hidden = true;
   const dialog = elements.Modal;
   dialog.open = false;
   dialog.shown = 0;
@@ -101,20 +103,36 @@ test('espera al cierre del selector inicial antes de mostrar el aviso, sin abrir
   f.otherModal.style.display = 'none';
   f.notify();
   assert.equal(f.dialog.open, true);
-  assert.match(f.elements.Message.textContent, /No recibimos respuesta/);
+  assert.equal(f.elements.Message.textContent, '', 'la explicación inicial no debe incluir un error');
+  assert.equal(f.elements.Steps.hidden, false);
+  assert.equal(f.elements.Ready.hidden, true);
 });
 
-test('una extensión presente no muestra el aviso ni solicita una sesión de Pricing', async (t) => {
+test('una extensión presente muestra los pasos para conectar sin abrir Pricing', async (t) => {
   const f = fixture(t);
   await f.present();
-  assert.equal(f.dialog.shown, 0);
-  assert.match(f.elements.Hint.textContent, /Extensión detectada/);
-  assert.equal(f.elements.Open.textContent, 'Comprobar extensión');
+  assert.equal(f.dialog.open, true);
+  assert.equal(f.elements.Title.textContent, '¡La herramienta está instalada!');
+  assert.equal(f.elements.Steps.hidden, true);
+  assert.equal(f.elements.Ready.hidden, false);
+  assert.match(f.elements.Hint.textContent, /La herramienta está instalada/);
+  assert.equal(f.elements.Open.textContent, 'Ver cómo conectar Carrefour360');
   assert.equal(f.storage.has(STORAGE_KEY), false, 'detectar la extensión no equivale a descartar el aviso');
   const nextPage = fixture(t, { storage: f.storage });
   assert.equal(nextPage.requests.length, 1, 'una nueva entrada debe comprobar si la extensión sigue disponible');
   await nextPage.absent();
   assert.equal(nextPage.dialog.open, true, 'se avisa si la extensión dejó de estar disponible');
+});
+
+test('los pasos para conectar también esperan al selector inicial de plantilla', async (t) => {
+  const f = fixture(t, { initialModal: true });
+  await f.present();
+  assert.equal(f.dialog.open, false);
+  assert.equal(f.elements.Ready.hidden, false);
+  f.otherModal.style.display = 'none';
+  f.notify();
+  assert.equal(f.dialog.open, true);
+  assert.equal(f.elements.Title.textContent, '¡La herramienta está instalada!');
 });
 
 test('cede el foco a otro modal y recupera el aviso sin recordar un descarte', async (t) => {
@@ -153,27 +171,65 @@ test('seguir sin extensión, cerrar y Escape recuerdan la decisión durante la s
   }
 });
 
-test('reintentar con éxito cierra el aviso y confirma la extensión en el panel', async (t) => {
+test('reintentar con éxito pasa de la instalación a los pasos para conectar', async (t) => {
   const f = fixture(t);
   await f.absent();
   f.elements.Retry.emit('click');
   assert.equal(f.elements.Retry.disabled, true);
   await f.present();
-  assert.equal(f.dialog.open, false);
+  assert.equal(f.dialog.open, true);
   assert.equal(f.elements.Retry.disabled, false);
-  assert.match(f.elements.Hint.textContent, /Extensión detectada/);
+  assert.equal(f.elements.Retry.textContent, 'Ya la instalé');
+  assert.equal(f.elements.Title.textContent, '¡La herramienta está instalada!');
+  assert.equal(f.elements.Steps.hidden, true);
+  assert.equal(f.elements.Ready.hidden, false);
+  assert.match(f.elements.Hint.textContent, /La herramienta está instalada/);
   assert.equal(f.storage.has(STORAGE_KEY), false, 'el reintento exitoso tampoco recuerda un descarte');
 });
 
-test('un reintento pendiente no vuelve a abrir el aviso después de descartarlo', async (t) => {
+test('la guía se puede cerrar, recuerda la decisión y se puede recuperar desde el panel', async (t) => {
+  for (const action of ['Done', 'Pricing', 'Close', 'Escape']) {
+    const f = fixture(t);
+    await f.present();
+    if (action === 'Escape') assert.equal(f.dialog.emit('cancel').defaultPrevented, true);
+    else f.elements[action].emit('click');
+    assert.equal(f.dialog.open, false, action);
+    assert.equal(f.storage.get(STORAGE_KEY), 'true', action);
+    f.notify();
+    assert.equal(f.dialog.open, false, action);
+    const nextPage = fixture(t, { storage: f.storage });
+    assert.equal(nextPage.requests.length, 0, action);
+    nextPage.elements.Open.emit('click');
+    await nextPage.present();
+    assert.equal(nextPage.dialog.open, true, 'el panel permite volver a leer los pasos');
+    assert.equal(nextPage.elements.Ready.hidden, false);
+  }
+});
+
+test('un reintento fallido muestra ayuda solo después de pedir comprobar la instalación', async (t) => {
   const f = fixture(t);
   await f.absent();
+  assert.equal(f.elements.Message.textContent, '');
   f.elements.Retry.emit('click');
-  f.elements.Later.emit('click');
   await f.absent();
-  f.notify();
-  assert.equal(f.dialog.open, false);
-  assert.equal(f.dialog.shown, 1);
+  assert.equal(f.dialog.open, true);
+  assert.equal(f.elements.Steps.hidden, false);
+  assert.equal(f.elements.Ready.hidden, true);
+  assert.ok(f.elements.Message.textContent.trim().length > 0, 'el fallo del reintento debe explicar qué hacer');
+  assert.equal(f.elements.Retry.textContent, 'Ya la instalé');
+});
+
+test('un reintento pendiente no vuelve a abrir el aviso después de descartarlo', async (t) => {
+  for (const result of ['absent', 'present']) {
+    const f = fixture(t);
+    await f.absent();
+    f.elements.Retry.emit('click');
+    f.elements.Later.emit('click');
+    await f[result]();
+    f.notify();
+    assert.equal(f.dialog.open, false, result);
+    assert.equal(f.dialog.shown, 1, result);
+  }
 });
 
 test('clics repetidos no duplican una comprobación pendiente', async (t) => {
@@ -199,7 +255,8 @@ test('abrir la tienda no consulta Pricing y reintenta solo al volver al editor',
   f.window.emit('focus');
   assert.equal(f.requests.length, 2);
   await f.present();
-  assert.equal(f.dialog.open, false);
+  assert.equal(f.dialog.open, true);
+  assert.equal(f.elements.Ready.hidden, false);
 });
 
 test('funciona con almacenamiento bloqueado y no interfiere con atajos del editor', async (t) => {
