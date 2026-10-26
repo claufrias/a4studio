@@ -38,6 +38,20 @@ y el PVP de Pricing. También podés usar **Actualizar producto actual** para
 volver a consultar el mismo código. **Desconectar** detiene las consultas y
 permite seguir trabajando con el catálogo local.
 
+Al entrar, A4 Studio comprueba si el conector responde, sin abrir Pricing ni
+consultar productos. Si no responde, muestra un aviso con el enlace de instalación,
+**Ya la instalé · Reintentar** y **Seguir sin extensión**. El aviso espera a que
+se cierre el selector inicial de plantilla. Cerrarlo lo descarta durante esa
+sesión de la pestaña; se puede volver a abrir desde **Instalar o comprobar extensión**.
+La instalación está pensada para Chrome o Edge en computadora.
+
+Esta comprobación de presencia requiere el conector **1.0.2 o posterior**.
+La versión 1.0.1 puede seguir consultando productos, pero no responde a la nueva
+comprobación. Publicá el ZIP actualizado en Chrome Web Store para que los usuarios
+reciban la detección. El aviso no afirma que la extensión esté desinstalada:
+también puede estar deshabilitada, sin permiso para esta página o pendiente de
+actualizar. Detectarla no equivale a tener una sesión de Pricing conectada.
+
 Si hay varias pestañas Pricing, dejá abierta la que quieras consultar antes
 de conectar. Ante una sesión vencida, una respuesta inválida o una consulta
 fallida se conservan los datos del cartel. Cambiar de página, espacio o EAN

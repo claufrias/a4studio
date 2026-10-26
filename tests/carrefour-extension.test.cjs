@@ -323,3 +323,69 @@ test('puente valida window/origin, exige conexión y adjunta solo vínculo inter
   assert.equal(posts.at(-1).message.result.ean, EAN);
   assert.equal(Object.hasOwn(posts.at(-1).message, 'pricingTabId'), false);
 });
+
+test('presencia responde sin sesión ni mensajes a Pricing y conserva la conexión existente', async () => {
+  const posts = [];
+  const calls = [];
+  let listener;
+  const window = {
+    location: new URL('https://claufrias.github.io/a4studio/'),
+    addEventListener: (_, callback) => { listener = callback; },
+    postMessage: (message, origin) => posts.push({ message, origin })
+  };
+  window.top = window;
+  bridge.install(window, {
+    getManifest: () => ({ version: '1.0.2' }),
+    sendMessage: async (message) => {
+      calls.push(message);
+      return message.action === 'status'
+        ? { ok: true, result: { ready: true, pricingTabId: 7, pricingUrl: PRICING_URL } }
+        : { ok: true, result: product(message.ean) };
+    }
+  });
+  const event = (action, extra = {}) => ({
+    source: window, origin: window.location.origin,
+    data: { source: 'a4studio-carrefour360', version: 1, id: `presence-${action}`, action, ...extra }
+  });
+  await listener(event('presence'));
+  assert.deepEqual(posts.at(-1), {
+    origin: window.location.origin,
+    message: { source: 'carrefour360-a4studio', version: 1, id: 'presence-presence',
+      ok: true, result: { installed: true, extensionVersion: '1.0.2' } }
+  });
+  assert.equal(calls.length, 0, 'detectar presencia no debe abrir ni consultar Pricing');
+  await listener(event('lookup', { ean: EAN }));
+  assert.equal(posts.at(-1).message.error.code, 'NOT_CONNECTED');
+  assert.equal(calls.length, 0, 'detectar presencia no equivale a conectar Pricing');
+  await listener(event('status'));
+  await listener(event('presence'));
+  await listener(event('lookup', { ean: EAN }));
+  assert.deepEqual(calls.map((call) => call.action), ['status', 'lookup']);
+  assert.equal(calls.at(-1).pricingTabId, 7, 'la detección no debe reemplazar la pestaña conectada');
+});
+
+test('presencia ignora mensajes ajenos e informa un contexto de extensión invalidado', async () => {
+  const posts = [];
+  let listener;
+  const window = {
+    location: new URL('https://claufrias.github.io/a4studio/'),
+    addEventListener: (_, callback) => { listener = callback; },
+    postMessage: (message) => posts.push(message)
+  };
+  window.top = window;
+  bridge.install(window, {
+    getManifest: () => { throw new Error('Extension context invalidated'); },
+    sendMessage: () => assert.fail('la presencia no debe usar runtime.sendMessage')
+  });
+  const event = { source: window, origin: window.location.origin,
+    data: { source: 'a4studio-carrefour360', version: 1, id: 'presence-1', action: 'presence' } };
+  await listener({ ...event, source: {} });
+  await listener({ ...event, origin: 'https://evil.test' });
+  await listener({ ...event, data: { ...event.data, version: 2 } });
+  await listener({ ...event, data: { ...event.data, id: 'invalid id' } });
+  assert.equal(posts.length, 0);
+  await listener(event);
+  assert.equal(posts.length, 1);
+  assert.equal(posts[0].ok, false);
+  assert.equal(posts[0].error.code, 'EXTENSION_UNAVAILABLE');
+});

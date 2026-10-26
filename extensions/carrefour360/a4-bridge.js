@@ -15,7 +15,7 @@
     return !!request && typeof request === 'object' && !Array.isArray(request)
       && request.source === REQUEST_SOURCE && request.version === 1
       && typeof request.id === 'string' && /^[a-zA-Z0-9._:-]{1,100}$/.test(request.id)
-      && (request.action === 'status'
+      && (request.action === 'presence' || request.action === 'status'
         || (request.action === 'lookup' && typeof request.ean === 'string' && /^\d{1,14}$/.test(request.ean)));
   }
 
@@ -32,6 +32,17 @@
       if (event.source !== window || event.origin !== window.location.origin || !validRequest(event.data)) return;
       const request = event.data;
       if (pending.has(request.id)) return;
+      // Presence is independent from Pricing and never opens or queries a tab.
+      if (request.action === 'presence') {
+        try {
+          const extensionVersion = runtime.getManifest().version;
+          if (typeof extensionVersion !== 'string' || !extensionVersion) throw new Error('Invalid extension context');
+          reply(request.id, { ok: true, result: { installed: true, extensionVersion } });
+        } catch (_) {
+          reply(request.id, { ok: false, error: { code: 'EXTENSION_UNAVAILABLE', message: 'Recargá A4 Studio después de instalar o actualizar la extensión.' } });
+        }
+        return;
+      }
       if (pending.size >= 8) {
         reply(request.id, { ok: false, error: { code: 'PRICING_BUSY', message: 'Hay varias consultas pendientes. Esperá unos segundos.' } });
         return;

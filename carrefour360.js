@@ -74,6 +74,19 @@
     return { ready: true, pricingTabId: value.pricingTabId, pricingUrl: value.pricingUrl };
   }
 
+  function validatePresence(value) {
+    if (!isRecord(value) || value.installed !== true
+      || typeof value.extensionVersion !== 'string'
+      || !/^(?:0|[1-9]\d{0,4})(?:\.(?:0|[1-9]\d{0,4})){0,3}$/.test(value.extensionVersion)) {
+      throw failure('INVALID_RESPONSE', 'La extensión devolvió una detección inválida.');
+    }
+    const parts = value.extensionVersion.split('.').map(Number);
+    if (parts.some((part) => part > 65535) || !parts.some((part) => part > 0)) {
+      throw failure('INVALID_RESPONSE', 'La extensión devolvió una detección inválida.');
+    }
+    return { installed: true, extensionVersion: value.extensionVersion };
+  }
+
   function createClient(options) {
     options = options || {};
     const targetWindow = options.targetWindow || root;
@@ -82,6 +95,7 @@
     const clientId = ++clientSequence;
     let destroyed = false;
     let sequence = 0;
+    const detectionTimeoutMs = positiveTimeout(options.detectionTimeoutMs, 1500);
     const connectTimeoutMs = positiveTimeout(options.connectTimeoutMs, 2500);
     const lookupTimeoutMs = positiveTimeout(options.lookupTimeoutMs, 20000);
 
@@ -120,8 +134,8 @@
           throw failure(message.error.code, message.error.message.trim());
         }
         if (message.ok !== true) throw failure('INVALID_RESPONSE', 'La extensión devolvió una respuesta inválida.');
-        const result = request.action === 'status'
-          ? validateStatus(message.result)
+        const result = request.action === 'presence' ? validatePresence(message.result)
+          : request.action === 'status' ? validateStatus(message.result)
           : validateProduct(message.result, request.ean);
         settle(message.id, null, result);
       } catch (error) {
@@ -140,9 +154,10 @@
       }
       return new Promise((resolve, reject) => {
         const id = nextId();
-        const timeout = action === 'status' ? connectTimeoutMs : lookupTimeoutMs;
+        const timeout = action === 'presence' ? detectionTimeoutMs
+          : action === 'status' ? connectTimeoutMs : lookupTimeoutMs;
         const timer = targetWindow.setTimeout(() => {
-          settle(id, action === 'status'
+          settle(id, action !== 'lookup'
             ? failure('EXTENSION_NOT_AVAILABLE', 'No se detectó la extensión de Carrefour360. Instalá o activá la extensión y recargá A4 Studio.')
             : failure('TIMEOUT', 'Carrefour360 tardó demasiado en responder. Volvé a consultar el producto.'));
         }, timeout);
@@ -165,6 +180,7 @@
 
     targetWindow.addEventListener('message', receive);
     return {
+      detect() { return request('presence'); },
       connect() { return request('status'); },
       lookup(ean) { return request('lookup', ean); },
       cancelPending,

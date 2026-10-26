@@ -67,6 +67,80 @@ function errorCode(code) {
   return (error) => error.code === code && typeof error.message === 'string' && error.message.length > 10;
 }
 
+test('detecta la extensión sin solicitar conexión ni una pestaña Pricing', async (t) => {
+  const { window, client } = setup(t);
+  const detected = client.detect();
+  assert.equal(window.messages.length, 1);
+  assert.equal(window.messages[0].message.action, 'presence');
+  assert.equal(window.messages[0].message.ean, undefined);
+  assert.equal(window.timers.values().next().value.delay, 1500);
+  window.reply(0, { installed: true, extensionVersion: '1.0.2', pricingUrl: 'discard' });
+  assert.deepEqual(JSON.parse(JSON.stringify(await detected)), { installed: true, extensionVersion: '1.0.2' });
+  assert.equal(window.timers.size, 0);
+});
+
+test('detección exige presencia y versión válidas, sin aceptar un estado de Pricing', async (t) => {
+  const { window, client } = setup(t);
+  const invalid = [
+    null, [], {}, status, { installed: false, extensionVersion: '1.0.2' },
+    { installed: true }, { installed: true, extensionVersion: 102 },
+    ...['', 'latest', '1.2.3.4.5', '1.0.2-beta', '01.2', '0.0.0.0', '65536.0', '1'.repeat(200)]
+      .map((extensionVersion) => ({ installed: true, extensionVersion }))
+  ];
+  for (const result of invalid) {
+    const detected = client.detect();
+    window.reply(window.messages.length - 1, result);
+    await assert.rejects(detected, errorCode('INVALID_RESPONSE'));
+  }
+  assert.equal(window.timers.size, 0);
+});
+
+test('detección ignora otros orígenes, ventanas e identificadores', async (t) => {
+  const { window, client } = setup(t);
+  const detected = client.detect();
+  let settled = false;
+  detected.then(() => { settled = true; });
+  const response = { source: 'carrefour360-a4studio', version: 1,
+    id: window.messages[0].message.id, ok: true, result: { installed: true, extensionVersion: '1.0.2' } };
+  window.emit(response, { source: {} });
+  window.emit(response, { origin: 'https://otro.example' });
+  window.emit({ ...response, id: 'other-id' });
+  window.emit({ ...response, version: 2 });
+  await Promise.resolve();
+  assert.equal(settled, false);
+  assert.equal(window.timers.size, 1);
+  window.emit(response);
+  assert.equal((await detected).installed, true);
+});
+
+test('detección tiene plazo propio y ausencia no se confunde con sesión Pricing', async (t) => {
+  const { window, client } = setup(t, { detectionTimeoutMs: 80 });
+  const detected = client.detect();
+  assert.equal(window.timers.values().next().value.delay, 80);
+  window.expire();
+  await assert.rejects(detected, errorCode('EXTENSION_NOT_AVAILABLE'));
+  window.reply(0, { installed: true, extensionVersion: '1.0.2' });
+  const connected = client.connect();
+  assert.equal(window.timers.values().next().value.delay, 2500);
+  window.reply(1, null, { ok: false, error: { code: 'LOGIN_REQUIRED', message: 'Iniciá sesión en Carrefour360.' } });
+  await assert.rejects(connected, errorCode('LOGIN_REQUIRED'));
+  assert.equal(window.timers.size, 0);
+});
+
+test('cancelar detección ignora respuesta tardía y permite reintentar', async (t) => {
+  const { window, client } = setup(t);
+  const first = client.detect();
+  client.cancelPending();
+  await assert.rejects(first, errorCode('CANCELLED'));
+  const retry = client.detect();
+  window.reply(0, { installed: true, extensionVersion: '1.0.2' });
+  assert.equal(window.timers.size, 1);
+  window.reply(1, { installed: true, extensionVersion: '1.0.2' });
+  assert.equal((await retry).installed, true);
+  client.destroy();
+  await assert.rejects(client.detect(), errorCode('CLIENT_DESTROYED'));
+});
+
 test('conecta por el mismo origen y valida la pestaña Pricing', async (t) => {
   const { window, client } = setup(t);
   const connected = client.connect();

@@ -25,6 +25,13 @@ rutas A4 indicadas y a Pricing. No se usan permisos `cookies`, `storage`,
 
 ## Funcionamiento
 
+Desde la versión **1.0.2**, A4 Studio puede comprobar la presencia del conector
+sin abrir Pricing, iniciar sesión ni consultar productos. El puente responde
+localmente a `action: 'presence'` con
+`{ installed: true, extensionVersion: '1.0.2' }`. Esto no establece ni cambia
+la conexión con la pestaña Pricing. Las versiones anteriores no responden a
+esta comprobación; hay que publicar la actualización en Chrome Web Store.
+
 La conexión se confirma solo si existe una única pestaña Pricing y están
 disponibles los controles de consulta. Si no hay una pestaña, la extensión abre
 Pricing y devuelve un aviso para iniciar sesión y volver a conectar. Si hay

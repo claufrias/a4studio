@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" referrerpolicy="no-referrer">
-<link rel="stylesheet" href="a4studio.css?v=20261026-carrefour-panel">
+<link rel="stylesheet" href="a4studio.css?v=20261026-carrefour-install">
 </head>
 <body data-a4-studio="true">
 
@@ -109,6 +109,8 @@ natural 170 g</textarea>
     <label class="carrefour-auto"><input id="carrefourAuto" type="checkbox" checked disabled> Completar al ingresar un EAN</label>
     <button id="carrefourRefresh" class="btn-outline carrefour-refresh" type="button" disabled>Actualizar producto actual</button>
     <div id="carrefourStatus" class="carrefour-status" role="status" aria-live="polite">Sin conectar. Podés seguir usando el catálogo local.</div>
+    <button id="carrefourInstallOpen" class="btn-outline carrefour-install-open" type="button">Instalar o comprobar extensión</button>
+    <p id="carrefourInstallHint" class="carrefour-help" role="status"></p>
     <details id="carrefourSetup" class="carrefour-setup">
       <summary>Configurar conexión</summary>
       <p>Para usar tu sesión, instalá el conector en Chrome:</p>
@@ -403,7 +405,28 @@ natural 170 g</textarea>
 
 <script src="productos.js?v=20261023"></script>
 <script src="product-search.js?v=20261023"></script>
-<script src="carrefour360.js?v=20261023"></script>
+<dialog id="carrefourInstallModal" class="carrefour-install" aria-labelledby="carrefourInstallTitle" aria-describedby="carrefourInstallDescription">
+  <button id="carrefourInstallClose" class="carrefour-install-close" type="button" aria-label="Cerrar aviso de instalación">×</button>
+  <div class="carrefour-install-icon" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.1 0l3-3a5 5 0 0 0-7.1-7.1l-1.7 1.7M14 11a5 5 0 0 0-7.1 0l-3 3a5 5 0 0 0 7.1 7.1l1.7-1.7"/></svg></div>
+  <p class="carrefour-install-eyebrow">A4 STUDIO + CARREFOUR360</p>
+  <h2 id="carrefourInstallTitle">Completá tus carteles con Carrefour360</h2>
+  <p id="carrefourInstallDescription">Traé la descripción y el precio de tus productos al ingresar su código EAN, usando tu sesión de Carrefour360 y la tienda que elegiste.</p>
+  <ol class="carrefour-install-steps">
+    <li>Instalá el conector desde Chrome Web Store.</li>
+    <li>Volvé a A4 Studio y comprobá la extensión.</li>
+    <li>Abrí Pricing con tu sesión y pulsá Conectar.</li>
+  </ol>
+  <p class="carrefour-install-note">Para Chrome o Edge en computadora. Podés seguir usando el catálogo local sin instalarlo.</p>
+  <p id="carrefourInstallMessage" class="carrefour-install-message" role="status" aria-live="polite"></p>
+  <div class="carrefour-install-actions">
+    <a id="carrefourInstallLink" href="https://chromewebstore.google.com/detail/pdephgakanbombajkihikkcjidcmeggf" target="_blank" rel="noopener noreferrer">Instalar extensión</a>
+    <button id="carrefourInstallRetry" type="button" class="btn-outline">Ya la instalé · Reintentar</button>
+    <button id="carrefourInstallLater" type="button" class="btn-outline">Seguir sin extensión</button>
+  </div>
+</dialog>
+
+<script src="carrefour360.js?v=20261026-presence"></script>
+<script src="carrefour-onboarding.js?v=20261026"></script>
 <script>
   (function(){
     const productSearch = window.A4ProductSearch;
@@ -3374,6 +3397,7 @@ natural 170 g</textarea>
       isFirstLoad = false;
       setTimeout(() => {
         if (!fondoActual) abrirModalFondo({ showApplyAll: false, required: true });
+        window.A4CarrefourOnboarding.start();
       }, 280);
     }
 

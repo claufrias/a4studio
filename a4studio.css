@@ -100,6 +100,108 @@ body.modal-open .product-suggestions {
   margin-top: 6px;
 }
 
+.carrefour-install-open {
+  width: 100%;
+  margin: 10px 0 6px;
+}
+.carrefour-install {
+  position: fixed;
+  width: min(520px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  box-sizing: border-box;
+  overflow-y: auto;
+  padding: clamp(22px, 5vw, 34px);
+  border: 1px solid #34455d;
+  border-radius: 22px;
+  color: #edf3fc;
+  background: linear-gradient(160deg, #17283e, #0b1421);
+  box-shadow: 0 30px 90px #0009;
+  font: 14px/1.55 var(--ui-font-stack);
+}
+.carrefour-install::backdrop {
+  background: #03080fbd;
+  backdrop-filter: blur(4px);
+}
+#carrefourInstallModal .carrefour-install-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #c3d2e6;
+  font-size: 28px;
+}
+.carrefour-install-icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  color: #8bc4ff;
+  background: #468ee326;
+  font-size: 22px;
+}
+.carrefour-install-eyebrow {
+  margin: 18px 0 8px;
+  color: #9acaff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+.carrefour-install h2 {
+  margin: 0 0 12px;
+  color: #fff;
+  font-size: clamp(22px, 5vw, 28px);
+  line-height: 1.2;
+}
+.carrefour-install-steps {
+  padding-left: 22px;
+  margin: 20px 0;
+}
+.carrefour-install-steps li + li {
+  margin-top: 8px;
+}
+.carrefour-install-note {
+  color: #bbcade;
+  font-size: 12px;
+}
+.carrefour-install-message {
+  min-height: 2.5em;
+  font-size: 12px;
+  color: #bbcade;
+}
+.carrefour-install-actions {
+  display: grid;
+  gap: 9px;
+  margin-top: 20px;
+}
+#carrefourInstallModal .carrefour-install-actions a,
+#carrefourInstallModal .carrefour-install-actions button {
+  display: block;
+  min-height: 44px;
+  box-sizing: border-box;
+  padding: 12px;
+  border: 1px solid #607898;
+  border-radius: 10px;
+  color: #edf3fc;
+  background: transparent;
+  text-align: center;
+  text-decoration: none;
+  font: 600 13px/1.4 var(--ui-font-stack);
+}
+#carrefourInstallModal .carrefour-install-actions a {
+  border-color: #8bc4ff;
+  color: #07182a;
+  background: #8bc4ff;
+}
+.carrefour-install :focus-visible {
+  outline: 3px solid #b9ddff;
+  outline-offset: 3px;
+}
+
 :root {
   --ui-font-stack: "Inter", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   --ui-font-stack-ios:
