@@ -18,12 +18,25 @@ una pestaña Pricing con la sesión iniciada y la tienda seleccionada allí.
 El PVP se aplica como precio normal y luego se calcula el descuento del cartel;
 en Consumo inmediato se conserva el descuento manual y se admiten centavos.
 
-Para activarla, descargá `downloads/carrefour360.zip`, extraelo y cargá esa
-carpeta desde Chrome → Extensiones → Gestionar extensiones → Modo desarrollador
-→ Cargar descomprimida. Recargá Pricing y A4 Studio y usá **Conectar** en el
-editor. La extensión se limita a `https://claufrias.github.io/a4studio/`, a la
+Para activarla, instalá el
+[conector desde Chrome Web Store](https://chromewebstore.google.com/detail/pdephgakanbombajkihikkcjidcmeggf).
+Abrí una única pestaña Pricing con tu sesión iniciada y la tienda seleccionada.
+Recargá Pricing y A4 Studio y usá **Conectar** en el editor.
+La extensión se limita a `https://claufrias.github.io/a4studio/`, a la
 página Pricing y a la ruta `/a4studio/` de localhost para desarrollo. No recibe
 contraseñas ni cookies y no modifica precios en Carrefour360.
+
+Para desarrollar la extensión, podés cargar `extensions/carrefour360/` desde
+Chrome → Extensiones → Gestionar extensiones → Modo desarrollador → Cargar
+descomprimida. El mismo código también está en `downloads/carrefour360.zip`.
+Usá una sola instalación del conector a la vez para evitar respuestas duplicadas.
+
+El panel **CARREFOUR360** del editor permite conectar la extensión y consultar
+el producto del cartel. Después de conectar, ingresá un EAN o elegí una
+sugerencia del catálogo: **Completar al ingresar un EAN** trae la descripción
+y el PVP de Pricing. También podés usar **Actualizar producto actual** para
+volver a consultar el mismo código. **Desconectar** detiene las consultas y
+permite seguir trabajando con el catálogo local.
 
 Si hay varias pestañas Pricing, dejá abierta la que quieras consultar antes
 de conectar. Ante una sesión vencida, una respuesta inválida o una consulta
