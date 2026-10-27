@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" referrerpolicy="no-referrer">
-<link rel="stylesheet" href="a4studio.css?v=20261026-carrefour-guide">
+<link rel="stylesheet" href="a4studio.css?v=20261027-carrefour-images">
 </head>
 <body data-a4-studio="true">
 
@@ -275,6 +275,15 @@ natural 170 g</textarea>
       <button class="header-combo-btn btn-with-icon" type="button" onclick="resetCropBox()"><i class="fa-solid fa-expand btn-icon" aria-hidden="true"></i><span>Marco completo</span></button>
     </div>
     <button id="imageDeleteBtn" class="header-combo-btn btn-with-icon" type="button" onclick="eliminarImagen()" disabled><i class="fa-regular fa-trash-can btn-icon" aria-hidden="true"></i><span>Eliminar imagen</span></button>
+    <div class="image-search-label image-search-subtitle">Foto de Carrefour</div>
+    <button id="carrefourImageSearch" class="header-combo-btn" type="button">Buscar imagen en Carrefour</button>
+    <p id="carrefourImageStatus" class="image-search-status" role="status" aria-live="polite">Usá el código de barras del cartel para buscar su foto.</p>
+    <div id="carrefourImagePreview" class="carrefour-image-preview" hidden>
+      <img id="carrefourImagePhoto" alt="" decoding="async">
+      <p id="carrefourImageCaption"></p>
+      <a id="carrefourImageSource" target="_blank" rel="noopener noreferrer">Ver producto en Carrefour</a>
+      <button id="carrefourImageUse" class="header-combo-btn" type="button" disabled>Usar esta imagen</button>
+    </div>
     <div class="image-search-label image-search-subtitle">Google Imagenes</div>
     <input id="googleImageSearchInput" class="image-search-field" type="text" placeholder="Producto a buscar en Google Imágenes">
     <div class="image-search-actions">
@@ -435,7 +444,8 @@ natural 170 g</textarea>
   </div>
 </dialog>
 
-<script src="carrefour360.js?v=20261026-presence"></script>
+<script src="carrefour360.js?v=20261027-images"></script>
+<script src="carrefour-images-ui.js?v=20261027"></script>
 <script src="carrefour-onboarding.js?v=20261027-install-ready"></script>
 <script>
   (function(){
@@ -5790,35 +5800,45 @@ natural 170 g</textarea>
       captureStateChange('Contenido duplicado');
     };
 
-    function loadImageFromDataUrl(dataUrl, successStatus, historyMessage) {
+    function loadImageFromDataUrl(dataUrl, successStatus, historyMessage, options = {}) {
       if (!dataUrl) {
         setImageSearchStatus('No se pudo cargar la imagen.', true);
-        return;
+        return Promise.resolve(false);
       }
-      const img = new Image();
-      img.onload = () => {
-        let maxDim = 400;
-        let scale = Math.min(maxDim / img.width, maxDim / img.height);
-        let w = img.width * scale;
-        let h = img.height * scale;
-        imagenObj = { img: img, x: CANVAS_W / 2 - w / 2, y: 550, w: w, h: h, cropData: null, srcData: dataUrl };
-        cropActive = false;
-        cropMode = false;
-        cropSessionOriginalState = null;
-        lastCropRect = null;
-        cropTool.reset();
-        cropTool.rect = { x: imagenObj.x, y: imagenObj.y, w: imagenObj.w, h: imagenObj.h };
-        selected = 'img';
-        updateCropUI();
-        mostrarHeaderTools(true);
-        updateView();
-        captureStateChange(historyMessage);
-        setImageSearchStatus(successStatus);
-      };
-      img.onerror = () => {
-        setImageSearchStatus('No se pudo abrir la imagen.', true);
-      };
-      img.src = dataUrl;
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          if (options.shouldApply && !options.shouldApply()) {
+            setImageSearchStatus('El cartel cambió. Volvé a buscar la foto del producto actual.', true);
+            resolve(false);
+            return;
+          }
+          if (options.beforeApply) options.beforeApply();
+          let maxDim = 400;
+          let scale = Math.min(maxDim / img.width, maxDim / img.height);
+          let w = img.width * scale;
+          let h = img.height * scale;
+          imagenObj = { img: img, x: CANVAS_W / 2 - w / 2, y: 550, w: w, h: h, cropData: null, srcData: dataUrl };
+          cropActive = false;
+          cropMode = false;
+          cropSessionOriginalState = null;
+          lastCropRect = null;
+          cropTool.reset();
+          cropTool.rect = { x: imagenObj.x, y: imagenObj.y, w: imagenObj.w, h: imagenObj.h };
+          selected = 'img';
+          updateCropUI();
+          mostrarHeaderTools(true);
+          updateView();
+          captureStateChange(historyMessage);
+          setImageSearchStatus(successStatus);
+          resolve(true);
+        };
+        img.onerror = () => {
+          setImageSearchStatus('No se pudo abrir la imagen.', true);
+          resolve(false);
+        };
+        img.src = dataUrl;
+      });
     }
 
     function loadImageFromFile(file, successStatus, historyMessage) {
@@ -6089,6 +6109,29 @@ natural 170 g</textarea>
     });
     setupToolbar();
     updateView();
+    const imageTarget = () => ({
+      pageId: pages[currentPageIndex]?.id,
+      ean: sanitizeEanValue(document.getElementById('productoEan').value),
+      consumo: isConsumoMode(),
+      image: imagenObj
+    });
+    const canUseCarrefourImage = () => !isConsumoMode() && !isRestoringState
+      && !historyTransitionInProgress && !activeEditor && !cropMode;
+    const isCurrentImageTarget = (target) => {
+      const current = imageTarget();
+      return current.pageId === target.pageId && current.ean === target.ean
+        && current.consumo === target.consumo && current.image === target.image;
+    };
+    window.A4CarrefourImagesUi.start({
+      getTarget: imageTarget,
+      isCurrentTarget: isCurrentImageTarget,
+      canApply: canUseCarrefourImage,
+      applyImage: (dataUrl, target) => loadImageFromDataUrl(dataUrl,
+        'Foto de Carrefour agregada al cartel.', 'Imagen de Carrefour', {
+          shouldApply: () => isCurrentImageTarget(target) && canUseCarrefourImage(),
+          beforeApply: flushPendingHistory
+        })
+    });
     mostrarModalInicial();
   })();
 </script>

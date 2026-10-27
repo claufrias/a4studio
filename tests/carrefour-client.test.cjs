@@ -9,7 +9,7 @@ const vm = require('node:vm');
 const source = fs.readFileSync(path.join(__dirname, '..', 'carrefour360.js'), 'utf8');
 const context = vm.createContext({ window: {}, URL });
 vm.runInContext(source, context);
-const { createClient, validateProduct } = context.window.A4Carrefour360;
+const { createClient, validateProduct, validateImage } = context.window.A4Carrefour360;
 
 class FakeWindow {
   constructor() {
@@ -57,6 +57,15 @@ function product(overrides = {}) {
   return { ean: '0012345678905', descripcion: 'CAFÉ MOLIDO 250 G', precioNormalCentavos: 254150,
     consultadoEn: '2026-10-23T14:22:33.000Z', source: 'Carrefour360', tienda: null, ...overrides };
 }
+function image(overrides = {}) {
+  return {
+    ean: '0012345678905', descripcion: 'CAFÉ MOLIDO 250 G',
+    imageDataUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4z8DwHwAFgAI/ScLbtAAAAABJRU5ErkJggg==',
+    imageUrl: 'https://carrefourar.vteximg.com.br/arquivos/ids/332148/0012345678905_E01.jpg?v=639148981511530000',
+    productUrl: 'https://www.carrefour.com.ar/cafe-molido-250g/p', source: 'Carrefour.com.ar',
+    ...overrides
+  };
+}
 function setup(t, options = {}) {
   const window = new FakeWindow();
   const client = createClient({ targetWindow: window, ...options });
@@ -66,6 +75,122 @@ function setup(t, options = {}) {
 function errorCode(code) {
   return (error) => error.code === code && typeof error.message === 'string' && error.message.length > 10;
 }
+
+test('busca imagen por EAN exacto sin conectar Pricing y descarta datos ajenos', async (t) => {
+  const { window, client } = setup(t);
+  const pending = client.image('0012345678905');
+  assert.equal(window.messages.length, 1);
+  assert.deepEqual(JSON.parse(JSON.stringify(window.messages[0].message)), {
+    source: 'a4studio-carrefour360', version: 1, id: window.messages[0].message.id,
+    action: 'image', ean: '0012345678905'
+  });
+  assert.equal(window.timers.values().next().value.delay, 20000);
+  window.reply(0, image({ descripcion: '  CAFÉ MOLIDO 250 G  ', extra: 'discard' }));
+  assert.deepEqual(JSON.parse(JSON.stringify(await pending)), image());
+  assert.equal(window.timers.size, 0);
+});
+
+test('imagen valida origen, EAN, enlaces y datos raster antes de aceptarlos', async (t) => {
+  const { window, client } = setup(t);
+  const invalid = [
+    null, [], {}, image({ ean: '12345678905' }), image({ ean: 12345678905 }),
+    image({ descripcion: '' }), image({ descripcion: 'x'.repeat(251) }), image({ source: 'otro' }),
+    ...[
+      'https://evil.test/arquivos/ids/332148/image.jpg',
+      'http://carrefourar.vteximg.com.br/arquivos/ids/332148/image.jpg',
+      'https://carrefourar.vteximg.com.br.evil.test/arquivos/ids/332148/image.jpg',
+      'https://user:pass@carrefourar.vteximg.com.br/arquivos/ids/332148/image.jpg',
+      'https://carrefourar.vteximg.com.br/arquivos/ids/332148/image.jpg#x',
+      'https://carrefourar.vteximg.com.br:8443/arquivos/ids/332148/image.jpg',
+      'https://carrefourar.vteximg.com.br/untrusted/image.jpg'
+    ].map((imageUrl) => image({ imageUrl })),
+    ...[
+      'https://evil.test/product/p', 'http://www.carrefour.com.ar/product/p',
+      'https://www.carrefour.com.ar.evil.test/product/p',
+      'https://user:pass@www.carrefour.com.ar/product/p',
+      'https://www.carrefour.com.ar/product/p#x',
+      'https://www.carrefour.com.ar:8443/product/p', 'https://www.carrefour.com.ar/login'
+    ].map((productUrl) => image({ productUrl })),
+    ...[
+      'https://carrefourar.vteximg.com.br/image.jpg',
+      'data:image/svg+xml;base64,PHN2Zz48L3N2Zz4=',
+      'data:text/html;base64,PHNjcmlwdD4=',
+      'data:image/jpeg;base64,PHNjcmlwdD4=',
+      'data:image/png;base64,not-a-base64-image',
+      'data:image/png;base64,iVBORw0KGgo===',
+      'data:image/png;base64,'
+    ].map((imageDataUrl) => image({ imageDataUrl }))
+  ];
+  for (const result of invalid) {
+    const pending = client.image('0012345678905');
+    window.reply(window.messages.length - 1, result);
+    await assert.rejects(pending, errorCode('INVALID_RESPONSE'));
+  }
+  const tooLarge = Buffer.alloc(4 * 1024 * 1024 + 1);
+  Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]).copy(tooLarge);
+  assert.throws(() => validateImage(image({ imageDataUrl: `data:image/png;base64,${tooLarge.toString('base64')}` })), errorCode('INVALID_RESPONSE'));
+  assert.equal(window.timers.size, 0);
+});
+
+test('imagen admite JPEG, PNG y WebP con firma consistente y devuelve solo el DTO', () => {
+  for (const [mime, bytes] of [
+    ['jpeg', [255, 216, 255, 224]],
+    ['png', [137, 80, 78, 71, 13, 10, 26, 10]],
+    ['webp', [82, 73, 70, 70, 4, 0, 0, 0, 87, 69, 66, 80]]
+  ]) {
+    const result = validateImage(image({ imageDataUrl: `data:image/${mime};base64,${Buffer.from(bytes).toString('base64')}`, extra: 'discard' }));
+    assert.equal(result.ean, '0012345678905');
+    assert.equal(result.extra, undefined);
+  }
+});
+
+test('imagen exige EAN válido antes de enviar mensajes', async (t) => {
+  const { window, client } = setup(t);
+  for (const ean of [1234, '', '123', '123456789012345', ' 1234', '1234 ', '123-4']) {
+    await assert.rejects(client.image(ean), errorCode('INVALID_EAN'));
+  }
+  assert.equal(window.messages.length, 0);
+  assert.equal(window.timers.size, 0);
+});
+
+test('imagen ignora respuestas ajenas y conserva errores públicos del catálogo', async (t) => {
+  const { window, client } = setup(t);
+  const pending = client.image('0012345678905');
+  const response = { source: 'carrefour360-a4studio', version: 1, id: window.messages[0].message.id, ok: true, result: image() };
+  let completed = false;
+  pending.then(() => { completed = true; });
+  window.emit(response, { source: {} });
+  window.emit(response, { origin: 'https://otro.example' });
+  window.emit({ ...response, source: 'other' });
+  window.emit({ ...response, version: 2 });
+  window.emit({ ...response, id: 'other-id' });
+  await Promise.resolve();
+  assert.equal(completed, false);
+  window.emit(response);
+  assert.equal((await pending).ean, '0012345678905');
+  const missing = client.image('0012345678905');
+  window.reply(1, null, { ok: false, error: { code: 'IMAGE_NOT_FOUND', message: 'No encontramos una imagen para este código.' } });
+  await assert.rejects(missing, errorCode('IMAGE_NOT_FOUND'));
+});
+
+test('imagen tiene plazo independiente y cancelación que ignora respuestas tardías', async (t) => {
+  const { window, client } = setup(t, { imageTimeoutMs: 90 });
+  const first = client.image('0012345678905');
+  assert.equal(window.timers.values().next().value.delay, 90);
+  client.cancelPending();
+  await assert.rejects(first, errorCode('CANCELLED'));
+  const second = client.image('0012345678905');
+  window.reply(0, image());
+  assert.equal(window.timers.size, 1);
+  window.expire();
+  await assert.rejects(second, (error) => error.code === 'IMAGE_TIMEOUT' && /Actualizá el conector/.test(error.message));
+  const third = client.image('0012345678905');
+  window.reply(1, image());
+  window.reply(2, image());
+  assert.equal((await third).ean, '0012345678905');
+  client.destroy();
+  await assert.rejects(client.image('0012345678905'), errorCode('CLIENT_DESTROYED'));
+});
 
 test('detecta la extensión sin solicitar conexión ni una pestaña Pricing', async (t) => {
   const { window, client } = setup(t);

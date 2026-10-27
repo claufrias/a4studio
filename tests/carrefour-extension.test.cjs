@@ -69,10 +69,11 @@ function pricingFixture() {
 test('manifest limita hosts y rutas sin permisos para sesiones o escritura', () => {
   const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, '../extensions/carrefour360/manifest.json'), 'utf8'));
   assert.equal(manifest.manifest_version, 3);
-  assert.equal(manifest.version, '1.0.3');
+  assert.equal(manifest.version, '1.0.4');
   assert.deepEqual(manifest.host_permissions, [
     'https://carrefour360.carrefour.com.ar/*', 'https://claufrias.github.io/a4studio/*',
-    'http://localhost/a4studio/*', 'http://127.0.0.1/a4studio/*'
+    'http://localhost/a4studio/*', 'http://127.0.0.1/a4studio/*',
+    'https://www.carrefour.com.ar/*', 'https://carrefourar.vteximg.com.br/*'
   ]);
   assert.deepEqual(manifest.permissions, ['scripting']);
   assert.equal(manifest.externally_connectable, undefined);

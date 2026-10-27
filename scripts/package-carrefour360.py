@@ -5,7 +5,7 @@ from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED
 root = Path(__file__).resolve().parent.parent
 source = root / "extensions" / "carrefour360"
 destination = root / "downloads" / "carrefour360.zip"
-required = ["manifest.json", "service-worker.js", "a4-bridge.js", "pricing-content.js", "README.md"]
+required = ["manifest.json", "service-worker.js", "a4-bridge.js", "pricing-content.js", "catalog-images.js", "README.md"]
 for name in required:
     if not (source / name).is_file():
         raise SystemExit(f"Missing extension source: {name}")

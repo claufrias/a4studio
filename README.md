@@ -67,6 +67,16 @@ página no puede activar una extensión en una pestaña anterior a su instalaci�
 Si actualizás una versión anterior, guardá tu trabajo y recargá A4 Studio y
 Pricing una vez. La activación automática se limita a instalaciones nuevas.
 
+Para buscar fotos necesitás el conector **1.0.4 o posterior**. En un cartel normal,
+ingresá el código de barras y, en el panel **Imagen**, tocá **Buscar imagen en
+Carrefour**. Se consulta el catálogo público de carrefour.com.ar y se muestra
+una vista previa del producto cuyo código coincida exactamente. Elegí **Usar esta
+imagen** para agregarla; tu foto anterior se conserva hasta esa confirmación y
+podés deshacer el cambio. Si cambiás de cartel, código o imagen durante la
+búsqueda, se pide volver a buscar. Esta consulta no necesita una sesión de
+Pricing ni modifica los precios del cartel. Consumo inmediato mantiene su diseño
+sin imágenes.
+
 Si hay varias pestañas Pricing, dejá abierta la que quieras consultar antes
 de conectar. Ante una sesión vencida, una respuesta inválida o una consulta
 fallida se conservan los datos del cartel. Cambiar de página, espacio o EAN

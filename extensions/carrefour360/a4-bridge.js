@@ -17,6 +17,7 @@
       && request.source === REQUEST_SOURCE && request.version === 1
       && typeof request.id === 'string' && /^[a-zA-Z0-9._:-]{1,100}$/.test(request.id)
       && (request.action === 'presence' || request.action === 'status'
+        || (request.action === 'image' && typeof request.ean === 'string' && /^\d{4,14}$/.test(request.ean))
         || (request.action === 'lookup' && typeof request.ean === 'string' && /^\d{1,14}$/.test(request.ean)));
   }
 
@@ -75,7 +76,8 @@
       try {
         const response = await runtime.sendMessage({
           channel: CHANNEL, version: 1, id: request.id, action: request.action,
-          ...(request.action === 'lookup' ? { ean: request.ean, pricingTabId } : {})
+          ...(['lookup', 'image'].includes(request.action) ? { ean: request.ean } : {}),
+          ...(request.action === 'lookup' ? { pricingTabId } : {})
         });
         if (request.action === 'status') {
           pricingTabId = response && response.ok === true && response.result && response.result.ready === true
@@ -90,7 +92,7 @@
           reply(request.id, { ok: false, error: { code: 'INVALID_RESPONSE', message: 'La extensión devolvió una respuesta no válida.' } });
         }
       } catch (_) {
-        pricingTabId = null;
+        if (request.action !== 'image') pricingTabId = null;
         reply(request.id, { ok: false, error: { code: 'EXTENSION_UNAVAILABLE', message: 'Recargá A4 Studio y Pricing después de instalar o actualizar la extensión.' } });
       } finally {
         pending.delete(request.id);

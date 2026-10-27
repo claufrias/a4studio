@@ -5,6 +5,7 @@
   const RESPONSE_SOURCE = 'carrefour360-a4studio';
   const VERSION = 1;
   const EAN_PATTERN = /^\d{4,14}$/;
+  const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
   let clientSequence = 0;
 
   function failure(code, message) {
@@ -87,6 +88,56 @@
     return { installed: true, extensionVersion: value.extensionVersion };
   }
 
+  function validImageDataUrl(value) {
+    if (typeof value !== 'string' || value.length > 4 * Math.ceil(MAX_IMAGE_BYTES / 3) + 32) return false;
+    const prefix = /^data:image\/(jpeg|png|webp);base64,/.exec(value);
+    if (!prefix) return false;
+    const base64 = value.slice(prefix[0].length);
+    if (!base64 || base64.length % 4 || !/^[A-Za-z0-9+/]*={0,2}$/.test(base64)) return false;
+    const padding = base64.endsWith('==') ? 2 : base64.endsWith('=') ? 1 : 0;
+    if (base64.length / 4 * 3 - padding > MAX_IMAGE_BYTES) return false;
+    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+    const bytes = [];
+    let bits = 0;
+    let count = 0;
+    for (const character of base64.slice(0, 16)) {
+      if (character === '=') break;
+      bits = (bits << 6) | alphabet.indexOf(character);
+      count += 6;
+      if (count >= 8) { count -= 8; bytes.push((bits >> count) & 255); }
+    }
+    if (prefix[1] === 'jpeg') return bytes[0] === 255 && bytes[1] === 216 && bytes[2] === 255;
+    if (prefix[1] === 'png') return [137, 80, 78, 71, 13, 10, 26, 10].every((byte, i) => bytes[i] === byte);
+    return [82, 73, 70, 70].every((byte, i) => bytes[i] === byte)
+      && [87, 69, 66, 80].every((byte, i) => bytes[i + 8] === byte);
+  }
+
+  function validImageLink(value, product = false) {
+    if (typeof value !== 'string' || value.length > 2048) return false;
+    try {
+      const url = new URL(value);
+      if (url.username || url.password || url.hash) return false;
+      return product
+        ? url.origin === 'https://www.carrefour.com.ar' && /^\/.+\/p$/.test(url.pathname)
+        : url.origin === 'https://carrefourar.vteximg.com.br'
+          && /^\/arquivos\/ids\/\d+(?:-\d+-\d+)?\/[^/]+$/.test(url.pathname);
+    } catch (_) { return false; }
+  }
+
+  function validateImage(value, expectedEan) {
+    if (!isRecord(value) || typeof value.ean !== 'string' || !EAN_PATTERN.test(value.ean)
+      || (expectedEan !== undefined && value.ean !== expectedEan)
+      || typeof value.descripcion !== 'string' || !value.descripcion.trim() || value.descripcion.length > 250
+      || !validImageDataUrl(value.imageDataUrl) || !validImageLink(value.imageUrl)
+      || !validImageLink(value.productUrl, true) || value.source !== 'Carrefour.com.ar') {
+      throw failure('INVALID_RESPONSE', 'Carrefour devolvió una imagen inválida. Volvé a buscar el producto.');
+    }
+    return {
+      ean: value.ean, descripcion: value.descripcion.trim(), imageDataUrl: value.imageDataUrl,
+      imageUrl: value.imageUrl, productUrl: value.productUrl, source: 'Carrefour.com.ar'
+    };
+  }
+
   function createClient(options) {
     options = options || {};
     const targetWindow = options.targetWindow || root;
@@ -98,6 +149,7 @@
     const detectionTimeoutMs = positiveTimeout(options.detectionTimeoutMs, 1500);
     const connectTimeoutMs = positiveTimeout(options.connectTimeoutMs, 2500);
     const lookupTimeoutMs = positiveTimeout(options.lookupTimeoutMs, 20000);
+    const imageTimeoutMs = positiveTimeout(options.imageTimeoutMs, 20000);
 
     function nextId() {
       sequence += 1;
@@ -136,6 +188,7 @@
         if (message.ok !== true) throw failure('INVALID_RESPONSE', 'La extensión devolvió una respuesta inválida.');
         const result = request.action === 'presence' ? validatePresence(message.result)
           : request.action === 'status' ? validateStatus(message.result)
+          : request.action === 'image' ? validateImage(message.result, request.ean)
           : validateProduct(message.result, request.ean);
         settle(message.id, null, result);
       } catch (error) {
@@ -149,21 +202,24 @@
       if (origin === 'null' || !/^https?:\/\//.test(origin)) {
         return Promise.reject(failure('INVALID_ORIGIN', 'Abrí A4 Studio desde su dirección web para conectar Carrefour360.'));
       }
-      if (action === 'lookup' && (typeof ean !== 'string' || !EAN_PATTERN.test(ean))) {
+      if ((action === 'lookup' || action === 'image') && (typeof ean !== 'string' || !EAN_PATTERN.test(ean))) {
         return Promise.reject(failure('INVALID_EAN', 'Ingresá un EAN de 4 a 14 dígitos, sin espacios.'));
       }
       return new Promise((resolve, reject) => {
         const id = nextId();
         const timeout = action === 'presence' ? detectionTimeoutMs
+          : action === 'image' ? imageTimeoutMs
           : action === 'status' ? connectTimeoutMs : lookupTimeoutMs;
         const timer = targetWindow.setTimeout(() => {
-          settle(id, action !== 'lookup'
+          settle(id, action === 'image'
+            ? failure('IMAGE_TIMEOUT', 'No se pudo obtener la imagen a tiempo. Actualizá el conector de A4 Studio y volvé a buscar.')
+            : action !== 'lookup'
             ? failure('EXTENSION_NOT_AVAILABLE', 'No se detectó la extensión de Carrefour360. Instalá o activá la extensión y recargá A4 Studio.')
             : failure('TIMEOUT', 'Carrefour360 tardó demasiado en responder. Volvé a consultar el producto.'));
         }, timeout);
         pending.set(id, { action, ean, resolve, reject, timer });
         const message = { source: REQUEST_SOURCE, version: VERSION, id, action };
-        if (action === 'lookup') message.ean = ean;
+        if (action === 'lookup' || action === 'image') message.ean = ean;
         try {
           targetWindow.postMessage(message, origin);
         } catch (_) {
@@ -183,6 +239,7 @@
       detect() { return request('presence'); },
       connect() { return request('status'); },
       lookup(ean) { return request('lookup', ean); },
+      image(ean) { return request('image', ean); },
       cancelPending,
       destroy() {
         if (destroyed) return;
@@ -197,5 +254,5 @@
     return Number.isFinite(value) && value > 0 ? value : fallback;
   }
 
-  root.A4Carrefour360 = { createClient, validateProduct };
+  root.A4Carrefour360 = { createClient, validateProduct, validateImage };
 })(window);

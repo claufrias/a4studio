@@ -1,6 +1,9 @@
 (function (root) {
   'use strict';
 
+  if (typeof root.importScripts === 'function') root.importScripts('catalog-images.js');
+  const imageCatalog = typeof module === 'object' && module.exports
+    ? require('./catalog-images.js') : root.A4CarrefourImages;
   const CHANNEL = 'a4studio-carrefour360-internal';
   const PRICING_URL = 'https://carrefour360.carrefour.com.ar/pricing';
   const TRANSPORT_TIMEOUT_MS = 18000;
@@ -62,6 +65,7 @@
       && request.channel === CHANNEL && request.version === 1
       && typeof request.id === 'string' && /^[a-zA-Z0-9._:-]{1,100}$/.test(request.id)
       && (request.action === 'status'
+        || (request.action === 'image' && typeof request.ean === 'string' && /^\d{4,14}$/.test(request.ean))
         || (request.action === 'lookup' && validEan(request.ean)
           && Number.isInteger(request.pricingTabId) && request.pricingTabId > 0));
   }
@@ -105,8 +109,25 @@
       : failure('INVALID_RESPONSE', 'La respuesta de Carrefour360 no es válida.');
   }
 
-  function createController(browser) {
+  function createController(browser, options = {}) {
     const queues = new Map();
+    const lookupImage = options.lookupImage || ((ean) => imageCatalog.lookup(ean));
+
+    async function image(ean) {
+      const errors = {
+        INVALID_EAN: 'Ingresá un código de barras de 4 a 14 dígitos.',
+        IMAGE_NOT_FOUND: 'Carrefour no tiene una imagen disponible para ese código de barras.',
+        IMAGE_UNAVAILABLE: 'No pudimos obtener la imagen de Carrefour. Volvé a intentar.',
+        IMAGE_INVALID: 'Carrefour devolvió una imagen o datos que no pudimos usar.',
+        IMAGE_TIMEOUT: 'La búsqueda de imagen tardó demasiado. Volvé a intentar.'
+      };
+      try {
+        return { ok: true, result: await lookupImage(ean) };
+      } catch (error) {
+        const code = error && Object.hasOwn(errors, error.code) ? error.code : 'IMAGE_UNAVAILABLE';
+        return failure(code, errors[code]);
+      }
+    }
 
     async function sendToPricing(tabId, request, timeoutMs = TRANSPORT_TIMEOUT_MS) {
       try {
@@ -182,6 +203,7 @@
       }
       if (!validRequest(request)) return failure('INVALID_REQUEST', 'La consulta de producto no es válida.');
       try {
+        if (request.action === 'image') return await image(request.ean);
         if (request.action === 'status') return await status();
         return await enqueue(request.pricingTabId, (remainingMs) => lookup(request, remainingMs));
       } catch (_) {

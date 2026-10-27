@@ -21,6 +21,9 @@ bajo esa ruta. La extensión no se conecta a archivos `file://` ni a otros sitio
 o repositorios de GitHub Pages.
 
 Los permisos de host cubren Carrefour360 y los orígenes de A4 indicados.
+Desde la versión 1.0.4 también se permite `https://www.carrefour.com.ar/*` para
+consultar el catálogo público y `https://carrefourar.vteximg.com.br/*` para
+descargar las fotos de productos. No se aceptan otras direcciones de imagen.
 El permiso `scripting` permite cargar los archivos propios del conector en las
 pestañas que ya estaban abiertas al instalar. Se revalida cada URL y solo se
 ejecuta en el frame principal de A4 o Pricing. Los content scripts también se
@@ -94,6 +97,20 @@ Primero debe completarse `status`. Las respuestas usan
 `source: 'carrefour360-a4studio'`, `version: 1`, el mismo `id` y `ok`.
 Si `ok` es verdadero, contienen `result`; de lo contrario,
 `error: { code, message }`. Nunca se devuelve HTML ni información de sesión.
+
+Desde la versión **1.0.4**, `action: 'image'` y un `ean` de 4 a 14 dígitos
+consultan una foto sin conectar a Pricing. El servicio público usado es
+`https://www.carrefour.com.ar/api/catalog_system/pub/products/search`, filtrado
+por `alternateIds_Ean`. Se exige que el `ean` del SKU coincida exactamente; no se
+elige una variante por similitud del nombre. El resultado incluye `ean`,
+`descripcion`, `imageUrl`, `productUrl`, `source: 'Carrefour.com.ar'` e
+`imageDataUrl` raster. La página muestra una vista previa y exige confirmación.
+
+El catálogo está limitado a 2 MiB, la foto a 4 MiB y la consulta completa a 15 s.
+Solo se permiten JPEG, PNG y WebP con tipo y firma compatibles. Se omiten
+credenciales y se rechazan redirecciones y hosts ajenos. La foto se incorpora
+como datos locales para poder guardar el proyecto, imprimir y deshacer el cambio.
+El ZIP debe incluir `catalog-images.js` junto con el resto del conector.
 
 ## Verificación
 

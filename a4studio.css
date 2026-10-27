@@ -205,6 +205,32 @@ body.modal-open .product-suggestions {
   outline-offset: 3px;
 }
 
+.carrefour-image-preview {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+}
+.carrefour-image-preview[hidden] {
+  display: none;
+}
+.carrefour-image-preview img {
+  display: block;
+  width: 100%;
+  height: 150px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: #fff;
+}
+.carrefour-image-preview p,
+.carrefour-image-preview a {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-size: 12px;
+}
+
 :root {
   --ui-font-stack: "Inter", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   --ui-font-stack-ios:
