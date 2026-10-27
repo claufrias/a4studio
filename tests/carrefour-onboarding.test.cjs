@@ -19,11 +19,12 @@ class Target {
     this.listeners.get(type).add(listener);
   }
   removeEventListener(type, listener) { this.listeners.get(type)?.delete(listener); }
-  emit(type) {
+  emit(type, overrides = {}) {
     const event = {
       type, defaultPrevented: false, propagationStopped: false,
       preventDefault() { this.defaultPrevented = true; },
-      stopPropagation() { this.propagationStopped = true; }
+      stopPropagation() { this.propagationStopped = true; },
+      ...overrides
     };
     for (const listener of [...(this.listeners.get(type) || [])]) listener(event);
     return event;
@@ -55,6 +56,11 @@ function fixture(t, { initialModal = false, storage = new Map(), denyStorage = f
   let disconnected = false;
   const window = Object.assign(new Target(), {
     document,
+    location: {
+      origin: 'https://claufrias.github.io',
+      reload() { assert.fail('Installing the extension must not reload the editor'); }
+    },
+    open() { assert.fail('An installation announcement must not open Pricing'); },
     getComputedStyle: (element) => ({ display: element === dialog ? (dialog.open ? 'block' : 'none') : element.style.display }),
     sessionStorage: {
       getItem(key) { if (denyStorage) throw new Error('Storage denied'); return storage.get(key) ?? null; },
@@ -81,6 +87,11 @@ function fixture(t, { initialModal = false, storage = new Map(), denyStorage = f
   t.after(() => controller.destroy());
   return {
     elements, dialog, otherModal, document, window, requests, controller, storage,
+    ready: (overrides = {}) => window.emit('message', {
+      source: window, origin: window.location.origin,
+      data: { source: 'carrefour360-a4studio', version: 1, action: 'ready' },
+      ...overrides
+    }),
     notify: () => { if (!disconnected) notify(); },
     absent: async (index = requests.length - 1) => {
       requests[index].reject(Object.assign(new Error('Not detected'), { code: 'EXTENSION_NOT_AVAILABLE' }));
@@ -257,6 +268,96 @@ test('abrir la tienda no consulta Pricing y reintenta solo al volver al editor',
   await f.present();
   assert.equal(f.dialog.open, true);
   assert.equal(f.elements.Ready.hidden, false);
+});
+
+test('la instalación en una página abierta inicia una nueva comprobación sin recargar', async (t) => {
+  const f = fixture(t);
+  await f.absent();
+  f.ready();
+  assert.equal(f.requests.length, 2, 'el aviso de instalación debe pedir una prueba nueva de presencia');
+  assert.equal(f.elements.Ready.hidden, true, 'el aviso no basta para confirmar que la herramienta funciona');
+  await f.present();
+  assert.equal(f.dialog.open, true);
+  assert.equal(f.elements.Ready.hidden, false);
+  assert.equal(f.elements.Title.textContent, '¡La herramienta está instalada!');
+});
+
+test('la instalación que llega durante la primera comprobación se verifica al terminar esta', async (t) => {
+  const f = fixture(t);
+  f.ready();
+  f.ready();
+  f.ready();
+  assert.equal(f.requests.length, 1, 'se acumula una sola comprobación posterior');
+  await f.absent(0);
+  assert.equal(f.requests.length, 2, 'la solicitud enviada antes de instalar no debe dejar el editor sin detectar');
+  assert.equal(f.elements.Ready.hidden, true);
+  await f.present(1);
+  assert.equal(f.elements.Ready.hidden, false);
+  assert.equal(f.requests.length, 2);
+});
+
+test('ignora avisos de instalación de otra ventana, origen, versión o formato', async (t) => {
+  const f = fixture(t);
+  await f.absent();
+  for (const overrides of [
+    { source: {} },
+    { origin: 'https://otro.example' },
+    { data: { source: 'other', version: 1, action: 'ready' } },
+    { data: { source: 'carrefour360-a4studio', version: 2, action: 'ready' } },
+    { data: { source: 'carrefour360-a4studio', version: 1, action: 'presence' } },
+    { data: null },
+    { data: [] },
+    { data: 'ready' }
+  ]) f.ready(overrides);
+  assert.equal(f.requests.length, 1);
+  assert.equal(f.elements.Ready.hidden, true);
+});
+
+test('un aviso de instalación espera a que la pestaña vuelva a estar visible', async (t) => {
+  const f = fixture(t);
+  await f.absent();
+  f.document.visibilityState = 'hidden';
+  f.ready();
+  f.window.emit('focus');
+  assert.equal(f.requests.length, 1);
+  f.document.visibilityState = 'visible';
+  f.document.emit('visibilitychange');
+  f.window.emit('focus');
+  assert.equal(f.requests.length, 2, 'los eventos de retorno no deben duplicar la comprobación');
+  await f.present();
+  assert.equal(f.elements.Ready.hidden, false);
+});
+
+test('descartar la guía cancela una comprobación pendiente solicitada por el aviso de instalación', async (t) => {
+  for (const result of ['absent', 'present']) {
+    const f = fixture(t);
+    await f.absent();
+    f.elements.Retry.emit('click');
+    f.ready();
+    f.elements.Later.emit('click');
+    await f[result]();
+    f.notify();
+    assert.equal(f.requests.length, 2, result);
+    assert.equal(f.dialog.open, false, result);
+  }
+});
+
+test('la instalación no vuelve a abrir un aviso descartado ni revive una integración destruida', async (t) => {
+  const f = fixture(t);
+  await f.absent();
+  f.elements.Later.emit('click');
+  f.ready();
+  assert.equal(f.requests.length, 1);
+  assert.equal(f.dialog.open, false);
+  const nextPage = fixture(t, { storage: f.storage });
+  nextPage.ready();
+  assert.equal(nextPage.requests.length, 0, 'un descarte recordado se sigue respetando');
+  const destroyed = fixture(t);
+  destroyed.controller.destroy();
+  await settle();
+  destroyed.ready();
+  assert.equal(destroyed.requests.length, 1);
+  assert.equal(destroyed.dialog.open, false);
 });
 
 test('funciona con almacenamiento bloqueado y no interfiere con atajos del editor', async (t) => {

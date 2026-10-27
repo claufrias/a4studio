@@ -3,6 +3,7 @@
 
   const CHANNEL = 'a4studio-carrefour360-internal';
   const LOOKUP_TIMEOUT_MS = 15000;
+  const INSTALL_KEY = '__a4studioCarrefourPricing';
 
   function parseDecimalCents(value) {
     const match = /^(\d{1,12})(?:\.(\d{1,2}))?$/.exec(String(value ?? '').trim());
@@ -69,6 +70,7 @@
 
   function createQueryRunner(document, environment) {
     let busy = false;
+    let cancelCurrent = null;
 
     function status() {
       const { input, button, content } = getControls(document);
@@ -92,6 +94,7 @@
           const finish = (result) => {
             if (settled) return;
             settled = true;
+            cancelCurrent = null;
             observer.disconnect();
             environment.clearTimeout(timer);
             input.removeEventListener('input', onInputChange);
@@ -115,6 +118,7 @@
             if (product) finish(product);
           };
           const observer = new environment.MutationObserver(check);
+          cancelCurrent = () => finish(failure('PRICING_NOT_READY', 'El conector se actualizó durante la consulta. Volvé a consultar.'));
           observer.observe(document.documentElement, {
             childList: true, subtree: true, characterData: true, attributes: true,
             attributeFilter: ['data-price', 'style', 'class', 'hidden']
@@ -136,23 +140,41 @@
       } finally { busy = false; }
     }
 
-    return { status, lookup };
+    return { status, lookup, destroy() { cancelCurrent?.(); } };
   }
 
   function install(document, runtime, environment) {
+    let version = null;
+    try { version = runtime.getManifest().version; } catch (_) {}
+    const previous = document[INSTALL_KEY];
+    if (previous && previous.runtime === runtime && previous.version === version) return previous;
+    if (previous) previous.dispose();
+    let active = true;
     const runner = createQueryRunner(document, environment);
-    runtime.onMessage.addListener((request, sender, sendResponse) => {
-      if (!sender || sender.id !== runtime.id || !request || request.channel !== CHANNEL || request.version !== 1) return false;
+    const listener = (request, sender, sendResponse) => {
+      if (!active || !sender || sender.id !== runtime.id || !request || request.channel !== CHANNEL || request.version !== 1) return false;
       if (request.action === 'status') {
         sendResponse(runner.status());
         return false;
       }
       if (request.action === 'lookup') {
-        runner.lookup(request.ean, request.timeoutMs).then(sendResponse);
+        runner.lookup(request.ean, request.timeoutMs).then((response) => { if (active) sendResponse(response); });
         return true;
       }
       return false;
-    });
+    };
+    const installation = {
+      runtime, version,
+      dispose() {
+        active = false;
+        runtime.onMessage.removeListener?.(listener);
+        runner.destroy();
+        if (document[INSTALL_KEY] === installation) delete document[INSTALL_KEY];
+      }
+    };
+    document[INSTALL_KEY] = installation;
+    runtime.onMessage.addListener(listener);
+    return installation;
   }
 
   if (typeof module === 'object' && module.exports) {

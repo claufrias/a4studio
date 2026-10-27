@@ -22,6 +22,7 @@
     let wanted = false;
     let checking = false;
     let awaitingInstallation = false;
+    let bridgeReadyPending = false;
     let printing = false;
     let destroyed = false;
 
@@ -33,6 +34,7 @@
     function hide() {
       wanted = false;
       awaitingInstallation = false;
+      bridgeReadyPending = false;
       if (dialog.open) dialog.close();
     }
 
@@ -95,11 +97,17 @@
         checking = false;
         retry.disabled = false;
         retry.textContent = 'Ya la instalé';
+        // A bridge attached after the request was sent needs a new challenge.
+        if (bridgeReadyPending) returnedToEditor();
       }
     }
 
     function returnedToEditor() {
-      if (awaitingInstallation && document.visibilityState !== 'hidden') check(true);
+      if ((awaitingInstallation || bridgeReadyPending) && !checking && document.visibilityState !== 'hidden') {
+        const manual = wanted || awaitingInstallation;
+        bridgeReadyPending = false;
+        check(manual);
+      }
       flush();
     }
 
@@ -127,6 +135,16 @@
     });
     listen(window, 'focus', returnedToEditor);
     listen(document, 'visibilitychange', returnedToEditor);
+    listen(window, 'message', (event) => {
+      const notice = event.data;
+      if (event.source !== window || event.origin !== window.location.origin
+        || !notice || typeof notice !== 'object' || Array.isArray(notice)
+        || notice.source !== 'carrefour360-a4studio' || notice.version !== 1 || notice.action !== 'ready') return;
+      if (dismissed && !wanted && !awaitingInstallation) return;
+      // The notice is a prompt to check, never proof of an installed extension.
+      bridgeReadyPending = true;
+      returnedToEditor();
+    });
     listen(window, 'beforeprint', () => { printing = true; if (dialog.open) dialog.close(); });
     listen(window, 'afterprint', () => { printing = false; flush(); });
 

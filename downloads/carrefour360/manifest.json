@@ -1,13 +1,17 @@
 {
   "manifest_version": 3,
   "name": "A4 Studio - Conector de precios",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Consulta productos y PVP desde la sesión abierta de Carrefour360 para A4 Studio.",
   "background": {
     "service_worker": "service-worker.js"
   },
+  "permissions": ["scripting"],
   "host_permissions": [
-    "https://carrefour360.carrefour.com.ar/*"
+    "https://carrefour360.carrefour.com.ar/*",
+    "https://claufrias.github.io/a4studio/*",
+    "http://localhost/a4studio/*",
+    "http://127.0.0.1/a4studio/*"
   ],
   "content_scripts": [
     {

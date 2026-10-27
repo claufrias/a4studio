@@ -21,7 +21,7 @@ en Consumo inmediato se conserva el descuento manual y se admiten centavos.
 Para activarla, instalá el
 [conector desde Chrome Web Store](https://chromewebstore.google.com/detail/pdephgakanbombajkihikkcjidcmeggf).
 Abrí una única pestaña Pricing con tu sesión iniciada y la tienda seleccionada.
-Recargá Pricing y A4 Studio y usá **Conectar** en el editor.
+Usá **Conectar** en el editor.
 La extensión se limita a `https://claufrias.github.io/a4studio/`, a la
 página Pricing y a la ruta `/a4studio/` de localhost para desarrollo. No recibe
 contraseñas ni cookies y no modifica precios en Carrefour360.
@@ -57,6 +57,15 @@ comprobación. Publicá el ZIP actualizado en Chrome Web Store para que los usua
 reciban la detección. El aviso no afirma que la extensión esté desinstalada:
 también puede estar deshabilitada, sin permiso para esta página o pendiente de
 actualizar. Detectarla no equivale a tener una sesión de Pricing conectada.
+
+Desde la versión **1.0.3**, una instalación nueva conecta las pestañas A4 Studio
+y Pricing que ya estaban abiertas, sin recargarlas ni perder los cambios del
+cartel. El puente avisa cuando está listo y A4 Studio vuelve a comprobar su
+presencia, incluso si la primera comprobación ocurrió antes de la instalación.
+Esto requiere publicar la versión 1.0.3 en Chrome Web Store; cambiar solo la
+página no puede activar una extensión en una pestaña anterior a su instalación.
+Si actualizás una versión anterior, guardá tu trabajo y recargá A4 Studio y
+Pricing una vez. La activación automática se limita a instalaciones nuevas.
 
 Si hay varias pestañas Pricing, dejá abierta la que quieras consultar antes
 de conectar. Ante una sesión vencida, una respuesta inválida o una consulta

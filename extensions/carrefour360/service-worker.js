@@ -4,6 +4,12 @@
   const CHANNEL = 'a4studio-carrefour360-internal';
   const PRICING_URL = 'https://carrefour360.carrefour.com.ar/pricing';
   const TRANSPORT_TIMEOUT_MS = 18000;
+  const OPEN_TAB_PATTERNS = [
+    'https://claufrias.github.io/a4studio/*',
+    'http://localhost/a4studio/*',
+    'http://127.0.0.1/a4studio/*',
+    `${PRICING_URL}*`
+  ];
 
   function isA4Url(value) {
     try {
@@ -20,6 +26,31 @@
       return url.origin === 'https://carrefour360.carrefour.com.ar'
         && ['/pricing', '/pricing/'].includes(url.pathname);
     } catch (_) { return false; }
+  }
+
+  async function attachOpenTabs(browser) {
+    let tabs;
+    try { tabs = await browser.tabs.query({ url: OPEN_TAB_PATTERNS }); }
+    catch (_) { return 0; }
+    if (!Array.isArray(tabs)) return 0;
+    const results = await Promise.all(tabs.map(async (tab) => {
+      if (!tab || !Number.isSafeInteger(tab.id) || tab.id <= 0) return false;
+      const file = isA4Url(tab.url) ? 'a4-bridge.js'
+        : isPricingUrl(tab.url) ? 'pricing-content.js' : null;
+      if (!file) return false;
+      try {
+        // Declarative scripts cover future navigations; attach to tabs that were
+        // already open before installation without reloading their editor state.
+        await browser.scripting.executeScript({
+          target: { tabId: tab.id, frameIds: [0] }, files: [file]
+        });
+        return true;
+      } catch (_) {
+        // A tab may close or navigate, or its site permission may be withheld.
+        return false;
+      }
+    }));
+    return results.filter(Boolean).length;
   }
 
   function validEan(value) {
@@ -162,7 +193,7 @@
   }
 
   if (typeof module === 'object' && module.exports) {
-    module.exports = { CHANNEL, isA4Url, isPricingUrl, validEan, validRequest, validProduct, createController };
+    module.exports = { CHANNEL, isA4Url, isPricingUrl, validEan, validRequest, validProduct, createController, attachOpenTabs };
   }
   if (root.chrome && root.chrome.runtime && root.chrome.tabs) {
     const controller = createController(root.chrome);
@@ -170,6 +201,11 @@
       if (!request || request.channel !== CHANNEL) return false;
       controller.handle(request, sender).then(sendResponse);
       return true;
+    });
+    root.chrome.runtime.onInstalled.addListener((details) => {
+      if (details.reason === 'install') {
+        return attachOpenTabs(root.chrome);
+      }
     });
   }
 })(globalThis);

@@ -8,7 +8,9 @@ cookies o tokens. No activa productos, no genera etiquetas ni modifica precios.
 
 1. Abrí `chrome://extensions` (o `edge://extensions`) y activá el modo desarrollador.
 2. Elegí **Cargar descomprimida** y seleccioná esta carpeta `extensions/carrefour360`.
-3. Recargá A4 Studio y la pestaña Carrefour360 si ya estaban abiertas.
+3. Volvé a A4 Studio. En una instalación nueva de la versión 1.0.3, las pestañas
+   que ya estaban abiertas se conectan sin recargar. Si estás actualizando una
+   versión anterior, guardá tu trabajo y recargá A4 Studio y Pricing una vez.
 4. Iniciá sesión en Carrefour360 y dejá abierta una única pestaña de Pricing con
    la sucursal que querés consultar. Conectá desde A4 Studio.
 
@@ -18,19 +20,35 @@ También se permiten `http://localhost/a4studio/` y
 bajo esa ruta. La extensión no se conecta a archivos `file://` ni a otros sitios
 o repositorios de GitHub Pages.
 
-El único permiso de host para el service worker es
-`https://carrefour360.carrefour.com.ar/*`. Los content scripts se limitan a las
-rutas A4 indicadas y a Pricing. No se usan permisos `cookies`, `storage`,
-`webRequest` o `scripting`, servidores intermedios ni código remoto.
+Los permisos de host cubren Carrefour360 y los orígenes de A4 indicados.
+El permiso `scripting` permite cargar los archivos propios del conector en las
+pestañas que ya estaban abiertas al instalar. Se revalida cada URL y solo se
+ejecuta en el frame principal de A4 o Pricing. Los content scripts también se
+limitan a esas rutas. No se usan permisos `cookies`, `storage`, `webRequest` ni
+`tabs`, servidores intermedios o código remoto.
 
 ## Funcionamiento
+
+En una instalación nueva de la versión **1.0.3**, `onInstalled` conecta las
+pestañas permitidas ya abiertas mediante `scripting.executeScript`, sin recargar,
+abrir pestañas ni consultar productos. Cada script se instala una sola vez por
+contexto, por lo que repetir la carga no duplica consultas ni pierde la conexión.
+Una pestaña cerrada o sin permisos no impide conectar las demás. La reinyección
+automática no se aplica al actualizar versiones anteriores: sus scripts pueden
+quedar invalidados y requieren recargar las páginas una vez.
 
 Desde la versión **1.0.2**, A4 Studio puede comprobar la presencia del conector
 sin abrir Pricing, iniciar sesión ni consultar productos. El puente responde
 localmente a `action: 'presence'` con
-`{ installed: true, extensionVersion: '1.0.2' }`. Esto no establece ni cambia
+`{ installed: true, extensionVersion: '1.0.3' }`. Esto no establece ni cambia
 la conexión con la pestaña Pricing. Las versiones anteriores no responden a
 esta comprobación; hay que publicar la actualización en Chrome Web Store.
+
+Al terminar de cargar el puente, se publica un aviso con
+`{ source: 'carrefour360-a4studio', version: 1, action: 'ready' }` en el mismo
+origen. La página no lo considera prueba de instalación: envía una nueva
+solicitud `presence`. Si había una solicitud anterior pendiente, espera a que
+termine y reintenta; si el usuario cerró la guía, el aviso no vuelve a abrirla.
 
 La conexión se confirma solo si existe una única pestaña Pricing y están
 disponibles los controles de consulta. Si no hay una pestaña, la extensión abre

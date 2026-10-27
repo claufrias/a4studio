@@ -4,6 +4,7 @@
   const REQUEST_SOURCE = 'a4studio-carrefour360';
   const RESPONSE_SOURCE = 'carrefour360-a4studio';
   const CHANNEL = 'a4studio-carrefour360-internal';
+  const INSTALL_KEY = '__a4studioCarrefourBridge';
 
   function isAllowedLocation(location) {
     return (location.origin === 'https://claufrias.github.io'
@@ -21,15 +22,34 @@
 
   function install(window, runtime) {
     if (window.top !== window || !isAllowedLocation(window.location)) return;
+    let version = null;
+    try { version = runtime.getManifest().version; } catch (_) {}
+    const previous = window[INSTALL_KEY];
+    if (previous && previous.runtime === runtime && previous.version === version) {
+      previous.announce();
+      return previous;
+    }
+    if (previous) previous.dispose();
+    let active = true;
     let pricingTabId = null;
     const pending = new Set();
 
     function reply(id, response) {
+      if (!active) return;
       window.postMessage({ source: RESPONSE_SOURCE, version: 1, id, ...response }, window.location.origin);
     }
 
-    window.addEventListener('message', async (event) => {
-      if (event.source !== window || event.origin !== window.location.origin || !validRequest(event.data)) return;
+    function announce() {
+      if (!active) return;
+      try {
+        // Do not announce an invalidated extension context as available.
+        if (!runtime.getManifest().version) return;
+        window.postMessage({ source: RESPONSE_SOURCE, version: 1, action: 'ready' }, window.location.origin);
+      } catch (_) {}
+    }
+
+    const listener = async (event) => {
+      if (!active || event.source !== window || event.origin !== window.location.origin || !validRequest(event.data)) return;
       const request = event.data;
       if (pending.has(request.id)) return;
       // Presence is independent from Pricing and never opens or queries a tab.
@@ -75,7 +95,19 @@
       } finally {
         pending.delete(request.id);
       }
-    });
+    };
+    const installation = {
+      runtime, version, announce,
+      dispose() {
+        active = false;
+        window.removeEventListener?.('message', listener);
+        if (window[INSTALL_KEY] === installation) delete window[INSTALL_KEY];
+      }
+    };
+    window[INSTALL_KEY] = installation;
+    window.addEventListener('message', listener);
+    announce();
+    return installation;
   }
 
   if (typeof module === 'object' && module.exports) module.exports = { isAllowedLocation, validRequest, install };
