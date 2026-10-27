@@ -284,14 +284,6 @@ natural 170 g</textarea>
       <a id="carrefourImageSource" target="_blank" rel="noopener noreferrer">Ver producto en Carrefour</a>
       <button id="carrefourImageUse" class="header-combo-btn" type="button" disabled>Usar esta imagen</button>
     </div>
-    <div class="image-search-label image-search-subtitle">Google Imagenes</div>
-    <input id="googleImageSearchInput" class="image-search-field" type="text" placeholder="Producto a buscar en Google Imágenes">
-    <div class="image-search-actions">
-      <button class="header-combo-btn btn-with-icon" type="button" onclick="abrirBusquedaGoogleImagenes()"><i class="fa-solid fa-magnifying-glass btn-icon" aria-hidden="true"></i><span>Buscar imagen en Google</span></button>
-      <button class="header-combo-btn btn-with-icon" type="button" onclick="usarNombreProductoEnBusqueda()"><i class="fa-solid fa-tag btn-icon" aria-hidden="true"></i><span>Usar producto</span></button>
-    </div>
-    <button class="image-search-chip image-help-btn" type="button" onclick="abrirModalConsejos('imagenes')">¿Cómo copio una imagen?</button>
-    <div class="image-search-note"><i class="fa-solid fa-arrow-pointer" aria-hidden="true"></i> También podés arrastrar una imagen desde tu computadora o desde una web y soltarla sobre el cartel.</div>
     <div id="cropIndicator" class="crop-status">
 <i class="fa-solid fa-crop-simple" aria-hidden="true"></i> RECORTE ACTIVO - Arrastra esquinas, bordes o centro. Pulsa RECORTE o ENTER para aplicar, ESC cancela
     </div>
@@ -3277,8 +3269,7 @@ natural 170 g</textarea>
     bindModalStateObserver();
 
     const imagePasteTips = [
-      'Tocá <strong>Buscar imagen en Google</strong>.',
-      'En Google, abrí la imagen que quieras usar.',
+      'Abrí la página donde está la imagen que quieras usar.',
       'Hacé <strong>clic derecho</strong> sobre la imagen.',
       'Elegí <strong>Copiar imagen</strong>.',
       'Volvé a <strong>A4 Studio</strong>.',
@@ -3288,7 +3279,7 @@ natural 170 g</textarea>
     ];
 
     const standardTips = [
-      '<strong>IMÁGENES:</strong> buscá en Google, copiá la imagen y tocá el botón Pegar del panel de imagen.',
+      '<strong>IMÁGENES:</strong> usá Agregar o Pegar, o buscá la foto por código de barras con Buscar imagen en Carrefour.',
       '<strong>CLICK</strong> en un objeto para seleccionarlo.',
       '<strong>CLICK FUERA</strong> para deseleccionar.',
       '<strong>DOBLE CLIC</strong> en texto o precio normal para editar inline.',
@@ -3319,7 +3310,7 @@ natural 170 g</textarea>
           ? '<i class="fa-solid fa-basket-shopping" aria-hidden="true"></i> Consejos'
           : '<i class="fa-regular fa-lightbulb" aria-hidden="true"></i> Consejos';
       if (intro) intro.textContent = imageSection
-        ? 'Pasos para copiar una imagen desde Google u otra web y pegarla en el cartel.'
+        ? 'Pasos para copiar una imagen desde otra web y pegarla en el cartel.'
         : consumoMode
           ? 'Atajos y flujo recomendado para completar los 4 espacios de la plantilla.'
           : 'Atajos utiles para mover, editar, recortar y agregar imagenes al cartel.';
@@ -4090,15 +4081,6 @@ natural 170 g</textarea>
       const btnOutline = document.getElementById('btnOutline');
       if (btnShadow) btnShadow.onclick = () => { aplicarEfectoTexto('shadow'); };
       if (btnOutline) btnOutline.onclick = () => { aplicarEfectoTexto('outline'); };
-      const imageSearchInput = document.getElementById('googleImageSearchInput');
-      if (imageSearchInput) {
-        imageSearchInput.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter') {
-            e.preventDefault();
-            window.abrirBusquedaGoogleImagenes();
-          }
-        });
-      }
     }
     
     function handleResize() {
@@ -4628,12 +4610,6 @@ natural 170 g</textarea>
       pages[currentPageIndex] = buildPageStateFromCurrent(currentMeta);
     }
 
-    function getSuggestedGoogleImageQuery() {
-      const baseText = (productoObj && productoObj.text ? productoObj.text : '').replace(/\s+/g, ' ').trim();
-      if (!baseText) return 'producto supermercado packshot';
-      return `${baseText} packshot`;
-    }
-
     function setImageSearchStatus(message, isWarning = false) {
       const status = document.getElementById('imagePanelStatus');
       if (!status) return;
@@ -4642,42 +4618,6 @@ natural 170 g</textarea>
       status.style.borderColor = isWarning ? 'rgba(203,154,110,0.35)' : 'rgba(255,255,255,0.05)';
       status.style.color = isWarning ? '#f1d4b3' : '#d6dde7';
     }
-
-    window.usarNombreProductoEnBusqueda = function() {
-      const input = document.getElementById('googleImageSearchInput');
-      if (!input) return;
-      input.value = getSuggestedGoogleImageQuery();
-      setImageSearchStatus('Consulta lista. Pulsá Buscar imagen en Google para abrir resultados.');
-      input.focus();
-      input.select();
-    };
-
-    window.aplicarSugerenciaBusquedaImagen = function(suffix) {
-      const input = document.getElementById('googleImageSearchInput');
-      if (!input) return;
-      const base = input.value.trim() || getSuggestedGoogleImageQuery();
-      const cleanSuffix = (suffix || '').trim();
-      const nextValue = cleanSuffix && !base.toLowerCase().includes(cleanSuffix.toLowerCase())
-        ? `${base} ${cleanSuffix}`.trim()
-        : base;
-      input.value = nextValue;
-      setImageSearchStatus(`Sugerencia aplicada: ${cleanSuffix || 'busqueda base'}.`);
-      input.focus();
-    };
-
-    window.abrirBusquedaGoogleImagenes = function(forceQuery = '') {
-      const input = document.getElementById('googleImageSearchInput');
-      if (!input) return;
-      const query = (forceQuery || input.value || getSuggestedGoogleImageQuery()).replace(/\s+/g, ' ').trim();
-      if (!query) {
-        setImageSearchStatus('Escribe algo para buscar en Google Imagenes.', true);
-        return;
-      }
-      input.value = query;
-      const searchUrl = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query)}`;
-      window.open(searchUrl, '_blank', 'noopener');
-      setImageSearchStatus('Google Imágenes se abrió en otra pestaña. Copiá una imagen, no el enlace. Luego volvé y tocá el botón Pegar del panel de imagen.');
-    };
 
     function syncFloatingPanelViewportMode() {
       const mobile = syncMobileUiMode();
@@ -4883,8 +4823,6 @@ natural 170 g</textarea>
       document.getElementById('productoColor').value = productoObj.color;
       const floatingProductColor = document.getElementById('productFloatingColor');
       if (floatingProductColor) floatingProductColor.value = productoObj.color;
-      const googleSearchInput = document.getElementById('googleImageSearchInput');
-      if (googleSearchInput && !googleSearchInput.value.trim()) googleSearchInput.value = getSuggestedGoogleImageQuery();
       document.getElementById('precioNormalEntero').value = precioNormalObj.entero;
       document.getElementById('precioNormalCentavos').value = String(precioNormalObj.centavos).padStart(2, '0');
       document.getElementById('precioNormalColor').value = precioNormalObj.color;
