@@ -3018,6 +3018,13 @@ body.tight-floating-panels:not(.mobile-ui) #titleToolsPanel .title-color-control
   border-radius: 26px;
 }
 
+#modalFondo .discount-bank-value {
+  color: #a91879;
+  font-size: 25px;
+  font-weight: 800;
+  line-height: 1;
+}
+
 #modalFondo .discount-option-consumo .discount-preview {
   background: linear-gradient(135deg, #fff1df, #fffaf4);
   border-radius: 50%;

@@ -1,6 +1,11 @@
 # a4studio
 Editor visual de carteles
 
+El selector de promociones incluye **Cuenta Digital Carrefour Banco · 10%**, con
+su fondo propio. Al elegirlo, se calcula el precio final con el 10% de descuento;
+también se puede aplicar a todas las páginas. La opción anterior de Cuenta
+Digital del 15% sigue disponible como una promoción independiente.
+
 El catálogo local incluye 3.362 productos del informe del 22/10/2026. Al escribir
 al menos dos caracteres en el nombre se muestran hasta ocho coincidencias, sin
 distinguir mayúsculas ni tildes. Elegir una sugerencia con clic o con las flechas
