@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" referrerpolicy="no-referrer">
-<link rel="stylesheet" href="a4studio.css?v=20261027-carrefour-images">
+<link rel="stylesheet" href="a4studio.css?v=20261027-sidebar">
 </head>
 <body data-a4-studio="true">
 
@@ -55,159 +55,147 @@
     <div class="sidebar-brand-subtitle">Editor visual de carteles</div>
   </div>
   
-  <div class="card" id="tituloCard">
-    <div class="card-title"><i class="fa-solid fa-bullhorn" aria-hidden="true"></i> TÍTULO PRINCIPAL</div>
-    <textarea id="titulo" rows="2" placeholder="Escribe aquí...">HOY</textarea>
-    <div class="tool-group">
-      <select id="tituloFont">
-        <option value="Arial Black">Arial Black</option>
-        <option value="Arial">Arial</option>
-      </select>
-      <select id="tituloSize">
-        <option value="48">48px</option>
-        <option value="56">56px</option>
-        <option value="64" selected>64px</option>
-        <option value="72">72px</option>
-      </select>
-    </div>
-    <div class="color-row">
-      <label><i class="fa-solid fa-palette" aria-hidden="true"></i> Color:</label>
-      <input type="color" id="tituloColor" value="#FFFFFF">
-    </div>
-  </div>
-
-  <div class="card" id="productoCard">
-    <div class="card-title"><i class="fa-solid fa-tag" aria-hidden="true"></i> NOMBRE DEL PRODUCTO</div>
-    <textarea id="producto" rows="2" aria-label="Nombre del producto" placeholder="Escribí para buscar productos...">Lomitos de atún
+  <section class="card" id="productoSection" aria-labelledby="productoSectionTitle">
+    <h2 class="card-title" id="productoSectionTitle">Producto</h2>
+    <div id="productoCard">
+      <div id="eanCard">
+        <div id="standardEanGroup">
+          <label for="productoEan">Código de barras</label>
+          <input id="productoEan" type="text" inputmode="numeric" maxlength="14" placeholder="Ej: 7792799000899">
+        </div>
+        <div id="consumoEanGroup">
+          <label for="consumoEan">Código de barras del espacio actual</label>
+          <input id="consumoEan" type="text" inputmode="numeric" maxlength="14" placeholder="Ej: 7792799000899">
+        </div>
+      </div>
+      <label for="producto">Nombre del producto</label>
+      <textarea id="producto" rows="2" placeholder="Escribí para buscar productos...">Lomitos de atún
 Carrefour al
 natural 170 g</textarea>
-    <div class="tool-group">
-      <select id="productoFont">
-        <option value="Arial">Arial</option>
-        <option value="Arial Black">Arial Black</option>
-      </select>
-      <select id="productoSize">
-        <option value="32">32px</option>
-        <option value="36">36px</option>
-        <option value="40" selected>40px</option>
-        <option value="48">48px</option>
-      </select>
     </div>
-    <div class="color-row">
-      <label><i class="fa-solid fa-palette" aria-hidden="true"></i> Color:</label>
-      <input type="color" id="productoColor" value="#000000">
-    </div>
-  </div>
 
-  <div class="card" id="carrefourCard">
-    <div class="card-title"><i class="fa-solid fa-link" aria-hidden="true"></i> CARREFOUR360</div>
-    <p class="carrefour-help">Consultá la descripción y el PVP de tu sesión de Pricing.</p>
-    <div class="tool-group carrefour-actions">
-      <button id="carrefourConnect" type="button">Conectar</button>
-      <a class="btn-outline" href="https://carrefour360.carrefour.com.ar/pricing" target="_blank" rel="noopener noreferrer">Abrir Pricing</a>
+    <div id="consumoPanel">
+      <label>Espacio a editar</label>
+      <div class="consumo-slot-row" id="consumoSlotButtons">
+        <button class="consumo-slot-btn active" type="button" onclick="seleccionarConsumoSlot(0)" aria-pressed="true">1</button>
+        <button class="consumo-slot-btn" type="button" onclick="seleccionarConsumoSlot(1)" aria-pressed="false">2</button>
+        <button class="consumo-slot-btn" type="button" onclick="seleccionarConsumoSlot(2)" aria-pressed="false">3</button>
+        <button class="consumo-slot-btn" type="button" onclick="seleccionarConsumoSlot(3)" aria-pressed="false">4</button>
+      </div>
+      <div id="consumoActiveIndicator" class="consumo-active-indicator">Editando espacio 1</div>
+      <div id="consumoInlineEanSlot" class="consumo-inline-fields"></div>
+      <label for="consumoNombre">Nombre del producto</label>
+      <textarea id="consumoNombre" rows="2" placeholder="Escribí para buscar productos..."></textarea>
+      <details class="sidebar-copy-tools">
+        <summary>Copiar o limpiar este producto</summary>
+        <div class="tool-group consumo-actions">
+          <button type="button" onclick="duplicarConsumoActivoEnVacios()">Duplicar en vacíos</button>
+          <button type="button" onclick="duplicarConsumoActivoEnTodos()">Repetir en 4</button>
+        </div>
+        <label id="consumoCopyLabel">Copiar espacio 1 a:</label>
+        <div class="consumo-slot-row" id="consumoCopyButtons">
+          <button class="consumo-slot-btn" type="button" onclick="copiarConsumoActivoA(0)">1</button>
+          <button class="consumo-slot-btn" type="button" onclick="copiarConsumoActivoA(1)">2</button>
+          <button class="consumo-slot-btn" type="button" onclick="copiarConsumoActivoA(2)">3</button>
+          <button class="consumo-slot-btn" type="button" onclick="copiarConsumoActivoA(3)">4</button>
+        </div>
+        <button class="btn-outline" type="button" onclick="limpiarConsumoActivo()">Limpiar espacio</button>
+      </details>
     </div>
-    <label class="carrefour-auto"><input id="carrefourAuto" type="checkbox" checked disabled> Completar al ingresar un EAN</label>
-    <button id="carrefourRefresh" class="btn-outline carrefour-refresh" type="button" disabled>Actualizar producto actual</button>
-    <div id="carrefourStatus" class="carrefour-status" role="status" aria-live="polite">Sin conectar. Podés seguir usando el catálogo local.</div>
-    <button id="carrefourInstallOpen" class="btn-outline carrefour-install-open" type="button">Instalar o comprobar extensión</button>
-    <p id="carrefourInstallHint" class="carrefour-help" role="status"></p>
-    <details id="carrefourSetup" class="carrefour-setup">
-      <summary>Configurar conexión</summary>
-      <p>Para usar tu sesión, instalá el conector en Chrome:</p>
-      <ol>
-        <li><a href="https://chromewebstore.google.com/detail/pdephgakanbombajkihikkcjidcmeggf" target="_blank" rel="noopener noreferrer">Instalá el conector desde Chrome Web Store.</a></li>
-        <li>Abrí una única pestaña Pricing con tu sesión iniciada y seleccioná la tienda que querés consultar.</li>
-        <li>Recargá Pricing y este editor y pulsá Conectar.</li>
-      </ol>
-      <p>Usa la tienda seleccionada en Carrefour360. El complemento consulta los productos; no cambia los precios de Carrefour.</p>
-    </details>
-  </div>
 
-  <div class="card" id="preciosCard">
-    <div class="card-title"><i class="fa-solid fa-sack-dollar" aria-hidden="true"></i> PRECIOS</div>
-    <label>Precio Normal:</label>
+    <div id="carrefourCard" class="sidebar-connection">
+      <div class="sidebar-connection-bar">
+        <span class="sidebar-connection-label">Carrefour360</span>
+        <span id="carrefourConnectionState" class="sidebar-connection-state" data-state="idle" role="status">Sin conexión</span>
+        <button id="carrefourConnect" type="button">Conectar</button>
+      </div>
+      <button id="carrefourRefresh" class="btn-outline carrefour-refresh" type="button" disabled>Traer datos de Carrefour360</button>
+      <div id="carrefourStatus" class="carrefour-status" role="status" aria-live="polite">Sin conectar. Podés completar los datos a mano.</div>
+      <details id="carrefourSetup" class="carrefour-setup">
+        <summary>Ayuda para conectar</summary>
+        <p>Instalá la herramienta en Chrome, abrí Carrefour360 y dejá una única pestaña Pricing con tu sesión iniciada.</p>
+        <a class="btn-outline" href="https://carrefour360.carrefour.com.ar/pricing" target="_blank" rel="noopener noreferrer">Abrir Carrefour360</a>
+        <button id="carrefourInstallOpen" class="btn-outline carrefour-install-open" type="button">Instalar o comprobar extensión</button>
+        <p id="carrefourInstallHint" class="carrefour-help" role="status"></p>
+        <label class="carrefour-auto"><input id="carrefourAuto" type="checkbox" checked disabled> Completar al ingresar un código</label>
+        <p>La descripción y el precio provienen de la tienda seleccionada en Carrefour360.</p>
+      </details>
+    </div>
+  </section>
+
+  <section class="card" id="preciosSection" aria-labelledby="preciosSectionTitle">
+    <h2 class="card-title" id="preciosSectionTitle">Precios y promoción</h2>
+    <div class="sidebar-promotion">
+      <span id="sidebarPromotion">Elegí una promoción</span>
+      <button class="sidebar-promotion-change btn-outline" type="button" onclick="abrirModalFondo()">Cambiar</button>
+    </div>
+    <div id="preciosCard">
+    <label for="precioNormalEntero">Precio normal</label>
     <div class="precio-row">
       <div class="precio-input-group">
         <input id="precioNormalEntero" type="number" value="2990" step="1000" min="0" placeholder="Ej: 2990">
-        <input id="precioNormalCentavos" type="number" value="00" step="1" min="0" max="99" placeholder="00">
+        <input id="precioNormalCentavos" type="number" value="00" step="1" min="0" max="99" placeholder="00" aria-label="Centavos del precio normal">
       </div>
-      <input type="color" id="precioNormalColor" value="#FFFFFF">
     </div>
-    <label class="field-spacer">Precio Oferta (calculado automáticamente):</label>
+    <label class="field-spacer" for="precioOfertaEntero">Precio final</label>
     <div class="precio-row">
       <div class="precio-input-group">
         <input id="precioOfertaEntero" type="number" value="2541" step="1000" min="0" placeholder="Ej: 2541">
-        <input id="precioOfertaCentavos" type="number" value="50" step="1" min="0" max="99" placeholder="00">
+        <input id="precioOfertaCentavos" type="number" value="50" step="1" min="0" max="99" placeholder="00" aria-label="Centavos del precio final">
       </div>
-      <input type="color" id="precioOfertaColor" value="#000000">
     </div>
     <div id="descuentoInfo" class="descuento-info"><i class="fa-solid fa-tag" aria-hidden="true"></i> Selecciona un fondo para ver el descuento</div>
-    
-  </div>
+    </div>
+    <div id="consumoPricesGroup" hidden>
+      <label for="consumoPrecioNormal">Precio normal</label>
+      <input id="consumoPrecioNormal" type="number" min="0" step="0.01" placeholder="Ej: 3500">
+      <label for="consumoDescuentoMonto">Monto de descuento</label>
+      <input id="consumoDescuentoMonto" type="number" min="0" step="0.01" placeholder="Ej: 1500">
+      <div id="consumoResultado" class="descuento-info">Precio final: $0 · 0% descuento</div>
+    </div>
+  </section>
 
-  <div class="card" id="vigenciaCard">
-    <div class="card-title"><i class="fa-regular fa-calendar-days" aria-hidden="true"></i> VIGENCIA</div>
+  <section class="card" id="vigenciaCard" aria-labelledby="vigenciaSectionTitle">
+    <h2 class="card-title" id="vigenciaSectionTitle">Vigencia</h2>
     <div id="vigenciaFieldsGroup">
-      <label>Vigencia del descuento:</label>
       <div class="validity-row">
         <div>
-          <label for="vigenciaDesde">Desde:</label>
+          <label for="vigenciaDesde">Desde</label>
           <input id="vigenciaDesde" type="date">
         </div>
         <div>
-          <label for="vigenciaHasta">Hasta:</label>
+          <label for="vigenciaHasta">Hasta</label>
           <input id="vigenciaHasta" type="date">
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <div class="card" id="eanCard">
-    <div class="card-title"><i class="fa-solid fa-barcode" aria-hidden="true"></i> EAN</div>
-    <div id="standardEanGroup">
-      <label for="productoEan">EAN del producto:</label>
-      <input id="productoEan" type="text" inputmode="numeric" maxlength="14" placeholder="Ej: 7792799000899">
+  <details class="card sidebar-personalize" id="personalizarCard">
+    <summary class="card-title">Personalizar cartel</summary>
+    <div class="sidebar-personalize-content">
+      <div id="tituloCard" class="sidebar-style-group">
+        <label for="titulo">Título del cartel</label>
+        <textarea id="titulo" rows="2" placeholder="Escribí aquí...">HOY</textarea>
+        <div class="tool-group">
+          <div><label for="tituloFont">Tipografía del título</label><select id="tituloFont"><option value="Arial Black">Arial Black</option><option value="Arial">Arial</option></select></div>
+          <div><label for="tituloSize">Tamaño</label><select id="tituloSize"><option value="48">48px</option><option value="56">56px</option><option value="64" selected>64px</option><option value="72">72px</option></select></div>
+        </div>
+        <div class="color-row"><label for="tituloColor">Color del título</label><input type="color" id="tituloColor" value="#FFFFFF"></div>
+      </div>
+      <div class="sidebar-style-group">
+        <div class="tool-group">
+          <div><label for="productoFont">Tipografía del producto</label><select id="productoFont"><option value="Arial">Arial</option><option value="Arial Black">Arial Black</option></select></div>
+          <div><label for="productoSize">Tamaño</label><select id="productoSize"><option value="32">32px</option><option value="36">36px</option><option value="40" selected>40px</option><option value="48">48px</option></select></div>
+        </div>
+        <div class="color-row"><label for="productoColor">Color del producto</label><input type="color" id="productoColor" value="#000000"></div>
+      </div>
+      <div class="sidebar-style-group sidebar-color-grid">
+        <div><label for="precioNormalColor">Color del precio normal</label><input type="color" id="precioNormalColor" value="#FFFFFF"></div>
+        <div><label for="precioOfertaColor">Color del precio final</label><input type="color" id="precioOfertaColor" value="#000000"></div>
+      </div>
     </div>
-    <div id="consumoEanGroup">
-      <label for="consumoEan">EAN del espacio actual:</label>
-      <input id="consumoEan" type="text" inputmode="numeric" maxlength="14" placeholder="Ej: 7792799000899">
-    </div>
-  </div>
-
-  <div class="card" id="consumoPanel">
-    <div class="card-title"><i class="fa-solid fa-basket-shopping" aria-hidden="true"></i> CONSUMO INMEDIATO</div>
-    <label>Espacio a editar:</label>
-    <div class="consumo-slot-row" id="consumoSlotButtons">
-      <button class="consumo-slot-btn active" type="button" onclick="seleccionarConsumoSlot(0)" aria-pressed="true">1</button>
-      <button class="consumo-slot-btn" type="button" onclick="seleccionarConsumoSlot(1)" aria-pressed="false">2</button>
-      <button class="consumo-slot-btn" type="button" onclick="seleccionarConsumoSlot(2)" aria-pressed="false">3</button>
-      <button class="consumo-slot-btn" type="button" onclick="seleccionarConsumoSlot(3)" aria-pressed="false">4</button>
-    </div>
-    <div id="consumoActiveIndicator" class="consumo-active-indicator">Editando espacio 1</div>
-    <label for="consumoNombre">Nombre del producto:</label>
-    <textarea id="consumoNombre" rows="2" placeholder="Escribí para buscar productos..."></textarea>
-    <div id="consumoInlineEanSlot" class="consumo-inline-fields"></div>
-    <div id="consumoInlineVigenciaSlot" class="consumo-inline-fields"></div>
-    <label>Precio normal:</label>
-    <input id="consumoPrecioNormal" type="number" min="0" step="0.01" placeholder="Ej: 3500">
-    <label>Monto de descuento:</label>
-    <input id="consumoDescuentoMonto" type="number" min="0" step="0.01" placeholder="Ej: 1500">
-    <div id="consumoResultado" class="descuento-info">Precio final: $0 · 0% descuento</div>
-    <div class="tool-group consumo-actions">
-      <button type="button" onclick="duplicarConsumoActivoEnVacios()">Duplicar en vacíos</button>
-      <button type="button" onclick="duplicarConsumoActivoEnTodos()">Repetir en 4</button>
-    </div>
-    <label id="consumoCopyLabel">Copiar espacio 1 a:</label>
-    <div class="consumo-slot-row" id="consumoCopyButtons">
-      <button class="consumo-slot-btn" type="button" onclick="copiarConsumoActivoA(0)">1</button>
-      <button class="consumo-slot-btn" type="button" onclick="copiarConsumoActivoA(1)">2</button>
-      <button class="consumo-slot-btn" type="button" onclick="copiarConsumoActivoA(2)">3</button>
-      <button class="consumo-slot-btn" type="button" onclick="copiarConsumoActivoA(3)">4</button>
-    </div>
-    <div class="tool-group consumo-actions">
-      <button class="btn-outline" type="button" onclick="limpiarConsumoActivo()">Limpiar espacio</button>
-    </div>
-  </div>
+  </details>
 
   <button class="tips-button btn-with-icon" type="button" onclick="abrirModalConsejos()">
     <i class="fa-regular fa-lightbulb btn-icon" aria-hidden="true"></i>
@@ -2777,28 +2765,21 @@ natural 170 g</textarea>
 
     function syncLayoutModePanels() {
       const consumoMode = isConsumoMode();
-      ['tituloCard', 'productoCard', 'preciosCard'].forEach((id) => {
+      ['tituloCard', 'productoCard', 'preciosCard', 'personalizarCard'].forEach((id) => {
         const el = document.getElementById(id);
         if (el) el.style.display = consumoMode ? 'none' : '';
       });
-      const vigenciaCard = document.getElementById('vigenciaCard');
       const eanCard = document.getElementById('eanCard');
-      const vigenciaFieldsGroup = document.getElementById('vigenciaFieldsGroup');
       const standardEanGroup = document.getElementById('standardEanGroup');
       const consumoEanGroup = document.getElementById('consumoEanGroup');
       const inlineEanSlot = document.getElementById('consumoInlineEanSlot');
-      const inlineVigenciaSlot = document.getElementById('consumoInlineVigenciaSlot');
       if (consumoMode) {
-        if (vigenciaCard) vigenciaCard.style.display = 'none';
         if (eanCard) eanCard.style.display = 'none';
         if (consumoEanGroup && inlineEanSlot && consumoEanGroup.parentNode !== inlineEanSlot) inlineEanSlot.appendChild(consumoEanGroup);
-        if (vigenciaFieldsGroup && inlineVigenciaSlot && vigenciaFieldsGroup.parentNode !== inlineVigenciaSlot) inlineVigenciaSlot.appendChild(vigenciaFieldsGroup);
         if (standardEanGroup) standardEanGroup.style.display = 'none';
         if (consumoEanGroup) consumoEanGroup.style.display = 'block';
       } else {
-        if (vigenciaCard) vigenciaCard.style.display = '';
         if (eanCard) eanCard.style.display = '';
-        if (vigenciaFieldsGroup && vigenciaCard && vigenciaFieldsGroup.parentNode !== vigenciaCard) vigenciaCard.appendChild(vigenciaFieldsGroup);
         if (standardEanGroup && eanCard && standardEanGroup.parentNode !== eanCard) eanCard.appendChild(standardEanGroup);
         if (consumoEanGroup && eanCard && consumoEanGroup.parentNode !== eanCard) eanCard.appendChild(consumoEanGroup);
         if (standardEanGroup) standardEanGroup.style.display = 'block';
@@ -2806,6 +2787,10 @@ natural 170 g</textarea>
       }
       const consumoPanel = document.getElementById('consumoPanel');
       if (consumoPanel) consumoPanel.style.display = consumoMode ? 'block' : 'none';
+      const consumoPrices = document.getElementById('consumoPricesGroup');
+      if (consumoPrices) consumoPrices.hidden = !consumoMode;
+      const promotion = document.getElementById('sidebarPromotion');
+      if (promotion) promotion.textContent = fondoActual ? getNombreFondo(fondoActual) : 'Elegí una promoción';
       if (consumoMode) {
         selected = null;
         dragging = false;
@@ -4160,6 +4145,11 @@ natural 170 g</textarea>
       const connect = document.getElementById('carrefourConnect');
       connect.disabled = carrefourConnecting;
       connect.textContent = carrefourConnecting ? 'Conectando…' : carrefourConnected ? 'Desconectar' : 'Conectar';
+      const state = document.getElementById('carrefourConnectionState');
+      if (state) {
+        state.textContent = carrefourConnecting ? 'Conectando…' : carrefourConnected ? 'Conectado' : 'Sin conexión';
+        state.dataset.state = carrefourConnecting ? 'pending' : carrefourConnected ? 'connected' : 'idle';
+      }
       document.getElementById('carrefourRefresh').disabled = !carrefourConnected || carrefourLookupPending;
       document.getElementById('carrefourAuto').disabled = !carrefourConnected;
     }
@@ -5996,6 +5986,7 @@ natural 170 g</textarea>
       if (mod && e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) window.rehacerCambio(); else window.deshacerCambio(); return; }
       if (mod && e.key.toLowerCase() === 'y') { e.preventDefault(); window.rehacerCambio(); return; }
       if (mod && e.key.toLowerCase() === 's') { e.preventDefault(); window.guardarDisenoEnArchivo(); return; }
+      if (document.activeElement?.closest('button, select, summary, a, [contenteditable="true"]')) return;
       if (isConsumoMode()) return;
       if (cropMode) return;
       const directEditValue = !writing ? getDirectTextEditValueFromKey(e) : null;

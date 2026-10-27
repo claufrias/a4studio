@@ -34,9 +34,16 @@ Usá una sola instalación del conector a la vez para evitar respuestas duplicad
 El panel **CARREFOUR360** del editor permite conectar la extensión y consultar
 el producto del cartel. Después de conectar, ingresá un EAN o elegí una
 sugerencia del catálogo: **Completar al ingresar un EAN** trae la descripción
-y el PVP de Pricing. También podés usar **Actualizar producto actual** para
+y el PVP de Pricing. También podés usar **Traer datos de Carrefour360** para
 volver a consultar el mismo código. **Desconectar** detiene las consultas y
 permite seguir trabajando con el catálogo local.
+
+El panel izquierdo agrupa los datos en **Producto**, **Precios y promoción** y
+**Vigencia**. **Personalizar cartel** reúne el título, las tipografías y los
+colores, y empieza cerrado. La conexión está junto al producto; las instrucciones
+de instalación y consulta están en **Ayuda para conectar**. En Consumo inmediato
+se elige el espacio en Producto, se editan los importes en Precios y promoción y
+se mantienen las fechas en Vigencia.
 
 Al entrar, A4 Studio comprueba si el conector responde, sin abrir Pricing ni
 consultar productos. Si no responde, muestra cómo instalar la herramienta con

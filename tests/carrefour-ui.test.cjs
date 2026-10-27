@@ -35,7 +35,7 @@ function setup(options = {}) {
     productoFont: 'Arial', productoSize: '40'
   };
   for (const [id, value] of Object.entries(initial)) elements.set(id, { value });
-  for (const id of ['carrefourConnect', 'carrefourRefresh', 'carrefourStatus', 'carrefourAuto']) {
+  for (const id of ['carrefourConnect', 'carrefourRefresh', 'carrefourStatus', 'carrefourAuto', 'carrefourConnectionState']) {
     elements.set(id, { value: '', textContent: '', dataset: {}, disabled: false, checked: true });
   }
   const document = { getElementById(id) {
