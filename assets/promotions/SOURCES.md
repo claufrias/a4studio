@@ -10,3 +10,7 @@ servidores externos al abrir el selector.
 - `carrefour-banco.png`: Cuenta Digital Carrefour Banco, 300 × 192; 11,326 bytes.
 
 [HTML público del que se descargaron las imágenes](https://raw.githubusercontent.com/claufrias/a4studio/7b6614e990e2223405c9c1360e3b35ce5efd874e/index.html).
+
+- `consumo-inmediato.jpg`: imagen roja de Consumo inmediato proporcionada por el
+  usuario en `consumo icono.zip` (`CONSUMOINM-logo.jpg`), 351 × 351; 42.943 bytes.
+  Se conserva el archivo original sin modificaciones y se usa en el selector.
