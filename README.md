@@ -1,10 +1,18 @@
 # a4studio
 Editor visual de carteles
 
-El selector de promociones incluye **Cuenta Digital Carrefour Banco · 10%**, con
-su fondo propio. Al elegirlo, se calcula el precio final con el 10% de descuento;
-también se puede aplicar a todas las páginas. La opción anterior de Cuenta
-Digital del 15% sigue disponible como una promoción independiente.
+El selector de promociones muestra tarjetas con el nombre, el porcentaje y una
+miniatura del fondo. Las opciones de **Cuenta Digital Carrefour Banco · 10% y
+15%** están agrupadas y conservan sus fondos propios. **Consumo inmediato** aparece
+por separado y permite ingresar el descuento de cada producto.
+
+Elegir una tarjeta muestra el fondo y el precio final de ejemplo sin modificar
+el cartel. El cambio se confirma con **Usar esta promoción** y se puede aplicar a
+**Solo este cartel** o **Todos los carteles**; cada cartel conserva su precio
+normal y calcula su propio descuento. La etiqueta **Actual** identifica la
+promoción aplicada. **Cancelar** conserva el proyecto y se puede deshacer una
+promoción confirmada. Al crear un proyecto se requiere elegir una promoción
+para el primer cartel.
 
 El catálogo local incluye 3.362 productos del informe del 22/10/2026. Al escribir
 al menos dos caracteres en el nombre se muestran hasta ocho coincidencias, sin

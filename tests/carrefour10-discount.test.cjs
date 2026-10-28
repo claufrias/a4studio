@@ -46,6 +46,13 @@ test('Cuenta Digital 10% calcula el precio final con centavos sin cambiar las pr
   assert.deepEqual(previousOffer, { entero: 850, centavos: 0 });
 });
 
+test('el descuento redondea los medios centavos de forma consistente con la vista previa', () => {
+  const api = contextFor(['calcularPrecioConDescuento']);
+  assert.deepEqual(plain(api.calcularPrecioConDescuento(1, 15, 10)), { entero: 1, centavos: 4 });
+  assert.deepEqual(plain(api.calcularPrecioConDescuento(1, 30, 15)), { entero: 1, centavos: 11 });
+  assert.deepEqual(plain(api.calcularPrecioConDescuento(10, 0, 15)), { entero: 8, centavos: 50 });
+});
+
 test('la opción nueva tiene nombre y fondo propios y mantiene el fondo de 15%', () => {
   const api = contextFor(['getNombreFondo']);
   assert.match(api.getNombreFondo('carrefour10'), /Cuenta Digital.*Carrefour Banco.*10%/);

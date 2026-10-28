@@ -4529,3 +4529,514 @@ body.tight-floating-panels:not(.mobile-ui) #imageSearchPanel .crop-controls .hea
     align-content: center;
   }
 }
+
+/* Promotion selection with a separate preview and explicit confirmation. */
+#modalFondo.modal.promotion-picker {
+  padding: 24px;
+  background: rgba(12, 23, 40, 0.62);
+  backdrop-filter: blur(5px);
+}
+#modalFondo.modal.promotion-picker [hidden] {
+  display: none !important;
+}
+#modalFondo.modal.promotion-picker .promotion-picker-content {
+  display: flex;
+  flex-direction: column;
+  width: min(980px, calc(100vw - 48px));
+  max-height: calc(100dvh - 48px);
+  min-height: 0;
+  margin: auto;
+  padding: 0;
+  overflow: hidden;
+  color: #142033;
+  text-align: left;
+  background: #fff;
+  border: 1px solid #dce4ef;
+  border-radius: 24px;
+  box-shadow: 0 30px 100px rgba(7, 18, 36, 0.28);
+}
+#modalFondo.modal.promotion-picker .promotion-picker-header {
+  flex: none;
+  padding: 24px 76px 20px 24px;
+}
+#modalFondo.modal.promotion-picker #promotionPickerTitle {
+  margin: 0;
+  font-size: clamp(22px, 2.5vw, 28px);
+  font-weight: 750;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+}
+#modalFondo.modal.promotion-picker .discount-modal-subtitle {
+  margin: 8px 0 0;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+#modalFondo.modal.promotion-picker #promotionClose {
+  position: absolute;
+  top: 17px;
+  right: 17px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  margin: 0;
+  padding: 0;
+  color: #64748b;
+  background: #f5f7fa;
+  border: 1px solid #e3e9f1;
+  border-radius: 12px;
+  box-shadow: none;
+  font-size: 25px;
+  line-height: 1;
+  transform: none;
+}
+#modalFondo.modal.promotion-picker.required-selection #promotionClose {
+  display: none;
+}
+#modalFondo.modal.promotion-picker #promotionClose:hover:not(:disabled) {
+  color: #174b95;
+  background: #edf4ff;
+  border-color: #b4ccef;
+}
+#modalFondo.modal.promotion-picker .promotion-picker-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  gap: 24px;
+  min-height: 0;
+  padding: 0 24px 24px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  align-items: start;
+}
+#modalFondo.modal.promotion-picker .promotion-options,
+#modalFondo.modal.promotion-picker .promotion-group {
+  min-width: 0;
+}
+#modalFondo.modal.promotion-picker .promotion-group + .promotion-group {
+  margin-top: 20px;
+}
+#modalFondo.modal.promotion-picker .promotion-group-title {
+  margin: 0 0 10px;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+#modalFondo.modal.promotion-picker .promotion-bank-group {
+  padding: 13px;
+  background: #f7f9fc;
+  border: 1px solid #e0e7f1;
+  border-radius: 16px;
+}
+#modalFondo.modal.promotion-picker .discount-options-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+#modalFondo.modal.promotion-picker .discount-option {
+  position: relative;
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  min-height: 112px;
+  margin: 0;
+  padding: 14px 12px;
+  overflow: hidden;
+  color: #142033;
+  text-align: left;
+  background: #fff;
+  border: 2px solid #e0e7f1;
+  border-radius: 14px;
+  box-shadow: none;
+  animation: none;
+  transform: none;
+  transition: border-color 0.16s ease, background-color 0.16s ease;
+}
+#modalFondo.modal.promotion-picker .discount-option::before,
+#modalFondo.modal.promotion-picker .discount-option::after,
+#modalFondo.modal.promotion-picker .discount-option-label::after,
+#modalFondo.modal.promotion-picker .promotion-picker-content::before {
+  display: none;
+}
+#modalFondo.modal.promotion-picker .discount-option:hover:not(:disabled) {
+  background: #f6faff;
+  border-color: #b1ccef;
+  box-shadow: none;
+  transform: none;
+}
+#modalFondo.modal.promotion-picker .discount-option[aria-pressed="true"] {
+  background: #edf5ff;
+  border-color: #2879d9;
+  box-shadow: 0 0 0 1px #2879d9;
+}
+#modalFondo.modal.promotion-picker .promotion-card-preview {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 76px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 5px;
+  box-shadow: 0 3px 8px rgba(20, 32, 51, 0.05);
+}
+#modalFondo.modal.promotion-picker .promotion-card-preview img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 0;
+  filter: none;
+}
+#modalFondo.modal.promotion-picker .discount-option-label {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: none;
+  gap: 7px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+}
+#modalFondo.modal.promotion-picker .discount-option-name {
+  display: block;
+  grid-area: auto;
+  min-width: 0;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+#modalFondo.modal.promotion-picker .discount-badge {
+  display: block;
+  grid-area: auto;
+  width: auto;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  color: #132849;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  font-size: 25px;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+#modalFondo.modal.promotion-picker .promotion-current-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  padding: 3px 6px;
+  color: #17613f;
+  background: #e7f4ec;
+  border-radius: 6px;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+#modalFondo.modal.promotion-picker .promotion-manual-group .discount-options-row {
+  grid-template-columns: minmax(0, 1fr);
+}
+#modalFondo.modal.promotion-picker .promotion-manual-group .discount-option {
+  min-height: 100px;
+}
+#modalFondo.modal.promotion-picker .promotion-manual-group .discount-badge {
+  color: #96551d;
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1.4;
+  letter-spacing: 0;
+}
+#modalFondo.modal.promotion-picker .promotion-preview {
+  position: sticky;
+  top: 0;
+  min-width: 0;
+  padding: 16px;
+  background: #f7f9fc;
+  border: 1px solid #e0e7f1;
+  border-radius: 16px;
+}
+#modalFondo.modal.promotion-picker .promotion-preview-sheet {
+  display: grid;
+  place-items: center;
+  min-height: 278px;
+  padding: 10px;
+  background: #eaf0f7;
+  border-radius: 10px;
+}
+#modalFondo.modal.promotion-picker .promotion-preview-eyebrow {
+  margin: 0 0 10px;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.4;
+}
+#modalFondo.modal.promotion-picker .promotion-preview-empty {
+  max-width: 175px;
+  color: #718096;
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+}
+#modalFondo.modal.promotion-picker #promotionPreviewImage:not([hidden]) + .promotion-preview-empty {
+  display: none;
+}
+#modalFondo.modal.promotion-picker #promotionPreviewImage {
+  display: block;
+  width: 100%;
+  height: 260px;
+  object-fit: contain;
+}
+#modalFondo.modal.promotion-picker #promotionPreviewName {
+  margin: 14px 0 6px;
+  color: #142033;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+#modalFondo.modal.promotion-picker #promotionPreviewDetail {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.5;
+}
+#modalFondo.modal.promotion-picker #promotionPricePreview {
+  margin: 13px 0 0;
+  padding: 11px;
+  color: #1e497d;
+  background: #e9f2ff;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.55;
+  white-space: pre-line;
+}
+#modalFondo.modal.promotion-picker .promotion-picker-footer {
+  flex: none;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px 18px;
+  align-items: center;
+  padding: 16px 24px;
+  background: #fff;
+  border-top: 1px solid #e2e8f0;
+}
+#modalFondo.modal.promotion-picker .promotion-scope {
+  grid-column: 1;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+#modalFondo.modal.promotion-picker .promotion-scope legend {
+  margin-bottom: 7px;
+  padding: 0;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 600;
+}
+#modalFondo.modal.promotion-picker .promotion-scope label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  margin: 0 4px 0 0;
+  padding: 9px 11px;
+  color: #475569;
+  background: #fff;
+  border: 1px solid #dce4ef;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+  cursor: pointer;
+}
+#modalFondo.modal.promotion-picker .promotion-scope label:has(input:checked) {
+  color: #1f5c9d;
+  background: #edf5ff;
+  border-color: #7babdf;
+}
+#modalFondo.modal.promotion-picker .promotion-scope input[type="radio"] {
+  appearance: auto;
+  width: 16px;
+  height: 16px;
+  min-height: 16px;
+  margin: 0;
+  padding: 0;
+  accent-color: #2879d9;
+  box-shadow: none;
+}
+#modalFondo.modal.promotion-picker #promotionPickerStatus {
+  grid-column: 1;
+  margin: 0;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.45;
+}
+#modalFondo.modal.promotion-picker #promotionPickerStatus:empty {
+  display: none;
+}
+#modalFondo.modal.promotion-picker .promotion-picker-actions {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 9px;
+}
+#modalFondo.modal.promotion-picker .promotion-picker-actions button {
+  min-height: 44px;
+  margin: 0;
+  padding: 11px 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 11px;
+  box-shadow: none;
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.4;
+}
+#modalFondo.modal.promotion-picker #promotionCancel {
+  color: #475569;
+  background: #fff;
+}
+#modalFondo.modal.promotion-picker #promotionConfirm {
+  min-width: 190px;
+  color: #fff;
+  background: #236fc7;
+  border-color: #236fc7;
+}
+#modalFondo.modal.promotion-picker #promotionConfirm:hover:not(:disabled) {
+  background: #175eaf;
+  border-color: #175eaf;
+}
+#modalFondo.modal.promotion-picker button:disabled,
+#modalFondo.modal.promotion-picker .promotion-scope label:has(input:disabled) {
+  opacity: 0.48;
+  cursor: default;
+}
+#modalFondo.modal.promotion-picker :focus-visible {
+  outline: 3px solid #7eafe6;
+  outline-offset: 3px;
+}
+
+@media (max-width: 760px) {
+  #modalFondo.modal.promotion-picker {
+    padding: 10px;
+  }
+  #modalFondo.modal.promotion-picker .promotion-picker-content {
+    width: calc(100vw - 20px);
+    max-height: calc(100dvh - 20px);
+    border-radius: 20px;
+  }
+  #modalFondo.modal.promotion-picker .promotion-picker-header {
+    padding: 20px 62px 17px 18px;
+  }
+  #modalFondo.modal.promotion-picker #promotionPickerTitle {
+    font-size: 22px;
+  }
+  #modalFondo.modal.promotion-picker .discount-modal-subtitle {
+    font-size: 13px;
+  }
+  #modalFondo.modal.promotion-picker #promotionClose {
+    top: 12px;
+    right: 10px;
+  }
+  #modalFondo.modal.promotion-picker .promotion-picker-body {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+    padding: 0 18px 18px;
+  }
+  #modalFondo.modal.promotion-picker .discount-options-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 9px;
+  }
+  #modalFondo.modal.promotion-picker .discount-option {
+    min-height: 100px;
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 13px;
+    padding: 12px;
+  }
+  #modalFondo.modal.promotion-picker .promotion-card-preview {
+    width: 48px;
+    height: 70px;
+  }
+  #modalFondo.modal.promotion-picker .discount-option-name {
+    font-size: 14px;
+  }
+  #modalFondo.modal.promotion-picker .discount-badge {
+    font-size: 25px;
+  }
+  #modalFondo.modal.promotion-picker .promotion-preview {
+    position: static;
+    display: grid;
+    grid-template-columns: 82px minmax(0, 1fr);
+    gap: 6px 13px;
+    align-items: start;
+    padding: 13px;
+  }
+  #modalFondo.modal.promotion-picker .promotion-preview-sheet {
+    grid-column: 1;
+    grid-row: 1 / span 4;
+    min-height: 112px;
+    padding: 4px;
+  }
+  #modalFondo.modal.promotion-picker .promotion-preview-eyebrow {
+    grid-column: 2;
+    margin: 0;
+    font-size: 10px;
+  }
+  #modalFondo.modal.promotion-picker .promotion-preview-empty {
+    font-size: 10px;
+  }
+  #modalFondo.modal.promotion-picker #promotionPreviewImage {
+    height: 106px;
+  }
+  #modalFondo.modal.promotion-picker #promotionPreviewName {
+    grid-column: 2;
+    margin: 0;
+    font-size: 15px;
+  }
+  #modalFondo.modal.promotion-picker #promotionPreviewDetail,
+  #modalFondo.modal.promotion-picker #promotionPricePreview {
+    grid-column: 2;
+    margin: 0;
+    font-size: 12px;
+  }
+  #modalFondo.modal.promotion-picker #promotionPricePreview {
+    padding: 8px;
+  }
+  #modalFondo.modal.promotion-picker .promotion-picker-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 13px 18px;
+  }
+  #modalFondo.modal.promotion-picker .promotion-scope label {
+    margin-bottom: 5px;
+    padding-inline: 9px;
+    font-size: 12px;
+  }
+  #modalFondo.modal.promotion-picker .promotion-picker-actions {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: stretch;
+    gap: 8px;
+  }
+  #modalFondo.modal.promotion-picker .promotion-picker-actions button {
+    width: 100%;
+    min-height: 44px;
+  }
+}
