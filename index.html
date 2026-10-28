@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" referrerpolicy="no-referrer">
-<link rel="stylesheet" href="a4studio.css?v=20261027-promotion-picker">
+<link rel="stylesheet" href="a4studio.css?v=20261028-promotion-icons">
 </head>
 <body data-a4-studio="true">
 
@@ -312,13 +312,13 @@ natural 170 g</textarea>
   </div>
 </div>
 
-<!-- Selector de promociones con vista previa y confirmación -->
+<!-- Selector de promociones con íconos y confirmación -->
 <div id="modalFondo" class="modal promotion-picker" role="dialog" aria-modal="true" aria-labelledby="promotionPickerTitle" aria-describedby="promotionPickerSubtitle">
   <div class="modal-content discount-modal-content promotion-picker-content">
     <header class="promotion-picker-header">
       <div>
         <h3 id="promotionPickerTitle" tabindex="-1">Elegí la promoción de tu cartel</h3>
-        <p id="promotionPickerSubtitle" class="discount-modal-subtitle">Revisá el fondo y el descuento antes de aplicarlos.</p>
+        <p id="promotionPickerSubtitle" class="discount-modal-subtitle">Elegí una opción y tocá «Usar esta promoción».</p>
       </div>
       <button id="promotionClose" class="discount-modal-close" type="button" aria-label="Cerrar selector de promociones">×</button>
     </header>
@@ -328,12 +328,12 @@ natural 170 g</textarea>
           <h4 class="promotion-group-title" id="promotionRegularTitle">Medios de pago</h4>
           <div class="discount-options-row">
             <button class="discount-option discount-option-dni" type="button" data-fondo-option="dni" aria-pressed="false">
-              <span class="discount-preview promotion-card-preview"><img src="fondodni.jpg" alt="" loading="lazy"></span>
+              <span class="discount-preview promotion-app-icon"><img src="assets/promotions/cuenta-dni.jpg" alt="" loading="lazy"></span>
               <span class="discount-option-label"><span class="discount-option-name">Cuenta DNI</span><span class="discount-badge discount-badge-green">10%</span></span>
               <span class="promotion-current-badge" data-current-badge hidden>Actual</span>
             </button>
             <button class="discount-option discount-option-mercadopago" type="button" data-fondo-option="mercadopago" aria-pressed="false">
-              <span class="discount-preview promotion-card-preview"><img src="fondomp.jpg" alt="" loading="lazy"></span>
+              <span class="discount-preview promotion-app-icon"><img src="assets/promotions/mercado-pago.jpg" alt="" loading="lazy"></span>
               <span class="discount-option-label"><span class="discount-option-name">Mercado Pago</span><span class="discount-badge discount-badge-yellow">15%</span></span>
               <span class="promotion-current-badge" data-current-badge hidden>Actual</span>
             </button>
@@ -343,12 +343,12 @@ natural 170 g</textarea>
           <h4 class="promotion-group-title" id="promotionBankTitle">Carrefour Banco</h4>
           <div class="discount-options-row">
             <button class="discount-option discount-option-carrefour10" type="button" data-fondo-option="carrefour10" aria-pressed="false">
-              <span class="discount-preview promotion-card-preview"><img src="fondobanco10.png" alt="" loading="lazy"></span>
+              <span class="discount-preview promotion-app-icon"><img src="assets/promotions/carrefour-banco.png" alt="" loading="lazy"></span>
               <span class="discount-option-label"><span class="discount-option-name">Cuenta Digital</span><span class="discount-badge discount-badge-pink">10%</span></span>
               <span class="promotion-current-badge" data-current-badge hidden>Actual</span>
             </button>
             <button class="discount-option discount-option-carrefour" type="button" data-fondo-option="carrefour" aria-pressed="false">
-              <span class="discount-preview promotion-card-preview"><img src="fondobanco.jpg" alt="" loading="lazy"></span>
+              <span class="discount-preview promotion-app-icon"><img src="assets/promotions/carrefour-banco.png" alt="" loading="lazy"></span>
               <span class="discount-option-label"><span class="discount-option-name">Cuenta Digital</span><span class="discount-badge discount-badge-pink">15%</span></span>
               <span class="promotion-current-badge" data-current-badge hidden>Actual</span>
             </button>
@@ -357,22 +357,12 @@ natural 170 g</textarea>
         <section class="promotion-group promotion-manual-group" aria-labelledby="promotionManualTitle">
           <h4 class="promotion-group-title" id="promotionManualTitle">Descuento por producto</h4>
           <button class="discount-option discount-option-consumo" type="button" data-fondo-option="consumo" aria-pressed="false">
-            <span class="discount-preview promotion-card-preview"><img src="consumo-inmediato-fondo.svg" alt="" loading="lazy"></span>
+            <span class="discount-preview promotion-app-icon"><img src="consumo-inmediato-logo.svg" alt="" loading="lazy"></span>
             <span class="discount-option-label"><span class="discount-option-name">Consumo inmediato</span><span class="discount-badge discount-badge-red">Descuento manual</span></span>
             <span class="promotion-current-badge" data-current-badge hidden>Actual</span>
           </button>
         </section>
       </div>
-      <aside class="promotion-preview" aria-labelledby="promotionPreviewName">
-        <p class="promotion-preview-eyebrow">Vista previa del fondo</p>
-        <div class="promotion-preview-sheet">
-          <img id="promotionPreviewImage" alt="" hidden>
-          <span class="promotion-preview-empty">Elegí una promoción para ver su fondo</span>
-        </div>
-        <h4 id="promotionPreviewName">Elegí una promoción</h4>
-        <p id="promotionPreviewDetail">Tu cartel se actualizará cuando confirmes.</p>
-        <p id="promotionPricePreview" hidden></p>
-      </aside>
     </div>
     <footer class="promotion-picker-footer">
       <fieldset id="promotionScope" class="promotion-scope" hidden>
@@ -441,7 +431,7 @@ natural 170 g</textarea>
   </div>
 </dialog>
 
-<script src="promotion-picker.js?v=20261027"></script>
+<script src="promotion-picker.js?v=20261028"></script>
 <script src="carrefour360.js?v=20261027-images"></script>
 <script src="carrefour-images-ui.js?v=20261027"></script>
 <script src="carrefour-onboarding.js?v=20261027-install-ready"></script>
@@ -3233,7 +3223,6 @@ natural 170 g</textarea>
       showModalElement(modal);
       promotionPicker.open({
         currentType: fondoActual,
-        normalCents: Number(precioNormalObj.entero) * 100 + Number(precioNormalObj.centavos),
         allowAll: projectSetupComplete && options.showApplyAll !== false,
         required: discountSelectionRequired,
         trigger
@@ -6085,9 +6074,6 @@ natural 170 g</textarea>
     promotionPicker = window.A4PromotionPicker.create({
       promotions: ['dni', 'mercadopago', 'carrefour10', 'carrefour', 'consumo'].map((type) => ({
         type,
-        name: getNombreFondo(type),
-        percent: calcularDescuentoPorFondo(type),
-        preview: fondos[type] || CONSUMO_FONDO_SRC,
         manual: type === 'consumo'
       })),
       apply: (type, allPages) => window.seleccionarFondo(type, { allPages }),

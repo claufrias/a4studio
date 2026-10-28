@@ -4530,11 +4530,11 @@ body.tight-floating-panels:not(.mobile-ui) #imageSearchPanel .crop-controls .hea
   }
 }
 
-/* Promotion selection with a separate preview and explicit confirmation. */
+/* Promotion selection with app icons and explicit confirmation. */
 #modalFondo.modal.promotion-picker {
   padding: 24px;
-  background: rgba(12, 23, 40, 0.62);
-  backdrop-filter: blur(5px);
+  background: #f8fafc url("a4studiofondo.png") center / cover no-repeat;
+  backdrop-filter: none;
 }
 #modalFondo.modal.promotion-picker [hidden] {
   display: none !important;
@@ -4542,7 +4542,7 @@ body.tight-floating-panels:not(.mobile-ui) #imageSearchPanel .crop-controls .hea
 #modalFondo.modal.promotion-picker .promotion-picker-content {
   display: flex;
   flex-direction: column;
-  width: min(980px, calc(100vw - 48px));
+  width: min(760px, calc(100vw - 48px));
   max-height: calc(100dvh - 48px);
   min-height: 0;
   margin: auto;
@@ -4603,7 +4603,7 @@ body.tight-floating-panels:not(.mobile-ui) #imageSearchPanel .crop-controls .hea
 }
 #modalFondo.modal.promotion-picker .promotion-picker-body {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 260px;
+  grid-template-columns: minmax(0, 1fr);
   gap: 24px;
   min-height: 0;
   padding: 0 24px 24px;
@@ -4639,7 +4639,7 @@ body.tight-floating-panels:not(.mobile-ui) #imageSearchPanel .crop-controls .hea
 #modalFondo.modal.promotion-picker .discount-option {
   position: relative;
   display: grid;
-  grid-template-columns: 52px minmax(0, 1fr);
+  grid-template-columns: 64px minmax(0, 1fr);
   align-items: center;
   gap: 12px;
   width: 100%;
@@ -4675,21 +4675,21 @@ body.tight-floating-panels:not(.mobile-ui) #imageSearchPanel .crop-controls .hea
   border-color: #2879d9;
   box-shadow: 0 0 0 1px #2879d9;
 }
-#modalFondo.modal.promotion-picker .promotion-card-preview {
+#modalFondo.modal.promotion-picker .promotion-app-icon {
   display: grid;
   place-items: center;
-  width: 52px;
-  height: 76px;
+  width: 64px;
+  height: 64px;
   min-width: 0;
   margin: 0;
   padding: 0;
   overflow: hidden;
   background: #fff;
   border: 1px solid #e2e8f0;
-  border-radius: 5px;
+  border-radius: 14px;
   box-shadow: 0 3px 8px rgba(20, 32, 51, 0.05);
 }
-#modalFondo.modal.promotion-picker .promotion-card-preview img {
+#modalFondo.modal.promotion-picker .promotion-app-icon img {
   display: block;
   width: 100%;
   height: 100%;
@@ -4759,69 +4759,6 @@ body.tight-floating-panels:not(.mobile-ui) #imageSearchPanel .crop-controls .hea
   font-weight: 650;
   line-height: 1.4;
   letter-spacing: 0;
-}
-#modalFondo.modal.promotion-picker .promotion-preview {
-  position: sticky;
-  top: 0;
-  min-width: 0;
-  padding: 16px;
-  background: #f7f9fc;
-  border: 1px solid #e0e7f1;
-  border-radius: 16px;
-}
-#modalFondo.modal.promotion-picker .promotion-preview-sheet {
-  display: grid;
-  place-items: center;
-  min-height: 278px;
-  padding: 10px;
-  background: #eaf0f7;
-  border-radius: 10px;
-}
-#modalFondo.modal.promotion-picker .promotion-preview-eyebrow {
-  margin: 0 0 10px;
-  color: #64748b;
-  font-size: 11px;
-  font-weight: 650;
-  line-height: 1.4;
-}
-#modalFondo.modal.promotion-picker .promotion-preview-empty {
-  max-width: 175px;
-  color: #718096;
-  font-size: 13px;
-  line-height: 1.5;
-  text-align: center;
-}
-#modalFondo.modal.promotion-picker #promotionPreviewImage:not([hidden]) + .promotion-preview-empty {
-  display: none;
-}
-#modalFondo.modal.promotion-picker #promotionPreviewImage {
-  display: block;
-  width: 100%;
-  height: 260px;
-  object-fit: contain;
-}
-#modalFondo.modal.promotion-picker #promotionPreviewName {
-  margin: 14px 0 6px;
-  color: #142033;
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 1.35;
-}
-#modalFondo.modal.promotion-picker #promotionPreviewDetail {
-  margin: 0;
-  color: #64748b;
-  font-size: 13px;
-  line-height: 1.5;
-}
-#modalFondo.modal.promotion-picker #promotionPricePreview {
-  margin: 13px 0 0;
-  padding: 11px;
-  color: #1e497d;
-  background: #e9f2ff;
-  border-radius: 10px;
-  font-size: 13px;
-  line-height: 1.55;
-  white-space: pre-line;
 }
 #modalFondo.modal.promotion-picker .promotion-picker-footer {
   flex: none;
@@ -4964,58 +4901,19 @@ body.tight-floating-panels:not(.mobile-ui) #imageSearchPanel .crop-controls .hea
   }
   #modalFondo.modal.promotion-picker .discount-option {
     min-height: 100px;
-    grid-template-columns: 48px minmax(0, 1fr);
+    grid-template-columns: 56px minmax(0, 1fr);
     gap: 13px;
     padding: 12px;
   }
-  #modalFondo.modal.promotion-picker .promotion-card-preview {
-    width: 48px;
-    height: 70px;
+  #modalFondo.modal.promotion-picker .promotion-app-icon {
+    width: 56px;
+    height: 56px;
   }
   #modalFondo.modal.promotion-picker .discount-option-name {
     font-size: 14px;
   }
   #modalFondo.modal.promotion-picker .discount-badge {
     font-size: 25px;
-  }
-  #modalFondo.modal.promotion-picker .promotion-preview {
-    position: static;
-    display: grid;
-    grid-template-columns: 82px minmax(0, 1fr);
-    gap: 6px 13px;
-    align-items: start;
-    padding: 13px;
-  }
-  #modalFondo.modal.promotion-picker .promotion-preview-sheet {
-    grid-column: 1;
-    grid-row: 1 / span 4;
-    min-height: 112px;
-    padding: 4px;
-  }
-  #modalFondo.modal.promotion-picker .promotion-preview-eyebrow {
-    grid-column: 2;
-    margin: 0;
-    font-size: 10px;
-  }
-  #modalFondo.modal.promotion-picker .promotion-preview-empty {
-    font-size: 10px;
-  }
-  #modalFondo.modal.promotion-picker #promotionPreviewImage {
-    height: 106px;
-  }
-  #modalFondo.modal.promotion-picker #promotionPreviewName {
-    grid-column: 2;
-    margin: 0;
-    font-size: 15px;
-  }
-  #modalFondo.modal.promotion-picker #promotionPreviewDetail,
-  #modalFondo.modal.promotion-picker #promotionPricePreview {
-    grid-column: 2;
-    margin: 0;
-    font-size: 12px;
-  }
-  #modalFondo.modal.promotion-picker #promotionPricePreview {
-    padding: 8px;
   }
   #modalFondo.modal.promotion-picker .promotion-picker-footer {
     display: flex;

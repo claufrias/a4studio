@@ -6,14 +6,14 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 
-const context = vm.createContext({ window: {}, Intl });
+const context = vm.createContext({ window: {} });
 vm.runInContext(fs.readFileSync(path.join(__dirname, '../promotion-picker.js'), 'utf8'), context);
 const { create } = context.window.A4PromotionPicker;
 const promotions = [
-  { type: 'dni', name: 'Cuenta DNI', percent: 10, preview: 'fondodni.jpg' },
-  { type: 'carrefour', name: 'Cuenta Digital · 15%', percent: 15, preview: 'fondobanco.jpg' },
-  { type: 'carrefour10', name: 'Cuenta Digital · 10%', percent: 10, preview: 'fondobanco10.png' },
-  { type: 'consumo', name: 'Consumo inmediato', manual: true, preview: 'consumo.svg' }
+  { type: 'dni', name: 'Cuenta DNI', percent: 10 },
+  { type: 'carrefour', name: 'Cuenta Digital · 15%', percent: 15 },
+  { type: 'carrefour10', name: 'Cuenta Digital · 10%', percent: 10 },
+  { type: 'consumo', name: 'Consumo inmediato', manual: true }
 ];
 
 class Element {
@@ -50,8 +50,7 @@ class Element {
 
 function fixture(t, { apply } = {}) {
   const document = {};
-  const ids = ['Title', 'PreviewImage', 'PreviewName', 'PreviewDetail', 'PricePreview',
-    'PickerStatus', 'Confirm', 'Cancel', 'Close', 'Scope', 'ScopeThis', 'ScopeAll'];
+  const ids = ['Title', 'PickerStatus', 'Confirm', 'Cancel', 'Close', 'Scope', 'ScopeThis', 'ScopeAll'];
   const elements = Object.fromEntries(ids.map((id) => [id, new Element(document)]));
   elements.Title.tabIndex = -1;
   const modal = new Element(document);
@@ -76,13 +75,14 @@ function fixture(t, { apply } = {}) {
   document.getElementById = (id) => {
     if (id === 'modalFondo') return modal;
     if (id === 'promotionPickerTitle') return elements.Title;
-    return elements[id.replace('promotion', '')];
+    const element = elements[id.replace('promotion', '')];
+    assert.ok(element, `control inesperado: ${id}`);
+    return element;
   };
-  const images = [];
   const window = {
     document,
     getComputedStyle: (element) => ({ display: element.hidden ? 'none' : 'block', visibility: 'visible' }),
-    Image: class { constructor() { images.push(this); } }
+    Image: class { constructor() { throw new Error('El selector no debe cargar imágenes de vista previa'); } }
   };
   const applications = [];
   let closes = 0;
@@ -97,29 +97,21 @@ function fixture(t, { apply } = {}) {
   });
   t.after(() => controller.destroy());
   return {
-    controller, modal, elements, cards, images, applications, document, trigger,
+    controller, modal, elements, cards, applications, document, trigger,
     closes: () => closes,
     choose: (type) => cards.find((card) => card.dataset.fondoOption === type).emit('click'),
-    load: (index = images.length - 1) => images[index].onload(),
-    fail: (index = images.length - 1) => images[index].onerror(),
-    open: (state = {}) => controller.open({ normalCents: 299050, allowAll: true, ...state })
+    open: (state = {}) => controller.open({ allowAll: true, ...state })
   };
 }
 
-test('elegir una tarjeta solo prepara la vista previa; confirmar aplica una vez al cartel actual', async (t) => {
+test('elegir una tarjeta habilita confirmar sin cargar imágenes ni modificar el cartel', async (t) => {
   const f = fixture(t);
   f.open({ allowAll: false });
   assert.equal(f.elements.Confirm.disabled, true);
   assert.equal(f.elements.Scope.hidden, true);
   await f.choose('carrefour10');
   assert.equal(f.applications.length, 0);
-  assert.equal(f.elements.Confirm.disabled, true, 'espera a que se cargue el fondo');
-  f.load();
-  assert.equal(f.elements.PreviewImage.src, 'fondobanco10.png');
-  assert.equal(f.elements.PreviewImage.hidden, false);
-  assert.match(f.elements.PricePreview.textContent, /2\.990,50/);
-  assert.match(f.elements.PricePreview.textContent, /2\.691,45/);
-  assert.equal(f.elements.PricePreview.hidden, false);
+  assert.equal(f.elements.Confirm.disabled, false, 'la confirmación queda disponible inmediatamente');
   f.elements.ScopeAll.checked = true;
   await f.elements.Confirm.emit('click');
   assert.deepEqual(f.applications, [{ type: 'carrefour10', all: false }]);
@@ -130,7 +122,6 @@ test('elegir una tarjeta solo prepara la vista previa; confirmar aplica una vez 
 test('la etiqueta Actual sigue al fondo aplicado y cancelar no modifica el cartel', async (t) => {
   const f = fixture(t);
   f.open({ currentType: 'carrefour' });
-  f.load();
   await f.choose('carrefour10');
   assert.equal(f.cards[1].badge.hidden, false);
   assert.equal(f.cards[2].badge.hidden, true);
@@ -144,28 +135,29 @@ test('la etiqueta Actual sigue al fondo aplicado y cancelar no modifica el carte
   assert.equal(f.elements.ScopeAll.checked, false);
 });
 
-test('la carga tardía de otro fondo no habilita ni cambia la vista previa seleccionada', async (t) => {
+test('cambiar de tarjeta aplica únicamente la última selección al confirmar', async (t) => {
   const f = fixture(t);
   f.open();
   await f.choose('dni');
   await f.choose('carrefour10');
-  f.load(0);
-  assert.equal(f.elements.Confirm.disabled, true);
-  f.fail(0);
-  assert.equal(f.elements.PickerStatus.textContent, 'Cargando vista previa…');
-  f.load(1);
-  assert.equal(f.elements.PreviewImage.src, 'fondobanco10.png');
+  assert.equal(f.applications.length, 0);
+  assert.equal(f.cards[0].attributes['aria-pressed'], 'false');
+  assert.equal(f.cards[2].attributes['aria-pressed'], 'true');
   assert.equal(f.elements.Confirm.disabled, false);
+  await f.elements.Confirm.emit('click');
+  assert.deepEqual(f.applications, [{ type: 'carrefour10', all: false }]);
 });
 
 test('confirmar captura el alcance y bloquea cambios, cierres y aplicaciones duplicadas durante la carga', async (t) => {
   let finish;
   const f = fixture(t, { apply: () => new Promise((resolve) => { finish = resolve; }) });
   f.open();
-  await f.choose('carrefour10'); f.load();
+  await f.choose('carrefour10');
   f.elements.ScopeAll.checked = true;
+  f.elements.Confirm.focus();
   const pending = f.elements.Confirm.emit('click');
   assert.equal(f.controller.busy, true);
+  assert.equal(f.document.activeElement, f.elements.Title, 'el foco sigue dentro del diálogo al deshabilitar confirmar');
   assert.ok(f.cards.every((card) => card.disabled));
   assert.equal(f.elements.ScopeAll.disabled, true);
   assert.equal(f.elements.Cancel.disabled, true);
@@ -192,7 +184,7 @@ test('una aplicación fallida mantiene la selección abierta y permite reintenta
     return true;
   } });
   f.open({ required: true });
-  await f.choose('carrefour10'); f.load();
+  await f.choose('carrefour10');
   await f.elements.Confirm.emit('click');
   assert.equal(f.closes(), 0);
   assert.match(f.elements.PickerStatus.textContent, /No se pudo aplicar/);
@@ -204,19 +196,15 @@ test('una aplicación fallida mantiene la selección abierta y permite reintenta
   assert.equal(f.closes(), 1, 'la selección inicial solo se libera después de aplicar');
 });
 
-test('Consumo explica su descuento manual y un fondo que no carga impide confirmar', async (t) => {
+test('Consumo explica su descuento manual y permite confirmarlo sin vista previa', async (t) => {
   const f = fixture(t);
   f.open();
   await f.choose('consumo');
-  assert.equal(f.elements.PreviewDetail.textContent, 'Ingresás el descuento de cada producto.');
-  assert.doesNotMatch(f.elements.PricePreview.textContent, /\$/);
-  f.fail();
-  assert.equal(f.elements.Confirm.disabled, true);
-  assert.match(f.elements.PickerStatus.textContent, /No se pudo cargar/);
-  await f.elements.Confirm.emit('click');
-  assert.equal(f.applications.length, 0);
-  await f.choose('dni'); f.load();
+  assert.equal(f.elements.PickerStatus.textContent, 'Consumo inmediato: ingresás el descuento de cada producto.');
   assert.equal(f.elements.Confirm.disabled, false);
+  assert.equal(f.applications.length, 0);
+  await f.elements.Confirm.emit('click');
+  assert.deepEqual(f.applications, [{ type: 'consumo', all: false }]);
 });
 
 test('la selección inicial no puede cerrarse y su alcance siempre empieza en este cartel', async (t) => {
@@ -235,7 +223,7 @@ test('la selección inicial no puede cerrarse y su alcance siempre empieza en es
 
 test('el teclado queda en el selector, conserva Tab y evita los atajos del canvas', async (t) => {
   const f = fixture(t);
-  f.open({ currentType: 'dni' }); f.load();
+  f.open({ currentType: 'dni' });
   assert.equal(f.document.activeElement, f.elements.Title);
   await f.modal.emit('keydown', { key: 'Tab' });
   assert.equal(f.document.activeElement, f.elements.Close);
@@ -262,19 +250,20 @@ test('al cerrar restaura el botón capturado antes de que el editor quede oculto
   assert.equal(f.document.activeElement, f.trigger);
 });
 
-test('cerrar o destruir ignora vistas previas pendientes y retira los controles', async (t) => {
-  const f = fixture(t);
+test('cerrar o destruir ignora aplicaciones pendientes y retira los controles', async (t) => {
+  let finish;
+  const f = fixture(t, { apply: () => new Promise((resolve) => { finish = resolve; }) });
   f.open();
   await f.choose('dni');
+  const pending = f.elements.Confirm.emit('click');
   f.controller.closed();
-  f.load();
-  assert.equal(f.elements.PreviewImage.hidden, true);
-  f.open();
-  await f.choose('carrefour10');
+  f.open({ currentType: 'carrefour10' });
+  finish(true);
+  await pending;
+  assert.equal(f.closes(), 0, 'la respuesta anterior no cierra una selección nueva');
+  assert.equal(f.cards[2].attributes['aria-pressed'], 'true');
   f.controller.destroy();
-  f.load();
   await f.elements.Confirm.emit('click');
   await f.choose('dni');
-  assert.equal(f.applications.length, 0);
-  assert.equal(f.elements.PreviewImage.hidden, true);
+  assert.deepEqual(f.applications, [{ type: 'dni', all: false }]);
 });

@@ -1,13 +1,15 @@
 # a4studio
 Editor visual de carteles
 
-El selector de promociones muestra tarjetas con el nombre, el porcentaje y una
-miniatura del fondo. Las opciones de **Cuenta Digital Carrefour Banco · 10% y
-15%** están agrupadas y conservan sus fondos propios. **Consumo inmediato** aparece
-por separado y permite ingresar el descuento de cada producto.
+El selector de promociones conserva el fondo de bienvenida y muestra tarjetas
+con el nombre, el porcentaje y el ícono de cada aplicación. Las opciones de
+**Cuenta Digital Carrefour Banco · 10% y 15%** están agrupadas y conservan sus
+fondos propios. **Consumo inmediato** aparece por separado y permite ingresar el
+descuento de cada producto. Los íconos se guardan en `assets/promotions/`, con
+sus fuentes documentadas en `SOURCES.md`.
 
-Elegir una tarjeta muestra el fondo y el precio final de ejemplo sin modificar
-el cartel. El cambio se confirma con **Usar esta promoción** y se puede aplicar a
+Elegir una tarjeta marca la opción sin modificar el cartel. El cambio se confirma
+con **Usar esta promoción** y se puede aplicar a
 **Solo este cartel** o **Todos los carteles**; cada cartel conserva su precio
 normal y calcula su propio descuento. La etiqueta **Actual** identifica la
 promoción aplicada. **Cancelar** conserva el proyecto y se puede deshacer una
