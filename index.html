@@ -2021,20 +2021,20 @@ natural 170 g</textarea>
     function drawPromotionTerms() {
       if (!PROMOTION_TERMS_FONDOS.has(fondoActual)) return;
       mainCtx.save();
-      // Cubrir Atención al cliente y su teléfono sin tapar las redes ni el reciclaje.
+      // Limpiar el pie original y conservar únicamente el logo de Carrefour a la derecha.
       mainCtx.fillStyle = '#ffffff';
-      mainCtx.fillRect(140, 1130, 158, 50);
+      mainCtx.fillRect(0, 1129, 735, 71);
       mainCtx.fillStyle = '#000000';
       mainCtx.textAlign = 'center';
       mainCtx.textBaseline = 'top';
-      mainCtx.font = '700 11px Arial, sans-serif';
+      mainCtx.font = '700 12px Arial, sans-serif';
       const exclusions = 'NO INCLUYE CARNICERÍA, FRUTAS, VERDURAS, HUEVOS DE GALLINA, ELECTROS, BAZAR, FERRETERÍA, AUTOMOTOR, JUGUETERÍA LIBRERÍA, COCINA, JARDINERÍA, TEXTIL, OFERTÓN POR BULTO, PACK FAMILIAR NI “PRECIO SÚPER BAJO”,';
-      drawWrappedConsumoText(mainCtx, exclusions, CANVAS_W / 2, 1102, CANVAS_W - 32, 13, Infinity);
+      drawWrappedConsumoText(mainCtx, exclusions, CANVAS_W / 2, 1102, CANVAS_W - 48, 14, Infinity);
       mainCtx.textBaseline = 'alphabetic';
-      mainCtx.font = '700 17px Arial, sans-serif';
-      mainCtx.fillText('Mínimo de compra', 535, 1148);
-      mainCtx.font = '700 20px Arial, sans-serif';
-      mainCtx.fillText('$15.000', 535, 1172);
+      mainCtx.font = '700 16px Arial, sans-serif';
+      mainCtx.fillText('Mínimo de compra', CANVAS_W / 2, 1151);
+      mainCtx.font = '700 24px Arial, sans-serif';
+      mainCtx.fillText('$15.000', CANVAS_W / 2, 1178);
       mainCtx.restore();
     }
 
