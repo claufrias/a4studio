@@ -2021,6 +2021,9 @@ natural 170 g</textarea>
     function drawPromotionTerms() {
       if (!PROMOTION_TERMS_FONDOS.has(fondoActual)) return;
       mainCtx.save();
+      // Cubrir Atención al cliente y su teléfono sin tapar las redes ni el reciclaje.
+      mainCtx.fillStyle = '#ffffff';
+      mainCtx.fillRect(140, 1130, 158, 50);
       mainCtx.fillStyle = '#000000';
       mainCtx.textAlign = 'center';
       mainCtx.textBaseline = 'top';
