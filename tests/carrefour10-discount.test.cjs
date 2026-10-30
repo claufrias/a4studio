@@ -65,7 +65,7 @@ test('la opción nueva tiene nombre y fondo propios y mantiene el fondo de 15%',
   assert.match(source, /data-fondo-option="carrefour10"/);
 });
 
-test('foto, fechas y código de barras quedan por encima del QR y no agregan términos de otras promociones', () => {
+test('Cuenta Digital ubica el código de barras abajo a la izquierda sin invadir el QR ni las fechas', () => {
   const start = source.indexOf('    const LAYOUT_LIMIT_COMPATIBLE_FONDOS');
   const end = source.indexOf('    function clampValue', start);
   assert.ok(start >= 0 && end > start);
@@ -74,11 +74,20 @@ test('foto, fechas y código de barras quedan por encima del QR y no agregan té
   const photo = plain(api.getMovementZone('img'));
   const footerMatch = /const standardFooterLayout = ([^]*?);\s+drawValidityAndEan/.exec(source);
   assert.ok(footerMatch);
-  const footer = vm.runInContext(`(${footerMatch[1]})`, api);
   assert.equal(photo.y + photo.h, 980);
-  assert.ok(photo.y + photo.h < footer.barcodeY);
-  assert.ok(footer.barcodeY + footer.barcodeH <= 1046);
-  assert.ok(footer.dateY < 1046);
+  assert.ok(photo.y + photo.h < 1046, 'la foto de 10% sigue por encima del QR');
+  for (const type of ['carrefour10', 'carrefour']) {
+    api.fondoActual = type;
+    const footer = vm.runInContext(`(${footerMatch[1]})`, api);
+    const photoZone = plain(api.getMovementZone('img'));
+    assert.ok(footer.barcodeX - 5 >= 18, 'conserva margen izquierdo y fondo blanco');
+    assert.ok(footer.barcodeX + footer.barcodeW + 5 < 235, 'el código completo queda a la izquierda del banner QR');
+    assert.ok(footer.barcodeY > 1100, 'se ubica en el pie del cartel');
+    assert.ok(footer.barcodeY + footer.barcodeH + 15 + 3 <= 1190, 'barras, dígitos y fondo blanco conservan margen inferior');
+    assert.ok(footer.barcodeW >= 170 && footer.barcodeH >= 48, 'conserva el tamaño de las barras');
+    assert.ok(footer.dateY - footer.dateSize > photoZone.y + photoZone.h, 'las fechas quedan debajo de la foto');
+    assert.ok(footer.dateY < footer.barcodeY - 3, 'las fechas quedan por encima del código');
+  }
   assert.equal(vm.runInContext("PROMOTION_TERMS_FONDOS.has('carrefour10')", api), false);
 
   for (const type of ['titulo', 'producto', 'precioNormal', 'precioOferta']) {

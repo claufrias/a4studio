@@ -2239,10 +2239,8 @@ natural 170 g</textarea>
       drawPromotionTerms();
       const standardFooterLayout = PROMOTION_TERMS_FONDOS.has(fondoActual)
         ? { dateX: 18, dateY: 1080, dateSize: 16, barcodeX: 710, barcodeY: 1050, barcodeW: 165, barcodeH: 28 }
-        : fondoActual === 'carrefour10'
-          ? { dateX: 18, dateY: 1030, dateSize: 16, barcodeX: 710, barcodeY: 1000, barcodeW: 165, barcodeH: 28 }
-        : fondoActual === 'carrefour'
-          ? { dateX: 14, dateY: 1157, dateSize: 21, barcodeX: 680, barcodeY: 1129, barcodeW: 170, barcodeH: 48 }
+        : fondoActual === 'carrefour10' || fondoActual === 'carrefour'
+          ? { dateX: 18, dateY: 1110, dateSize: 16, barcodeX: 24, barcodeY: 1124, barcodeW: 170, barcodeH: 48 }
           : { dateX: 350, dateY: 1157, dateSize: 21, barcodeX: 710, barcodeY: 1129, barcodeW: 165, barcodeH: 48 };
       drawValidityAndEan(mainCtx, productoEan, vigenciaObj, standardFooterLayout);
       
