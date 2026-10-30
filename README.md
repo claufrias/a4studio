@@ -16,6 +16,11 @@ promoción aplicada. **Cancelar** conserva el proyecto y se puede deshacer una
 promoción confirmada. Al crear un proyecto se requiere elegir una promoción
 para el primer cartel.
 
+El selector usa tarjetas compactas con íconos de 40 px. En pantallas de
+1024 × 600 se ven las cinco opciones sin desplazar la lista. En ventanas más
+pequeñas o con el navegador ampliado, la lista puede desplazarse mientras el
+encabezado y los botones permanecen visibles.
+
 El catálogo local incluye 3.362 productos del informe del 22/10/2026. Al escribir
 al menos dos caracteres en el nombre se muestran hasta ocho coincidencias, sin
 distinguir mayúsculas ni tildes. Elegir una sugerencia con clic o con las flechas
